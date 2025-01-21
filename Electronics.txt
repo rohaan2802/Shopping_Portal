@@ -1,0 +1,30 @@
+Smartphone - 50000 PKR, 5
+Laptop - 80000 PKR, 3
+Television - 70000 PKR, 4
+Headphones - 5000 PKR, 15
+Bluetooth speaker - 3000 PKR, 10
+Digital camera - 30000 PKR, 2
+Gaming console - 40000 PKR, 2
+Smartwatch - 10000 PKR, 8
+Portable hard drive - 4000 PKR, 12
+Wireless earbuds - 8000 PKR, 6
+Tablet - 20000 PKR, 4
+Refrigerator - 80000 PKR, 3
+Washing machine - 60000 PKR, 4
+Air conditioner - 70000 PKR, 3
+Microwave oven - 10000 PKR, 6
+Blender - 5000 PKR, 10
+Vacuum cleaner - 12000 PKR, 5
+Electric kettle - 3000 PKR, 15
+Toaster - 4000 PKR, 12
+Rice cooker - 6000 PKR, 8
+Coffee maker - 7000 PKR, 6
+Food processor - 15000 PKR, 4
+Juicer - 7000 PKR, 6
+Iron - 2000 PKR, 15
+Electric grill - 8000 PKR, 5
+Handheld mixer - 3500 PKR, 10
+Air purifier - 15000 PKR, 4
+Bread maker - 10000 PKR, 6
+Electric fan - 3000 PKR, 10
+Induction cooktop - 12000 PKR, 5
