@@ -1,0 +1,30 @@
+T shirt - 500 PKR, 10
+Jeans - 2000 PKR, 5
+Dress - 3000 PKR, 5
+Sweater - 2500 PKR, 6
+Hoodie - 2500 PKR, 6
+Shorts - 1500 PKR, 8
+Skirt - 2000 PKR, 5
+Blouse - 1500 PKR, 8
+Suit - 5000 PKR, 3
+Coat - 4000 PKR, 4
+Scarf - 500 PKR, 10
+Hat - 300 PKR, 15
+Socks - 200 PKR, 20
+Underwear - 300 PKR, 15
+Belt - 500 PKR, 10
+Watch - 3000 PKR, 5
+Sunglasses - 1000 PKR, 10
+Handbag - 4000 PKR, 4
+Wallet - 2000 PKR, 6
+Shoes - 3500 PKR, 5
+Sandals - 2500 PKR, 6
+Boots - 4000 PKR, 4
+Slippers - 1000 PKR, 10
+Jewelry set - 5000 PKR, 3
+Tie - 500 PKR, 10
+Gloves - 300 PKR, 15
+Bathrobe - 2000 PKR, 6
+Pajamas - 1500 PKR, 8
+Lingerie - 1500 PKR, 8
+Swimwear - 3000 PKR, 5

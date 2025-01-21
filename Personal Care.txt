@@ -1,0 +1,30 @@
+Shampoo - 200 PKR, 5
+Toothpaste - 100 PKR, 20
+Body wash - 250 PKR, 15
+Deodorant - 150 PKR, 10
+Hand soap - 80 PKR, 25
+Razor blades - 300 PKR, 8
+Facial cleanser - 180 PKR, 14
+Conditioner - 220 PKR, 12
+Moisturizer - 250 PKR, 10
+Sunscreen - 200 PKR, 15
+Toothbrush - 50 PKR, 30
+Hair gel - 150 PKR, 10
+Body lotion - 180 PKR, 12
+Shaving cream - 120 PKR, 18
+Cotton swabs - 70 PKR, 25
+Lip balm - 100 PKR, 20
+Face mask - 50 PKR, 30
+Hand sanitizer - 100 PKR, 25
+Tissues - 60 PKR, 40
+Hairbrush - 80 PKR, 20
+Nail clippers - 60 PKR, 25
+Dental floss - 70 PKR, 20
+Bath sponge - 50 PKR, 35
+Wet wipes - 90 PKR, 15
+Body spray - 200 PKR, 10
+Makeup remover - 150 PKR, 12
+Hair spray - 180 PKR, 8
+Face scrub - 200 PKR, 10
+Hand cream - 120 PKR, 18
+Talcum powder - 100 PKR, 20

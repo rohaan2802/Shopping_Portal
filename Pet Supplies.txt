@@ -1,0 +1,30 @@
+Dog food - 500 PKR, 5
+Cat litter - 300 PKR, 15
+Dog leash - 200 PKR, 20
+Cat scratching post - 400 PKR, 12
+Birdcage - 1000 PKR, 6
+Fish tank - 800 PKR, 8
+Pet bed - 600 PKR, 10
+Dog collar - 150 PKR, 20
+Cat toys - 100 PKR, 25
+Dog shampoo - 200 PKR, 15
+Bird food - 100 PKR, 30
+Hamster cage - 500 PKR, 8
+Reptile terrarium - 1500 PKR, 5
+Rabbit hutch - 1200 PKR, 6
+Guinea pig food - 300 PKR, 15
+Fish food - 50 PKR, 40
+Pet grooming brush - 100 PKR, 20
+Birdcage accessories - 200 PKR, 10
+Cat litter box - 400 PKR, 12
+Dog chew toys - 150 PKR, 20
+Pet carrier - 800 PKR, 8
+Small animal bedding - 100 PKR, 25
+Fish tank decorations - 300 PKR, 15
+Catnip - 50 PKR, 30
+Dog dental chews - 200 PKR, 15
+Birdcage stand - 300 PKR, 10
+Turtle food - 100 PKR, 25
+Rabbit hay - 50 PKR, 30
+Hamster wheel - 100 PKR, 20
+Fish tank filter - 200 PKR, 10

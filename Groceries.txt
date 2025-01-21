@@ -1,0 +1,30 @@
+Apples - 150 PKR, 2
+Bananas - 80 PKR, 15
+Bread - 120 PKR, 5
+Milk - 180 PKR, 8
+Eggs - 200 PKR, 12
+Chicken breasts - 500 PKR, 3
+Ground beef - 400 PKR, 6
+Rice - 100 PKR, 15
+Pasta - 90 PKR, 20
+Cereal - 250 PKR, 7
+Yogurt - 80 PKR, 18
+Cheese - 300 PKR, 9
+Tomatoes - 70 PKR, 30
+Lettuce - 60 PKR, 22
+Carrots - 50 PKR, 35
+Onions - 40 PKR, 40
+Potatoes - 80 PKR, 28
+Green beans - 120 PKR, 15
+Broccoli - 100 PKR, 20
+Cauliflower - 150 PKR, 12
+Oranges - 180 PKR, 14
+Strawberries - 300 PKR, 5
+Blueberries - 400 PKR, 3
+Grapes - 250 PKR, 10
+Avocado - 200 PKR, 8
+Olive oil - 350 PKR, 7
+Peanut butter - 250 PKR, 15
+Jelly - 200 PKR, 10
+Canned soup - 150 PKR, 20
+Frozen pizza - 500 PKR, 4
