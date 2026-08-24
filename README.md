@@ -1,99 +1,92 @@
-# Shopping_Portal
+# Shopping_Portal (FAST Shopping Portal)
 
-Console **OOP shopping portal** (“FAST Shopping Portal”) with role selection, customer registration/login, category-based catalog files, cart, search, and billing. Built as a Visual Studio C++ project.
+Windows **console OOP shop**: role picker, **Customer** register/login/cart/billing, file-based catalogs. **Admin** and **Vendor** headers exist as **stubs**.
 
-## Overview
+**Team/course refs:** 22I-2327 Mohammad Rohaan · [rohaan2802](https://github.com/rohaan2802)
 
-`Main.cpp` maximizes the console, shows a welcome banner, and calls `Select_Role()`:
+---
 
-1. Admin  
-2. Vendor  
-3. Customer  
-4. Close window  
+## Table of contents
 
-**Customer** is fully implemented (`Customer` + `Item` + `Cart`). **Admin** and **Vendor** headers/cpp files are present as stubs (includes only)—role menu entries exist, but those flows are not implemented in the committed sources.
+1. [Entry and roles](#entry-and-roles)
+2. [Customer flow](#customer-flow)
+3. [Catalog files](#catalog-files)
+4. [OOP map](#oop-map)
+5. [Build](#build)
+6. [Gaps](#gaps)
 
-Catalog data is file-driven: `ItemsCategory.txt` lists categories; each category has a matching `*.txt` inventory file.
+---
 
-## Features
+## Entry and roles
 
-### Customer
-- Registration / login with username & password rules (length checks, confirm password)  
-- Accounts appended to `customer_account_save.txt`  
-- Forgot-password path updates password in the account file  
-- Customer menu:
-  1. Place an order (browse categories → items → quantities)  
-  2. Modify an item (menu entry present)  
-  3. Display cart  
-  4. Search an item  
-  5. Remove an item from cart  
-  6. Show total bill  
-  7. Go back  
+`Main.cpp` maximizes the console, welcome banner, `Select_Role()`:
 
-### Catalog categories (`ItemsCategory.txt`)
-Groceries, Personal Care, Household Essentials, Baby Care, Health and Wellness, Electronics, Home Appliances, Clothing and Fashion, Home Decor and Furniture, Sports and Fitness, Office and School Supplies, Pet Supplies — each with a corresponding `.txt` stock file.
+1. Admin *(not implemented in committed cpp)*  
+2. Vendor *(stub)*  
+3. Customer *(full)*  
+4. Close window (`WM_CLOSE`)
 
-### Cart (`Cart` class)
-- Add / display / search / remove items  
-- Running total bill  
-- Inventory quantity updates when ordering (`update_items` / remove helpers on `Item`)
+`Customer.cpp` (`_sources/Shopping_Customer.cpp`): `customer_Reg_Log_Menu` — Registration / Login / Go Back, colored `SetConsoleTextAttribute`, `goto label1` after failed nested menus. Invalid `cin` cleared with `MAXDWORD`. Failed login offers **forgot password** (0/1) updating `customer_account_save.txt`.
 
-### OOP layout
-- Abstract `Role` (`registraion`, `login`)  
+---
+
+## Customer flow
+
+Registration/login: username/password rules (length, confirm password). Accounts **append** to `customer_account_save.txt` (**plain text**).
+
+After login, `show_customer_menu()`:
+
+1. Place an order — categories → items → quantities (`update_items` on stock files)  
+2. Modify an item *(menu entry; may be incomplete)*  
+3. Display cart  
+4. Search an item  
+5. Remove from cart  
+6. Show total bill  
+7. Go back  
+
+`Cart`: add / display / search / remove / running total. `Item` updates inventory files when ordering.
+
+---
+
+## Catalog files
+
+`ItemsCategory.txt` lists categories; each has a matching **`CategoryName.txt`** stock file:
+
+Groceries, Personal Care, Household Essentials, Baby Care, Health and Wellness, Electronics, Home Appliances, Clothing and Fashion, Home Decor and Furniture, Sports and Fitness, Office and School Supplies, Pet Supplies.
+
+Working directory = project root so these files resolve.
+
+---
+
+## OOP map
+
+- Abstract `Role`: `registraion`, `login` (typo in the method name is in source)  
 - `Customer : protected Role`  
-- `Item` + `Cart` collaboration  
-- UI helpers in `Other_Fun.h` (welcome, role select, console colors)
+- `Item` + `Cart`  
+- `Other_Fun.h` — welcome, role select, colors  
+- `Admin.h/.cpp`, `Vendor.h/.cpp` — stubs (includes only)
 
-## Tech stack
+Also: `Shopping_Items.cpp`, `Shopping_Cart.cpp`, `Shopping_Vendor.cpp`, `Shopping_Admin.cpp` under `_sources/` / the VS project.
 
-| Component | Technology |
-|-----------|------------|
-| Language | C++ |
-| Platform | Windows console (`windows.h`, `conio.h`) |
-| Persistence | Text files (`fstream`) |
-| IDE | `Shopping_Portal.sln` |
+---
 
-## Project structure
+## Build
 
-```
-Shopping_Portal/
-├── Main.cpp
-├── Role.h
-├── Admin.h / Admin.cpp          # stubs
-├── Vendor.h / Vendor.cpp        # stubs
-├── Customer.h / Customer.cpp
-├── Items.h / Items.cpp
-├── Cart.h / Cart.cpp
-├── Other_Fun.h
-├── ItemsCategory.txt
-├── Groceries.txt … Pet Supplies.txt   # per-category stock
-├── customer_account_save.txt
-├── Shopping_Portal.sln / .vcxproj
-└── *.zip archives (Final Project, etc.)
-```
+Open `Shopping_Portal.sln` (Windows). `windows.h`, `conio.h`, `fstream`.
 
-## How to build / run
+---
 
-1. Open `Shopping_Portal.sln` in Visual Studio.  
-2. Build (Windows).  
-3. Run with working directory = project folder so category `.txt` files and `customer_account_save.txt` are found.
+## Gaps
 
-## Usage
+- Admin/Vendor stock CRUD not wired.  
+- Passwords in cleartext.  
+- Confirm menu option 2 (modify).  
+- Zip archives (`Final Project`, etc.) may duplicate sources.
 
-1. Launch → welcome screen.  
-2. Choose **3** for Customer.  
-3. Register or log in.  
-4. Place orders by picking a category number, then item numbers and quantities.  
-5. View cart, search, remove lines, or print the bill.  
-6. Option **4** on the role screen posts `WM_CLOSE` to exit the console window.
+**Extend:** implement Admin/Vendor; hash passwords; add a category = new line in `ItemsCategory.txt` + matching `.txt`.
 
-## How to extend / modify
-
-- Implement `Admin` / `Vendor` (stock CRUD, approvals) behind menu options 1–2.  
-- Add or rename categories in `ItemsCategory.txt` and add matching `CategoryName.txt` files.  
-- Harden password handling (currently plain text in `customer_account_save.txt`).  
-- Complete “Modify an item” (choice 2) if still a no-op in your branch.
+---
 
 ## Author
 
-**rohaan2802** (course folder references 22I-2327 Mohammad Rohaan) — [https://github.com/rohaan2802](https://github.com/rohaan2802)
+**rohaan2802** (22I-2327 Mohammad Rohaan) · [https://github.com/rohaan2802](https://github.com/rohaan2802)
