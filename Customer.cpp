@@ -404,11 +404,7 @@ void Customer::manageWishlist()
 	{
 		setDefaultColor();
 		for (int i = 0; i < wishlist_size; i++)
-		{
-			cout << "                         ";
-			printPaddedIndex(cout, i + 1, 2);
-			cout << ")  " << wishlist[i] << "\n";
-		}
+			printNumberedLine(cout, i + 1, wishlist[i], 2);
 	}
 	cout << "\n                         1) Add item name to wishlist\n";
 	cout << "                         2) Remove from wishlist\n";
@@ -469,11 +465,7 @@ void Customer::manageWishlist()
 			setDefaultColor();
 			cout << "\n";
 			for (int i = 0; i < wishlist_size; i++)
-			{
-				cout << "                         ";
-				printPaddedIndex(cout, i + 1, 2);
-				cout << ")  " << wishlist[i] << "\n";
-			}
+				printNumberedLine(cout, i + 1, wishlist[i], 2);
 		}
 	}
 }

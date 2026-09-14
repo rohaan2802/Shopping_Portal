@@ -100,9 +100,7 @@ void Admin::viewUsers()
 	{
 		if (u.empty()) continue;
 		if (!getline(cust, p)) p = "";
-		cout << "                         ";
-		printPaddedIndex(cout, i++, 2);
-		cout << ")  Username: " << u << "\n";
+		printNumberedLine(cout, i++, string("Username: ") + u, 2);
 	}
 	if (i == 1) cout << "                         (none)\n";
 
@@ -117,9 +115,7 @@ void Admin::viewUsers()
 		if (u.empty()) continue;
 		getline(vend, p);
 		getline(vend, company);
-		cout << "                         ";
-		printPaddedIndex(cout, i++, 2);
-		cout << ")  Username: " << u << "  |  Company: " << company << "\n";
+		printNumberedLine(cout, i++, string("Username: ") + u + "  |  Company: " + company, 2);
 	}
 	if (i == 1) cout << "                         (none)\n";
 
@@ -130,9 +126,7 @@ void Admin::viewUsers()
 	i = 1;
 	while (getline(adm, u) && getline(adm, p))
 	{
-		cout << "                         ";
-		printPaddedIndex(cout, i++, 2);
-		cout << ")  Username: " << u << "\n";
+		printNumberedLine(cout, i++, string("Username: ") + u, 2);
 	}
 }
 

@@ -38,11 +38,10 @@ inline HANDLE console()
 /** Right-pad Sr# / ITEM # so values < 10 keep a leading space (columns stay aligned). */
 inline void printPaddedIndex(ostream& out, int n, int width = 2)
 {
-	ios_base::fmtflags old = out.flags();
-	char fill = out.fill();
-	out << right << setfill(' ') << setw(width) << n;
-	out.flags(old);
-	out.fill(fill);
+	/* Build string first so sticky left/right flags on 'out' cannot break padding. */
+	ostringstream oss;
+	oss << right << setfill(' ') << setw(width) << n;
+	out << oss.str();
 }
 
 inline string paddedIndex(int n, int width = 2)
@@ -50,6 +49,14 @@ inline string paddedIndex(int n, int width = 2)
 	ostringstream oss;
 	oss << right << setfill(' ') << setw(width) << n;
 	return oss.str();
+}
+
+/** Standard list line: "  1)  Name" / " 10)  Name" with aligned ')' and text. */
+inline void printNumberedLine(ostream& out, int n, const string& text, int width = 2)
+{
+	out << "                         ";
+	printPaddedIndex(out, n, width);
+	out << ")  " << text << "\n";
 }
 
 inline void setColor(int fg)

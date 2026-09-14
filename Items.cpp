@@ -42,9 +42,8 @@ bool Item::print_Items_Menu()
 		{
 			if (str.empty()) continue;
 			Item_Category[itemcount] = str;
-			cout << "                                            ";
-			printPaddedIndex(cout, itemcount, 2);
-			cout << ")  " << str << "\n\n";
+			printNumberedLine(cout, itemcount, str, 2);
+			cout << "\n";
 			arrayofcount[i++] = itemcount++;
 		}
 		read.close();
@@ -269,7 +268,7 @@ bool Item::listCategories()
 	while (getline(read, str))
 	{
 		if (str.empty()) continue;
-		cout << "                         " << n++ << ")  " << str << "\n";
+		printNumberedLine(cout, n++, str, 2);
 	}
 	return true;
 }

@@ -249,10 +249,9 @@ void Cart::Search(const string& query)
 		if (lower.find(q) != string::npos)
 		{
 			found = true;
-			cout << "                         ";
-			printPaddedIndex(cout, i + 1, 2);
-			cout << ") " << trimCopy(itemnames[i])
-				<< "  |  " << trimCopy(Items_Price[i]) << "  |  Qty: " << Items_Quantity[i] << "\n";
+			printNumberedLine(cout, i + 1,
+				trimCopy(itemnames[i]) + "  |  " + trimCopy(Items_Price[i])
+				+ "  |  Qty: " + to_string(Items_Quantity[i]), 2);
 		}
 	}
 	if (!found)
