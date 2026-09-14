@@ -20,14 +20,17 @@ public:
 	void Search(const string& query);
 	bool modify_quantity();
 	void remove_item();
-	void reset_data();
-	void restock_all_and_clear(); // restore catalog stock then empty cart (logout / abandon)
+	void reset_data(); // clear cart only — does not touch catalog stock
+	// Validate every line still has enough stock, then deduct once. Returns false if any line fails.
+	bool validateAndDeductStock();
 	int size() const { return cart_size; }
 	bool isEmpty() const { return cart_size <= 0; }
 	string getName(int i) const { return itemnames[i]; }
 	string getPrice(int i) const { return Items_Price[i]; }
 	int getQty(int i) const { return Items_Quantity[i]; }
 	double lastBillTotal() const { return total_bill; }
+	// Catalog stock for name+price, or -1 if not found
+	static int catalogStock(const string& itemName, const string& itemPrice);
 };
 
 #endif // !CART_H
