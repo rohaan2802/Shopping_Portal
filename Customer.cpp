@@ -14,11 +14,103 @@ using namespace std;
 
 extern Cart c;
 
+namespace
+{
+	const char* WISHLIST_FILE = "wishlist.txt";
+}
+
 Customer::Customer()
 {
 	currentUser = "";
 	wishlist_size = 0;
 	for (int i = 0; i < 100; i++) wishlist[i] = "";
+}
+
+void Customer::clearWishlistMemory()
+{
+	wishlist_size = 0;
+	for (int i = 0; i < 100; i++) wishlist[i] = "";
+}
+
+void Customer::loadWishlist()
+{
+	clearWishlistMemory();
+	ifstream in(WISHLIST_FILE);
+	if (!in.is_open())
+		return;
+
+	string line;
+	while (getline(in, line))
+	{
+		line = trimCopy(line);
+		if (line.empty() || line[0] == '#') continue;
+		size_t bar = line.find('|');
+		if (bar == string::npos) continue;
+		string user = trimCopy(line.substr(0, bar));
+		string item = trimCopy(line.substr(bar + 1));
+		if (user != currentUser || item.empty()) continue;
+
+		bool dup = false;
+		for (int i = 0; i < wishlist_size; i++)
+		{
+			if (trimCopy(wishlist[i]) == item)
+			{
+				dup = true;
+				break;
+			}
+		}
+		if (dup) continue;
+		if (wishlist_size < 100)
+			wishlist[wishlist_size++] = item;
+	}
+}
+
+void Customer::saveWishlist()
+{
+	// Preserve other users' entries, rewrite current user's list
+	ifstream in(WISHLIST_FILE);
+	ostringstream kept;
+	string line;
+	if (in.is_open())
+	{
+		while (getline(in, line))
+		{
+			string raw = line;
+			string t = trimCopy(line);
+			if (t.empty() || t[0] == '#')
+			{
+				kept << raw << "\n";
+				continue;
+			}
+			size_t bar = t.find('|');
+			if (bar == string::npos)
+			{
+				kept << raw << "\n";
+				continue;
+			}
+			string user = trimCopy(t.substr(0, bar));
+			if (user == currentUser)
+				continue; // drop old rows for this user
+			kept << raw << "\n";
+		}
+		in.close();
+	}
+
+	ofstream out(WISHLIST_FILE);
+	if (!out.is_open())
+	{
+		errorMsg("Could not save wishlist.txt");
+		return;
+	}
+
+	string preserved = kept.str();
+	if (preserved.empty())
+		out << "# wishlist.txt — format: username|item_name\n";
+	else
+		out << preserved;
+
+	for (int i = 0; i < wishlist_size; i++)
+		out << currentUser << "|" << wishlist[i] << "\n";
 }
 
 bool Customer::customer_Reg_Log_Menu()
@@ -44,7 +136,8 @@ label1:
 		if (login())
 		{
 			show_customer_menu();
-			c.restock_all_and_clear();
+			c.reset_data(); // logout / leave menu — cart only, stock untouched
+			clearWishlistMemory();
 			goto label1;
 		}
 		else
@@ -131,6 +224,7 @@ bool Customer::login()
 		if (s1 == login_name && s2 == login_pass)
 		{
 			currentUser = login_name;
+			loadWishlist();
 			successMsg("LOGIN SUCCESSFUL — Welcome " + currentUser);
 			return true;
 		}
@@ -227,6 +321,14 @@ void Customer::checkoutAndSaveOrder()
 		return;
 	}
 
+	// Deduct catalog stock only when the order is confirmed
+	if (!c.validateAndDeductStock())
+	{
+		errorMsg("Checkout aborted — stock unchanged");
+		pauseEnter();
+		return;
+	}
+
 	// Generate order id
 	int nextId = 1001;
 	ifstream check("orders.txt");
@@ -295,18 +397,20 @@ void Customer::viewOrderHistory()
 void Customer::manageWishlist()
 {
 	clearScreen();
-	sectionTitle("WISHLIST", 6);
+	sectionTitle("WISHLIST — " + currentUser, 6);
 	if (wishlist_size == 0)
 		infoMsg("Wishlist is empty");
 	else
 	{
+		setColor(0);
 		for (int i = 0; i < wishlist_size; i++)
 			cout << "                         " << (i + 1) << ")  " << wishlist[i] << "\n";
 	}
 	cout << "\n                         1) Add item name to wishlist\n";
 	cout << "                         2) Remove from wishlist\n";
-	cout << "                         3) Back\n";
-	int ch = readIntInRange("                         Choice:   ", 1, 3);
+	cout << "                         3) View wishlist\n";
+	cout << "                         4) Back\n";
+	int ch = readIntInRange("                         Choice:   ", 1, 4);
 	if (ch == 1)
 	{
 		string name = trimCopy(readLine("                         Item name:   "));
@@ -330,7 +434,8 @@ void Customer::manageWishlist()
 			else if (wishlist_size < 100)
 			{
 				wishlist[wishlist_size++] = name;
-				successMsg("Added to wishlist");
+				saveWishlist();
+				successMsg("Added to wishlist (saved)");
 			}
 			else
 				errorMsg("Wishlist is full");
@@ -343,7 +448,25 @@ void Customer::manageWishlist()
 		for (int i = idx; i < wishlist_size - 1; i++)
 			wishlist[i] = wishlist[i + 1];
 		wishlist_size--;
-		successMsg("Removed from wishlist");
+		wishlist[wishlist_size] = "";
+		saveWishlist();
+		successMsg("Removed from wishlist (saved)");
+	}
+	else if (ch == 2 && wishlist_size == 0)
+	{
+		infoMsg("Wishlist is empty — nothing to remove");
+	}
+	else if (ch == 3)
+	{
+		if (wishlist_size == 0)
+			infoMsg("Wishlist is empty");
+		else
+		{
+			setColor(0);
+			cout << "\n";
+			for (int i = 0; i < wishlist_size; i++)
+				cout << "                         " << (i + 1) << ")  " << wishlist[i] << "\n";
+		}
 	}
 }
 
@@ -361,7 +484,7 @@ bool Customer::show_customer_menu()
 		cout << "                                                  4)  Search Products\n\n";
 		cout << "                                                  5)  Remove An Item From Cart\n\n";
 		cout << "                                                  6)  Show Bill / Checkout\n\n";
-		cout << "                                                  7)  Wishlist\n\n";
+		cout << "                                                  7)  Wishlist (saved)\n\n";
 		cout << "                                                  8)  Order History\n\n";
 		cout << "                                                  9)  Logout\n\n";
 
@@ -404,7 +527,8 @@ bool Customer::show_customer_menu()
 		else if (choice == 9)
 		{
 			items.reset();
-			successMsg("Logged out — cart cleared");
+			clearWishlistMemory();
+			successMsg("Logged out — cart cleared (stock unchanged)");
 			return false;
 		}
 	}

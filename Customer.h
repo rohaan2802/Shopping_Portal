@@ -11,6 +11,10 @@ class Customer : protected Role
 	string currentUser;
 	string wishlist[100];
 	int wishlist_size;
+
+	void clearWishlistMemory();
+	void loadWishlist();
+	void saveWishlist();
 public:
 	Customer();
 	void registraion() override;

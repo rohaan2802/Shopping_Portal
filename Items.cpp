@@ -130,12 +130,27 @@ bool Item::print_Items_Menu()
 				continue;
 			}
 
-			i_q = readIntInRange("                         Enter quantity:   ", 1, avail);
-			avail -= i_q;
-			string new_val = to_string(avail);
+			// Stock is not reserved until checkout — cap by catalog qty minus cart qty already held
+			int alreadyInCart = 0;
+			for (int ci = 0; ci < c.size(); ci++)
+			{
+				if (trimCopy(c.getName(ci)) == trimCopy(items[itemref].itemnames) &&
+					trimCopy(c.getPrice(ci)) == trimCopy(items[itemref].Items_Price))
+				{
+					alreadyInCart = c.getQty(ci);
+					break;
+				}
+			}
+			int remaining = avail - alreadyInCart;
+			if (remaining <= 0)
+			{
+				infoMsg("All available stock for this item is already in your cart");
+				continue;
+			}
+
+			i_q = readIntInRange("                         Enter quantity:   ", 1, remaining);
 			c.add_item(items[itemref].itemnames, items[itemref].Items_Price, i_q);
-			update_items(filename, items[itemref].itemnames, items[itemref].Items_Price, new_val);
-			items[itemref].Items_Quantity = new_val;
+			// Catalog files unchanged until checkout
 		} while (true);
 
 	} while (true);
@@ -180,7 +195,7 @@ void Item::update_items(const string& filename, const string& name, string price
 
 void Item::reset()
 {
-	c.restock_all_and_clear();
+	c.reset_data(); // clear cart only — stock was never deducted early
 }
 
 bool Item::Display_Cart()

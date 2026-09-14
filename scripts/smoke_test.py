@@ -17,6 +17,7 @@ DATA_FILES = [
     "vendor_products.txt",
     "admin_accounts.txt",
     "orders.txt",
+    "wishlist.txt",
     "ItemsCategory.txt",
     "Groceries.txt",
     "Electronics.txt",
@@ -136,7 +137,7 @@ def main() -> int:
             )
         )
 
-        # --- Test 2: logout restocks cart deductions ---
+        # --- Test 2: add-to-cart does NOT deduct stock; logout leaves stock unchanged ---
         restore_data(tmp)
         stock0 = grocery_stock("Apples")
         assert stock0 is not None and stock0 >= 1, "Apples stock unavailable for test"
@@ -153,7 +154,7 @@ def main() -> int:
                     "1",  # qty
                     "0",  # back to categories
                     "0",  # leave browse
-                    "9",  # logout (should restock)
+                    "9",  # logout (must NOT restock / stock never deducted)
                     "4",  # back
                     "4",  # exit
                 ]
@@ -163,13 +164,13 @@ def main() -> int:
         ok = stock1 == stock0
         results.append(
             (
-                "logout restores deducted stock",
+                "add-to-cart / logout does not change stock",
                 ok,
                 f"before={stock0} after={stock1}",
             )
         )
 
-        # --- Test 3: cart merges same name+price (no duplicate lines) ---
+        # --- Test 3: cart merges same name+price; stock still unchanged ---
         restore_data(tmp)
         stock0 = grocery_stock("Apples")
         proc = run_portal(
@@ -196,12 +197,6 @@ def main() -> int:
             )
         )
         out = (proc.stdout or "") + (proc.stderr or "")
-        # Cart display should show one Apples line with qty 2
-        apples_lines = re.findall(r"Apples\s+Rs\.", out)
-        # Also accept table formatting without exact Rs. adjacent
-        if not apples_lines:
-            apples_lines = re.findall(r"\bApples\b", out)
-        # Count occurrences in DISPLAYING ITEMS section if present
         display = out
         idx = display.find("DISPLAYING ITEMS IN CART")
         if idx >= 0:
@@ -210,18 +205,83 @@ def main() -> int:
         else:
             apples_in_cart = -1
         stock1 = grocery_stock("Apples")
-        ok = apples_in_cart == 1 and stock1 == stock0  # restocked on logout
+        ok = apples_in_cart == 1 and stock1 == stock0
         results.append(
             (
-                "cart merges same item (no duplicate rows) + restock",
+                "cart merges same item; stock untouched until checkout",
                 ok,
                 f"apples_in_cart_display={apples_in_cart}, stock {stock0}->{stock1}",
             )
         )
 
-        # --- Test 4: addProduct duplicate rejected (via unit-ish file check after vendor path) ---
+        # --- Test 4: checkout deducts stock once ---
         restore_data(tmp)
-        # Append a duplicate line intentionally then search should dedupe
+        stock0 = grocery_stock("Apples")
+        assert stock0 is not None and stock0 >= 1
+        proc = run_portal(
+            nl(
+                [
+                    "3",
+                    "2",
+                    "rohaan",
+                    "123456",
+                    "1",
+                    "1",
+                    "1",
+                    "1",
+                    "0",
+                    "0",
+                    "6",  # checkout
+                    "1",  # confirm place order
+                    "",  # pause
+                    "9",
+                    "4",
+                    "4",
+                ]
+            )
+        )
+        stock1 = grocery_stock("Apples")
+        ok = stock1 == stock0 - 1
+        results.append(
+            (
+                "checkout deducts stock once",
+                ok,
+                f"before={stock0} after={stock1}",
+            )
+        )
+
+        # --- Test 5: wishlist persists to wishlist.txt ---
+        restore_data(tmp)
+        wish_item = "SmokeWishItem"
+        proc = run_portal(
+            nl(
+                [
+                    "3",
+                    "2",
+                    "rohaan",
+                    "123456",
+                    "7",  # wishlist
+                    "1",  # add
+                    wish_item,
+                    "",  # pause
+                    "9",
+                    "4",
+                    "4",
+                ]
+            )
+        )
+        wish_text = (ROOT / "wishlist.txt").read_text(encoding="utf-8", errors="replace")
+        ok = f"rohaan|{wish_item}" in wish_text
+        results.append(
+            (
+                "wishlist persists to wishlist.txt",
+                ok,
+                f"found={ok}",
+            )
+        )
+
+        # --- Test 6: search dedupes identical catalog rows ---
+        restore_data(tmp)
         g = ROOT / "Groceries.txt"
         text = g.read_text(encoding="utf-8", errors="replace")
         g.write_text(text.rstrip() + "\nApples - 150 PKR, 99\n", encoding="utf-8")
@@ -242,7 +302,6 @@ def main() -> int:
             )
         )
         out = (proc.stdout or "") + (proc.stderr or "")
-        # In SEARCH PRODUCTS section, count Groceries Apples lines
         m = re.search(r"SEARCH PRODUCTS.*?SEARCH IN CART", out, re.S)
         section = m.group(0) if m else out
         hits = re.findall(r"\[Groceries\].*Apples", section)

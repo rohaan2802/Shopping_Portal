@@ -116,6 +116,11 @@ Cart::Cart()
 	}
 }
 
+int Cart::catalogStock(const string& itemName, const string& itemPrice)
+{
+	return findCatalogStock(itemName, itemPrice);
+}
+
 void Cart::add_item(string i_n, string i_p, int i_q)
 {
 	int index = -1;
@@ -161,14 +166,36 @@ void Cart::reset_data()
 	}
 }
 
-void Cart::restock_all_and_clear()
+bool Cart::validateAndDeductStock()
 {
+	// Pass 1: ensure every line is still available (stock never reserved until checkout)
 	for (int i = 0; i < cart_size; i++)
 	{
-		if (Items_Quantity[i] > 0)
-			adjustCatalogStock(itemnames[i], Items_Price[i], Items_Quantity[i]);
+		int stock = findCatalogStock(itemnames[i], Items_Price[i]);
+		if (stock < 0)
+		{
+			errorMsg("Product not found in catalog: " + trimCopy(itemnames[i]));
+			return false;
+		}
+		if (stock < Items_Quantity[i])
+		{
+			errorMsg("Not enough stock for " + trimCopy(itemnames[i])
+				+ " (need " + to_string(Items_Quantity[i])
+				+ ", available " + to_string(stock) + ")");
+			return false;
+		}
 	}
-	reset_data();
+
+	// Pass 2: deduct once per line
+	for (int i = 0; i < cart_size; i++)
+	{
+		if (!adjustCatalogStock(itemnames[i], Items_Price[i], -Items_Quantity[i]))
+		{
+			errorMsg("Failed to update stock for " + trimCopy(itemnames[i]));
+			return false;
+		}
+	}
+	return true;
 }
 
 void Cart::DisplayItems()
@@ -243,31 +270,22 @@ bool Cart::modify_quantity()
 		return false;
 
 	index -= 1;
-	int oldQty = Items_Quantity[index];
 	int newQty = readIntInRange("                         Enter new quantity (1 or more):   ", 1, 9999);
 
-	int delta = oldQty - newQty; // positive => return to stock; negative => take more
-	if (delta < 0)
+	int stock = findCatalogStock(itemnames[index], Items_Price[index]);
+	if (stock < 0)
 	{
-		int need = -delta;
-		int stock = findCatalogStock(itemnames[index], Items_Price[index]);
-		if (stock < 0)
-		{
-			errorMsg("Could not locate product in catalog to increase quantity");
-			return false;
-		}
-		if (stock < need)
-		{
-			errorMsg("Not enough stock. Available to add: " + to_string(stock));
-			return false;
-		}
+		errorMsg("Could not locate product in catalog");
+		return false;
+	}
+	if (newQty > stock)
+	{
+		errorMsg("Not enough stock. Available: " + to_string(stock));
+		return false;
 	}
 
 	Items_Quantity[index] = newQty;
-	if (delta != 0)
-		adjustCatalogStock(itemnames[index], Items_Price[index], delta);
-
-	successMsg("Quantity updated");
+	successMsg("Quantity updated (stock deducts at checkout)");
 	return true;
 }
 
@@ -282,8 +300,6 @@ void Cart::remove_item()
 	int index = readIntInRange("\n\n                             Choose The item_# To Remove From Cart:   ", 1, cart_size);
 	index -= 1; // 0-based
 
-	bool restocked = adjustCatalogStock(itemnames[index], Items_Price[index], Items_Quantity[index]);
-
 	for (int i = index; i < cart_size - 1; i++)
 	{
 		itemnames[i] = itemnames[i + 1];
@@ -295,7 +311,7 @@ void Cart::remove_item()
 	Items_Price[cart_size] = "";
 	Items_Quantity[cart_size] = 0;
 
-	infoMsg(restocked ? "Item(s) Removed Successfully (stock restored)" : "Item(s) Removed Successfully");
+	infoMsg("Item(s) Removed Successfully");
 }
 
 bool Cart::Bill(double taxPercent, double deliveryPercent)

@@ -1,6 +1,7 @@
 // Lightweight unit checks for Cart merge + addProduct duplicate rejection.
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <cstdio>
 #include "../Cart.h"
@@ -33,6 +34,47 @@ int main()
 		expect(cart.getQty(1) == 1, "different price stays separate");
 		cart.reset_data();
 		expect(cart.isEmpty(), "reset clears cart");
+	}
+
+	{
+		// Stock-at-checkout helpers: write a tiny catalog and deduct via validateAndDeductStock
+		string oldCats;
+		{
+			ifstream cinfile("ItemsCategory.txt");
+			if (cinfile)
+			{
+				ostringstream ss;
+				ss << cinfile.rdbuf();
+				oldCats = ss.str();
+			}
+		}
+
+		ofstream cats("ItemsCategory.txt", ios::trunc);
+		cats << "UnitStockCat\n";
+		cats.close();
+		ofstream f("UnitStockCat.txt");
+		f << "Widget - 10 PKR, 5\n";
+		f.close();
+
+		Cart cart;
+		cart.add_item("Widget", " 10 PKR", 2);
+		expect(Cart::catalogStock("Widget", " 10 PKR") == 5, "catalog stock unread until deduct");
+		expect(cart.validateAndDeductStock(), "checkout deduct succeeds with enough stock");
+		expect(Cart::catalogStock("Widget", " 10 PKR") == 3, "stock reduced only after deduct");
+
+		Cart cart2;
+		cart2.add_item("Widget", " 10 PKR", 9);
+		expect(!cart2.validateAndDeductStock(), "checkout rejects when stock insufficient");
+		expect(Cart::catalogStock("Widget", " 10 PKR") == 3, "failed checkout leaves stock unchanged");
+
+		remove("UnitStockCat.txt");
+		if (oldCats.empty())
+			remove("ItemsCategory.txt");
+		else
+		{
+			ofstream restore("ItemsCategory.txt", ios::trunc);
+			restore << oldCats;
+		}
 	}
 
 	{
