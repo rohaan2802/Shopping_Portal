@@ -74,6 +74,18 @@ inline void setDefaultColor()
 	setColor(7); /* light gray on black */
 }
 
+inline void setFontBold(int height = 24)
+{
+	CONSOLE_FONT_INFOEX fontInfo;
+	fontInfo.cbSize = sizeof(CONSOLE_FONT_INFOEX);
+	GetCurrentConsoleFontEx(console(), FALSE, &fontInfo);
+	fontInfo.dwFontSize.X = 0;
+	fontInfo.dwFontSize.Y = height;
+	fontInfo.FontWeight = FW_BOLD;
+	wcscpy_s(fontInfo.FaceName, L"Consolas");
+	SetCurrentConsoleFontEx(console(), FALSE, &fontInfo);
+}
+
 inline void enableDarkTheme()
 {
 	/* Force black background + bright white default (cmd color table) */
@@ -81,6 +93,7 @@ inline void enableDarkTheme()
 	SetConsoleOutputCP(437); /* OEM USA - ASCII-safe, avoids mojibake */
 	SetConsoleCP(437);
 	setDefaultColor();
+	setFontBold();
 }
 
 inline string trimCopy(string s)
@@ -122,18 +135,6 @@ inline bool parseDoubleSafe(const string& s, double& out)
 	{
 		return false;
 	}
-}
-
-inline void setFontBold(int height = 20)
-{
-	CONSOLE_FONT_INFOEX fontInfo;
-	fontInfo.cbSize = sizeof(CONSOLE_FONT_INFOEX);
-	GetCurrentConsoleFontEx(console(), FALSE, &fontInfo);
-	fontInfo.dwFontSize.X = 0;
-	fontInfo.dwFontSize.Y = height;
-	fontInfo.FontWeight = FW_BOLD;
-	wcscpy_s(fontInfo.FaceName, L"Consolas");
-	SetCurrentConsoleFontEx(console(), FALSE, &fontInfo);
 }
 
 inline void clearScreen()
@@ -291,7 +292,7 @@ inline string extractPriceNumber(const string& priceStr)
 inline void Welcome_Message()
 {
 	enableDarkTheme();
-	setFontBold(20);
+	setFontBold(24);
 	clearScreen();
 	setColor(11);
 	cout << "\n\n\n";
