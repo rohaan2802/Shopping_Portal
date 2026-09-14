@@ -1,17 +1,29 @@
 #pragma once
-#include"Role.h"
-#ifndef Customer_H
-#define Customer_H
+#ifndef CUSTOMER_H
+#define CUSTOMER_H
 
-class Customer :protected Role
+#include "Role.h"
+#include <string>
+using namespace std;
+
+class Customer : protected Role
 {
+	string currentUser;
+	string wishlist[100];
+	int wishlist_size;
 public:
-	void registraion();
-	bool login();
+	Customer();
+	void registraion() override;
+	bool login() override;
 	string getPasswordFromUser();
 	bool customer_Reg_Log_Menu();
-	void updateValueInFile(const std::string& filename, const std::string& searchString, const std::string& newValue);
+	void updateValueInFile(const string& filename, const string& searchString, const string& newValue);
 	bool show_customer_menu();
-	//void display_Customer();
+	void forgotPassword();
+	void checkoutAndSaveOrder();
+	void viewOrderHistory();
+	void manageWishlist();
+	void addToWishlist();
 };
-#endif // !Customer_H
+
+#endif // !CUSTOMER_H

@@ -1,35 +1,32 @@
 #pragma once
-#include<iostream>
-#include"Items.h"
+#ifndef CART_H
+#define CART_H
+
+#include <string>
 using namespace std;
-#ifndef Cart_H
-#define Cart_H
 
 class Cart
 {
-	static int cart_size;
-	string* itemnames = new string[500];
-	string* Items_Price = new string[500];
-	int* Items_Quantity = new int[500];
+	static int cart_size; // number of items currently in cart (0 = empty)
+	string itemnames[500];
+	string Items_Price[500];
+	int Items_Quantity[500];
 	double total_bill;
 public:
-	void add_item(string, string, int);
+	Cart();
+	void add_item(string name, string price, int qty);
 	void DisplayItems();
-	bool Bill();
-	void Search();
+	bool Bill(double taxPercent = 5.0, double deliveryPercent = 5.0);
+	void Search(const string& query);
+	bool modify_quantity();
 	void remove_item();
 	void reset_data();
-	//	void update_items_remove(const std::string& name, string price, int& newValue);
-
-
-		//void update_items(const std::string& filename, const std::string& name, string price, const std::string& newValue);
-
-		/*~Cart()
-		{
-			delete[] my_cart;
-		}*/
-
+	int size() const { return cart_size; }
+	bool isEmpty() const { return cart_size <= 0; }
+	string getName(int i) const { return itemnames[i]; }
+	string getPrice(int i) const { return Items_Price[i]; }
+	int getQty(int i) const { return Items_Quantity[i]; }
+	double lastBillTotal() const { return total_bill; }
 };
 
-
-#endif // !Cart_H
+#endif // !CART_H

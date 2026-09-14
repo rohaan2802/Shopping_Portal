@@ -1,0 +1,2 @@
+1001|rohaan|450|Apples x2; Bread x1 @ 2026-09-14 18:00
+1002|rohaan|890|Milk x2; Eggs x1 @ 2026-09-14 18:30
