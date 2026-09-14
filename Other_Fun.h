@@ -24,6 +24,35 @@
 
 using namespace std;
 
+/* ---------- Dark theme (black background, high-contrast foreground) ---------- */
+/* 0 Black  1 Blue  2 Green  3 Cyan  4 Red  5 Magenta  6 Brown/Yellow  7 LightGray */
+/* 8 DarkGray  9 LBlue  10 LGreen  11 LCyan  12 LRed  13 LMagenta  14 LYellow  15 White */
+
+inline HANDLE console()
+{
+	return GetStdHandle(STD_OUTPUT_HANDLE);
+}
+
+inline void setColor(int fg)
+{
+	/* Foreground only on black background - readable dark theme */
+	SetConsoleTextAttribute(console(), static_cast<WORD>(fg & 0x0F));
+}
+
+inline void setDefaultColor()
+{
+	setColor(7); /* light gray on black */
+}
+
+inline void enableDarkTheme()
+{
+	/* Force black background + bright white default (cmd color table) */
+	system("color 0F");
+	SetConsoleOutputCP(437); /* OEM USA - ASCII-safe, avoids mojibake */
+	SetConsoleCP(437);
+	setDefaultColor();
+}
+
 inline string trimCopy(string s)
 {
 	while (!s.empty() && isspace(static_cast<unsigned char>(s.front())))
@@ -65,21 +94,7 @@ inline bool parseDoubleSafe(const string& s, double& out)
 	}
 }
 
-// Console color helpers (Other_Fun style — spacious colorful UI)
-// 0 Black  1 Blue  2 Green  3 Cyan  4 Red  5 Magenta  6 Yellow  7 White
-// 8 Gray   9 LBlue 10 LGreen 11 LCyan 12 LRed 13 LMagenta 14 LYellow 15 BrightWhite
-
-inline HANDLE console()
-{
-	return GetStdHandle(STD_OUTPUT_HANDLE);
-}
-
-inline void setColor(int n)
-{
-	SetConsoleTextAttribute(console(), BACKGROUND_INTENSITY | n);
-}
-
-inline void setFontBold(int height = 22)
+inline void setFontBold(int height = 20)
 {
 	CONSOLE_FONT_INFOEX fontInfo;
 	fontInfo.cbSize = sizeof(CONSOLE_FONT_INFOEX);
@@ -87,72 +102,77 @@ inline void setFontBold(int height = 22)
 	fontInfo.dwFontSize.X = 0;
 	fontInfo.dwFontSize.Y = height;
 	fontInfo.FontWeight = FW_BOLD;
+	wcscpy_s(fontInfo.FaceName, L"Consolas");
 	SetCurrentConsoleFontEx(console(), FALSE, &fontInfo);
 }
 
 inline void clearScreen()
 {
 	system("cls");
+	setDefaultColor();
 }
 
 inline void pauseEnter()
 {
 	setColor(8);
 	cout << "\n\n                         Press Enter to continue...";
+	setDefaultColor();
 	cin.clear();
-	// One getline only: leftover '\n' from cin>> returns immediately; empty buffer waits for Enter.
 	string dummy;
 	getline(cin, dummy);
 }
 
-inline void banner(const string& title, int color = 3)
+inline void banner(const string& title, int color = 11)
 {
 	setColor(color);
 	cout << "\n\n";
-	cout << "               **********************************************************************************************\n";
+	cout << "               ==================================================================================================\n";
 	cout << "                                      " << title << "\n";
-	cout << "               **********************************************************************************************\n\n\n";
+	cout << "               ==================================================================================================\n\n\n";
+	setDefaultColor();
 }
 
-inline void sectionTitle(const string& title, int color = 5)
+inline void sectionTitle(const string& title, int color = 14)
 {
 	setColor(color);
-	cout << "\n\n                         ####################  " << title << "  ####################\n\n";
-	setColor(0);
+	cout << "\n\n                         ####  " << title << "  ####\n\n";
+	setDefaultColor();
 }
 
 inline void successMsg(const string& msg)
 {
-	setColor(15);
-	cout << "\n\n                         ---------------  " << msg << "  ---------------\n\n";
+	setColor(10); /* bright green */
+	cout << "\n\n                         [OK]  " << msg << "\n\n";
+	setDefaultColor();
 }
 
 inline void errorMsg(const string& msg)
 {
-	setColor(4);
-	cout << "\n\n                         *** " << msg << " ***\n\n";
-	setColor(0);
+	setColor(12); /* bright red */
+	cout << "\n\n                         [ERROR]  " << msg << "\n\n";
+	setDefaultColor();
 }
 
 inline void infoMsg(const string& msg)
 {
-	setColor(1);
-	cout << "\n                         <<<<<<<<<  " << msg << "  <<<<<<<<<\n";
-	setColor(0);
+	setColor(11); /* bright cyan */
+	cout << "\n                         [INFO]  " << msg << "\n";
+	setDefaultColor();
 }
 
 inline int readIntInRange(const string& prompt, int lo, int hi)
 {
 	int value;
-	setColor(0);
+	setColor(15);
 	cout << prompt;
+	setDefaultColor();
 	while (!(cin >> value) || value < lo || value > hi)
 	{
-		setColor(4);
+		setColor(12);
 		cout << "                         Invalid input. Enter an integer in range [" << lo << " - " << hi << "]:   ";
 		cin.clear();
 		cin.ignore(MAXDWORD, '\n');
-		setColor(0);
+		setDefaultColor();
 	}
 	cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 	return value;
@@ -161,8 +181,9 @@ inline int readIntInRange(const string& prompt, int lo, int hi)
 inline string readLine(const string& prompt)
 {
 	string s;
-	setColor(0);
+	setColor(15);
 	cout << prompt;
+	setDefaultColor();
 	getline(cin, s);
 	return s;
 }
@@ -170,8 +191,9 @@ inline string readLine(const string& prompt)
 inline string readToken(const string& prompt)
 {
 	string s;
-	setColor(0);
+	setColor(15);
 	cout << prompt;
+	setDefaultColor();
 	cin >> s;
 	cin.ignore((numeric_limits<streamsize>::max)(), '\n');
 	return s;
@@ -179,7 +201,6 @@ inline string readToken(const string& prompt)
 
 inline string getPasswordMasked()
 {
-	// Piped/redirected stdin (smoke tests): read a normal line instead of _getch.
 	if (!_isatty(_fileno(stdin)))
 	{
 		string password;
@@ -239,24 +260,32 @@ inline string extractPriceNumber(const string& priceStr)
 
 inline void Welcome_Message()
 {
-	setFontBold(22);
-	setColor(3);
+	enableDarkTheme();
+	setFontBold(20);
 	clearScreen();
+	setColor(11);
 	cout << "\n\n\n";
-	cout << "               ************************************  WELCOME TO FAST SHOPPING PORTAL  ************************************\n";
+	cout << "               ================================================================================================\n";
+	cout << "                                    WELCOME TO FAST SHOPPING PORTAL\n";
+	cout << "               ================================================================================================\n";
+	setColor(14);
 	cout << "\n";
 	cout << "                                   Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z\n";
-	cout << "                                   OOP Console Shopping Portal — Admin · Vendor · Customer\n\n\n";
+	setColor(7);
+	cout << "                                   OOP Console Shopping Portal - Admin | Vendor | Customer\n\n\n";
+	setDefaultColor();
 }
 
 inline int Select_Role()
 {
-	setColor(5);
-	cout << "\n\n                                                         What Is Your Login Type....\n\n";
+	setColor(14);
+	cout << "\n\n                                                         What Is Your Login Type?\n\n";
+	setColor(15);
 	cout << "                                                               1. Admin\n\n";
 	cout << "                                                               2. Vendor\n\n";
 	cout << "                                                               3. Customer\n\n";
 	cout << "                                                               4. Exit / Close Window\n\n";
+	setDefaultColor();
 	return readIntInRange("                                      Enter Your Choice here                   ", 1, 4);
 }
 

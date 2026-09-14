@@ -20,7 +20,7 @@ public:
 	void Search(const string& query);
 	bool modify_quantity();
 	void remove_item();
-	void reset_data(); // clear cart only — does not touch catalog stock
+	void reset_data(); // clear cart only - does not touch catalog stock
 	// Validate every line still has enough stock, then deduct once. Returns false if any line fails.
 	bool validateAndDeductStock();
 	int size() const { return cart_size; }

@@ -28,7 +28,7 @@ again:
 
 	if (!validCredential(reg_name, reg_password, confirm_pass) || company.empty())
 	{
-		errorMsg("Invalid data — username/password 6-16 chars, no spaces; company required");
+		errorMsg("Invalid data - username/password 6-16 chars, no spaces; company required");
 		goto again;
 	}
 
@@ -41,7 +41,7 @@ again:
 		getline(in, c);
 		if (trimCopy(u) == reg_name)
 		{
-			errorMsg("Vendor already registered — please login");
+			errorMsg("Vendor already registered - please login");
 			return;
 		}
 	}
@@ -77,7 +77,7 @@ bool Vendor::login()
 		{
 			currentUser = u;
 			company = c;
-			successMsg("VENDOR LOGIN SUCCESSFUL — " + company);
+			successMsg("VENDOR LOGIN SUCCESSFUL - " + company);
 			return true;
 		}
 	}
@@ -88,7 +88,7 @@ bool Vendor::login()
 void Vendor::viewOwnProducts()
 {
 	clearScreen();
-	sectionTitle("MY PRODUCTS — " + company, 3);
+	sectionTitle("MY PRODUCTS - " + company, 3);
 	ifstream in("vendor_products.txt");
 	if (!in.is_open())
 	{
@@ -97,7 +97,7 @@ void Vendor::viewOwnProducts()
 	}
 	string line;
 	int n = 0;
-	setColor(0);
+	setDefaultColor();
 	while (getline(in, line))
 	{
 		if (line.empty()) continue;
@@ -123,7 +123,7 @@ void Vendor::manageOwnStock()
 	while (true)
 	{
 		clearScreen();
-		sectionTitle("VENDOR STOCK MANAGEMENT — " + company, 5);
+		sectionTitle("VENDOR STOCK MANAGEMENT - " + company, 5);
 		cout << "                         1) View my products\n\n";
 		cout << "                         2) Add product to category\n\n";
 		cout << "                         3) Update my product stock/price\n\n";
@@ -168,7 +168,7 @@ void Vendor::manageOwnStock()
 			ownCheck.close();
 			if (alreadyOwns)
 			{
-				errorMsg("You already listed that product — use Update instead");
+				errorMsg("You already listed that product - use Update instead");
 				pauseEnter();
 				continue;
 			}
@@ -278,8 +278,8 @@ bool Vendor::vendor_menu()
 	while (true)
 	{
 		clearScreen();
-		banner("VENDOR DASHBOARD — " + currentUser + " (" + company + ")", 5);
-		setColor(0);
+		banner("VENDOR DASHBOARD - " + currentUser + " (" + company + ")", 5);
+		setDefaultColor();
 		cout << "                         1)  Manage My Products / Stock\n\n";
 		cout << "                         2)  View Catalog Categories\n\n";
 		cout << "                         3)  Search Catalog\n\n";
