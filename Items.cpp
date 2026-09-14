@@ -11,6 +11,29 @@ using namespace std;
 
 Cart c;
 
+namespace
+{
+	string productHeader()
+	{
+		ostringstream hdr;
+		hdr << fitField("ITEM#", 6, false) << "  "
+			<< fitField("ITEM NAME", 28, true)
+			<< fitField("PRICE", 18, true)
+			<< fitField("STOCK", 10, true);
+		return hdr.str();
+	}
+
+	string productRow(int idx, const string& name, const string& price, const string& stock)
+	{
+		ostringstream row;
+		row << paddedIndex(idx, 6) << "  "
+			<< fitField(trimCopy(name), 28, true)
+			<< fitField(trimCopy(price), 18, true)
+			<< fitField(trimCopy(stock), 10, true);
+		return row.str();
+	}
+}
+
 bool Item::print_Items_Menu()
 {
 	do
@@ -28,7 +51,8 @@ bool Item::print_Items_Menu()
 		clearScreen();
 		sectionTitle("ORDER PLACING - BROWSE CATEGORIES", 5);
 		setDefaultColor();
-		cout << "                         Select a category (or 0 to go back)\n\n";
+		contentPrint("Select a category (or 0 to go back)");
+		cout << "\n";
 
 		ifstream read("ItemsCategory.txt");
 		if (!read.is_open())
@@ -48,7 +72,7 @@ bool Item::print_Items_Menu()
 		}
 		read.close();
 
-		int choice = readIntInRange("\n                         GO BACK = 0   |   Enter category #:   ", 0, itemcount - 1);
+		int choice = readIntInRange("\nGO BACK = 0   |   Enter category #:   ", 0, itemcount - 1);
 		if (choice == 0)
 			return false;
 
@@ -76,11 +100,8 @@ bool Item::print_Items_Menu()
 
 		clearScreen();
 		sectionTitle(filename, 3);
-		cout << "                         "
-			<< right << setw(6) << "ITEM#"
-			<< "  " << left << setw(28) << "ITEM NAME"
-			<< setw(20) << "PRICE"
-			<< setw(12) << "STOCK" << "\n\n";
+		contentPrint(productHeader());
+		cout << "\n";
 
 		itemcount1 = 1;
 		while (getline(read1, items[itemcount1].itemnames, '-') &&
@@ -103,11 +124,8 @@ bool Item::print_Items_Menu()
 			int qty = 0;
 			if (!parseIntSafe(items[itemcount1].Items_Quantity, qty))
 				qty = 0;
-			cout << "                         ";
-			printPaddedIndex(cout, itemcount1, 6);
-			cout << "  " << left << setw(28) << trimCopy(items[itemcount1].itemnames)
-				<< setw(20) << trimCopy(items[itemcount1].Items_Price)
-				<< setw(12) << qty << "\n";
+			contentPrint(productRow(itemcount1, items[itemcount1].itemnames,
+				items[itemcount1].Items_Price, to_string(qty)));
 			itemcount1++;
 			if (itemcount1 >= 500) break;
 		}
@@ -115,7 +133,7 @@ bool Item::print_Items_Menu()
 
 		do
 		{
-			itemref = readIntInRange("\n                         Add ITEM # to cart (0 = back to categories):   ", 0, itemcount1 - 1);
+			itemref = readIntInRange("\nAdd ITEM # to cart (0 = back to categories):   ", 0, itemcount1 - 1);
 			if (itemref == 0)
 			{
 				clearScreen();
@@ -147,7 +165,7 @@ bool Item::print_Items_Menu()
 				continue;
 			}
 
-			i_q = readIntInRange("                         Enter quantity:   ", 1, remaining);
+			i_q = readIntInRange("Enter quantity:   ", 1, remaining);
 			c.add_item(items[itemref].itemnames, items[itemref].Items_Price, i_q);
 			// Catalog files unchanged until checkout
 		} while (true);
@@ -202,7 +220,7 @@ bool Item::Display_Cart()
 	clearScreen();
 	sectionTitle("YOUR CART", 5);
 	c.DisplayItems();
-	readIntInRange("\n                         GO BACK, PRESS 0:   ", 0, 0);
+	readIntInRange("\nGO BACK, PRESS 0:   ", 0, 0);
 	return false;
 }
 
@@ -213,7 +231,7 @@ bool Item::Item_Remove_from_Cart()
 	c.DisplayItems();
 	if (!c.isEmpty())
 		c.remove_item();
-	readIntInRange("\n                         GO BACK, PRESS 0:   ", 0, 0);
+	readIntInRange("\nGO BACK, PRESS 0:   ", 0, 0);
 	return false;
 }
 
@@ -222,7 +240,7 @@ bool Item::Modify_Cart_Item()
 	clearScreen();
 	sectionTitle("MODIFY CART QUANTITY", 6);
 	c.modify_quantity();
-	readIntInRange("\n                         GO BACK, PRESS 0:   ", 0, 0);
+	readIntInRange("\nGO BACK, PRESS 0:   ", 0, 0);
 	return false;
 }
 
@@ -230,7 +248,7 @@ bool Item::Search_Catalog()
 {
 	clearScreen();
 	sectionTitle("SEARCH PRODUCTS", 3);
-	string query = readLine("                         Enter search keyword:   ");
+	string query = readLine("Enter search keyword:   ");
 	if (query.empty())
 	{
 		errorMsg("Empty search");
@@ -240,7 +258,7 @@ bool Item::Search_Catalog()
 	cout << "\n";
 	sectionTitle("SEARCH IN CART", 5);
 	c.Search(query);
-	readIntInRange("\n                         GO BACK, PRESS 0:   ", 0, 0);
+	readIntInRange("\nGO BACK, PRESS 0:   ", 0, 0);
 	return false;
 }
 
@@ -249,7 +267,7 @@ bool Item::Bill()
 	clearScreen();
 	sectionTitle("TOTAL BILL (Tax 5% + Delivery 5%)", 3);
 	c.Bill(5.0, 5.0);
-	readIntInRange("\n                         GO BACK, PRESS 0:   ", 0, 0);
+	readIntInRange("\nGO BACK, PRESS 0:   ", 0, 0);
 	return false;
 }
 
@@ -471,16 +489,21 @@ bool Item::viewCategoryProducts(const string& category)
 		return false;
 	}
 	setDefaultColor();
-	cout << "\n                         "
-		<< right << setw(6) << "#"
-		<< "  " << left << setw(28) << "NAME" << setw(20) << "PRICE" << setw(10) << "QTY" << "\n\n";
+	cout << "\n";
+	{
+		ostringstream hdr;
+		hdr << fitField("#", 6, false) << "  "
+			<< fitField("NAME", 28, true)
+			<< fitField("PRICE", 18, true)
+			<< fitField("QTY", 10, true);
+		contentPrint(hdr.str());
+		cout << "\n";
+	}
 	int i = 1;
 	string n, p, q;
 	while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
 	{
-		cout << "                         ";
-		printPaddedIndex(cout, i++, 6);
-		cout << "  " << left << setw(28) << trimCopy(n) << setw(20) << trimCopy(p) << setw(10) << trimCopy(q) << "\n";
+		contentPrint(productRow(i++, n, p, q));
 	}
 	return true;
 }
@@ -524,8 +547,7 @@ bool Item::searchAllCatalogs(const string& query)
 				seenKeys[seenCount++] = key;
 
 			any = true;
-			cout << "                         [" << cat << "]  " << name
-				<< "  | " << price << "  | Stock: " << trimCopy(qty) << "\n";
+			contentPrint("[" + cat + "]  " + name + "  | " + price + "  | Stock: " + trimCopy(qty));
 		}
 	}
 	if (!any)
