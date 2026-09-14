@@ -102,6 +102,35 @@ namespace
 		}
 		return -1;
 	}
+
+	string cartHeader()
+	{
+		ostringstream hdr;
+		hdr << fitField("ITEM#", 6, false) << "  "
+			<< fitField("ITEM NAME", 26, true)
+			<< fitField("UNIT PRICE", 14, true)
+			<< fitField("QTY", 8, true)
+			<< fitField("LINE TOTAL", 14, true);
+		return hdr.str();
+	}
+
+	string cartRow(int idx, const string& name, int unit, int qty, int lineTotal)
+	{
+		ostringstream row;
+		row << paddedIndex(idx, 6) << "  "
+			<< fitField(trimCopy(name), 26, true)
+			<< fitField("Rs. " + to_string(unit), 14, true)
+			<< fitField(to_string(qty), 8, true)
+			<< fitField("Rs. " + to_string(lineTotal), 14, true);
+		return row.str();
+	}
+
+	string billLine(const string& label, int amount)
+	{
+		ostringstream row;
+		row << fitField(label, 52, true) << "Rs. " << amount;
+		return row.str();
+	}
 }
 
 Cart::Cart()
@@ -204,17 +233,15 @@ void Cart::DisplayItems()
 	cout << "\n\n";
 	if (cart_size <= 0)
 	{
-		cout << "                                           <<<<<<<<<<<<<<<<<<<  CART IS EMPTY   <<<<<<<<<<<<<<<<<<<\n\n";
+		centerPrint("<<<<<  CART IS EMPTY  >>>>>");
+		cout << "\n";
 		return;
 	}
 
-	cout << "                                           <<<<<<<<<<<<<<<<<<<  DISPLAYING ITEMS IN CART   <<<<<<<<<<<<<<<<<<<\n\n";
-	cout << "                         "
-		<< right << setw(6) << "ITEM#"
-		<< "  " << left << setw(28) << "ITEM NAME"
-		<< setw(18) << "UNIT PRICE"
-		<< setw(12) << "QTY"
-		<< setw(16) << "LINE TOTAL" << "\n\n";
+	centerPrint("<<<<<  DISPLAYING ITEMS IN CART  >>>>>");
+	cout << "\n";
+	contentPrint(cartHeader());
+	cout << "\n";
 
 	for (int i = 0; i < cart_size; i++)
 	{
@@ -222,13 +249,8 @@ void Cart::DisplayItems()
 		double unit = 0;
 		parseDoubleSafe(numeric, unit);
 		double line = unit * Items_Quantity[i];
-
-		cout << "                         ";
-		printPaddedIndex(cout, i + 1, 6);
-		cout << "  " << left << setw(28) << trimCopy(itemnames[i])
-			<< "Rs. " << setw(14) << (int)unit
-			<< setw(12) << Items_Quantity[i]
-			<< "Rs. " << setw(12) << (int)line << "\n";
+		contentPrint(cartRow(i + 1, itemnames[i], static_cast<int>(unit),
+			Items_Quantity[i], static_cast<int>(line)));
 	}
 	cout << "\n\n";
 }
@@ -236,7 +258,9 @@ void Cart::DisplayItems()
 void Cart::Search(const string& query)
 {
 	setDefaultColor();
-	cout << "\n\n                         Search results in cart for: \"" << query << "\"\n\n";
+	cout << "\n\n";
+	contentPrint("Search results in cart for: \"" + query + "\"");
+	cout << "\n";
 	bool found = false;
 	string q = query;
 	for (char& c : q) c = static_cast<char>(tolower(static_cast<unsigned char>(c)));
@@ -267,12 +291,12 @@ bool Cart::modify_quantity()
 		return false;
 	}
 	DisplayItems();
-	int index = readIntInRange("\n                         Choose ITEM # to modify quantity (0 = cancel):   ", 0, cart_size);
+	int index = readIntInRange("\nChoose ITEM # to modify quantity (0 = cancel):   ", 0, cart_size);
 	if (index == 0)
 		return false;
 
 	index -= 1;
-	int newQty = readIntInRange("                         Enter new quantity (1 or more):   ", 1, 9999);
+	int newQty = readIntInRange("Enter new quantity (1 or more):   ", 1, 9999);
 
 	int stock = findCatalogStock(itemnames[index], Items_Price[index]);
 	if (stock < 0)
@@ -299,7 +323,7 @@ void Cart::remove_item()
 		return;
 	}
 
-	int index = readIntInRange("\n\n                             Choose The item_# To Remove From Cart:   ", 1, cart_size);
+	int index = readIntInRange("\n\nChoose The item_# To Remove From Cart:   ", 1, cart_size);
 	index -= 1; // 0-based
 
 	for (int i = index; i < cart_size - 1; i++)
@@ -340,14 +364,23 @@ bool Cart::Bill(double taxPercent, double deliveryPercent)
 	double delivery = (subtotal * deliveryPercent) / 100.0;
 	total_bill = subtotal + tax + delivery;
 
+	string rule(static_cast<size_t>(CONTENT_WIDTH), '-');
 	setColor(3);
-	cout << "                                                                                            -----------------------------------\n";
-	cout << "\n  <<<<<<<< SUBTOTAL                                                                              Rs. " << (int)subtotal << endl;
-	cout << "\n  <<<<<<<< TAX (" << taxPercent << "%)                                                                          Rs. " << (int)tax << endl;
-	cout << "\n  <<<<<<<< Delivery Charges (" << deliveryPercent << "%)                                                           Rs. " << (int)delivery << endl;
-	cout << "                                                                                            -----------------------------------\n";
+	contentPrint(rule);
+	contentPrint(billLine("SUBTOTAL", static_cast<int>(subtotal)));
+	{
+		ostringstream lab;
+		lab << "TAX (" << taxPercent << "%)";
+		contentPrint(billLine(lab.str(), static_cast<int>(tax)));
+	}
+	{
+		ostringstream lab;
+		lab << "Delivery Charges (" << deliveryPercent << "%)";
+		contentPrint(billLine(lab.str(), static_cast<int>(delivery)));
+	}
+	contentPrint(rule);
 	setColor(15);
-	cout << "\n  <<<<<<<< TOTAL AMOUNT                                                                          Rs. " << (int)total_bill << endl;
+	contentPrint(billLine("TOTAL AMOUNT", static_cast<int>(total_bill)));
 	setDefaultColor();
 	return true;
 }

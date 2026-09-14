@@ -19,12 +19,12 @@ void Vendor::registraion()
 	clearScreen();
 	sectionTitle("VENDOR REGISTRATION", 5);
 again:
-	reg_name = readToken("                         Username (6-16):   ");
-	cout << "                         Password:   ";
+	reg_name = readToken("Username (6-16):   ");
+	contentPrint("Password:   ", false);
 	reg_password = getPasswordMasked();
-	cout << "                         Confirm:    ";
+	contentPrint("Confirm:    ", false);
 	confirm_pass = getPasswordMasked();
-	company = readLine("                         Company name:   ");
+	company = readLine("Company name:   ");
 
 	if (!validCredential(reg_name, reg_password, confirm_pass) || company.empty())
 	{
@@ -62,8 +62,8 @@ bool Vendor::login()
 {
 	clearScreen();
 	sectionTitle("VENDOR LOGIN", 5);
-	login_name = readToken("                         Username:   ");
-	cout << "                         Password:   ";
+	login_name = readToken("Username:   ");
+	contentPrint("Password:   ", false);
 	login_pass = getPasswordMasked();
 
 	ifstream in("vendor_accounts.txt");
@@ -124,12 +124,17 @@ void Vendor::manageOwnStock()
 	{
 		clearScreen();
 		sectionTitle("VENDOR STOCK MANAGEMENT - " + company, 5);
-		cout << "                         1) View my products\n\n";
-		cout << "                         2) Add product to category\n\n";
-		cout << "                         3) Update my product stock/price\n\n";
-		cout << "                         4) Remove my product\n\n";
-		cout << "                         5) Back\n\n";
-		int ch = readIntInRange("                         Choice:   ", 1, 5);
+		contentPrint("1) View my products");
+		cout << "\n";
+		contentPrint("2) Add product to category");
+		cout << "\n";
+		contentPrint("3) Update my product stock/price");
+		cout << "\n";
+		contentPrint("4) Remove my product");
+		cout << "\n";
+		contentPrint("5) Back");
+		cout << "\n";
+		int ch = readIntInRange("Choice:   ", 1, 5);
 		if (ch == 5) return;
 
 		if (ch == 1)
@@ -140,10 +145,10 @@ void Vendor::manageOwnStock()
 		else if (ch == 2)
 		{
 			Item::listCategories();
-			string cat = readLine("\n                         Category:   ");
-			string name = readLine("                         Product name:   ");
-			string price = readLine("                         Price label (e.g. 500 PKR):   ");
-			int qty = readIntInRange("                         Stock quantity:   ", 0, 99999);
+			string cat = readLine("\nCategory:   ");
+			string name = readLine("Product name:   ");
+			string price = readLine("Price label (e.g. 500 PKR):   ");
+			int qty = readIntInRange("Stock quantity:   ", 0, 99999);
 
 			// Reject duplicate ownership rows for this vendor
 			ifstream ownCheck("vendor_products.txt");
@@ -185,10 +190,10 @@ void Vendor::manageOwnStock()
 		else if (ch == 3)
 		{
 			viewOwnProducts();
-			string cat = readLine("\n                         Category:   ");
-			string name = readLine("                         Product name:   ");
-			string price = readLine("                         New price label:   ");
-			int qty = readIntInRange("                         New stock:   ", 0, 99999);
+			string cat = readLine("\nCategory:   ");
+			string name = readLine("Product name:   ");
+			string price = readLine("New price label:   ");
+			int qty = readIntInRange("New stock:   ", 0, 99999);
 
 			// Verify ownership
 			ifstream in("vendor_products.txt");
@@ -232,8 +237,8 @@ void Vendor::manageOwnStock()
 		else if (ch == 4)
 		{
 			viewOwnProducts();
-			string cat = readLine("\n                         Category:   ");
-			string name = readLine("                         Product name to remove:   ");
+			string cat = readLine("\nCategory:   ");
+			string name = readLine("Product name to remove:   ");
 
 			ifstream in("vendor_products.txt");
 			ofstream temp("temp_vendor.txt");
@@ -280,11 +285,15 @@ bool Vendor::vendor_menu()
 		clearScreen();
 		banner("VENDOR DASHBOARD - " + currentUser + " (" + company + ")", 5);
 		setDefaultColor();
-		cout << "                         1)  Manage My Products / Stock\n\n";
-		cout << "                         2)  View Catalog Categories\n\n";
-		cout << "                         3)  Search Catalog\n\n";
-		cout << "                         4)  Logout\n\n";
-		int ch = readIntInRange("                         Enter choice:   ", 1, 4);
+		contentPrint("1)  Manage My Products / Stock");
+		cout << "\n";
+		contentPrint("2)  View Catalog Categories");
+		cout << "\n";
+		contentPrint("3)  Search Catalog");
+		cout << "\n";
+		contentPrint("4)  Logout");
+		cout << "\n";
+		int ch = readIntInRange("Enter choice:   ", 1, 4);
 		if (ch == 1) manageOwnStock();
 		else if (ch == 2)
 		{
@@ -296,7 +305,7 @@ bool Vendor::vendor_menu()
 		else if (ch == 3)
 		{
 			clearScreen();
-			string q = readLine("                         Search:   ");
+			string q = readLine("Search:   ");
 			Item::searchAllCatalogs(q);
 			pauseEnter();
 		}

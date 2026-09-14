@@ -119,11 +119,15 @@ label1:
 	clearScreen();
 	banner("CUSTOMER GATEWAY", 3);
 	setDefaultColor();
-	cout << "                                                    1)    Registration\n\n";
-	cout << "                                                    2)    Login\n\n";
-	cout << "                                                    3)    Forgot Password\n\n";
-	cout << "                                                    4)    Go Back\n\n";
-	int choice = readIntInRange("                                      Enter Your Choice here                   ", 1, 4);
+	contentPrint("1)    Registration");
+	cout << "\n";
+	contentPrint("2)    Login");
+	cout << "\n";
+	contentPrint("3)    Forgot Password");
+	cout << "\n";
+	contentPrint("4)    Go Back");
+	cout << "\n";
+	int choice = readIntInRange("Enter Your Choice here:   ", 1, 4);
 
 	if (choice == 1)
 	{
@@ -165,10 +169,10 @@ void Customer::registraion()
 	clearScreen();
 	sectionTitle("CUSTOMER REGISTRATION", 5);
 again32:
-	reg_name = readToken("                                                Enter Your User_Name                       ");
-	cout << "                                                Enter Your password                        ";
+	reg_name = readToken("Enter Your User_Name:   ");
+	contentPrint("Enter Your password:   ", false);
 	reg_password = getPasswordMasked();
-	cout << "                                                Enter Confirm_Password                     ";
+	contentPrint("Enter Confirm_Password:   ", false);
 	confirm_pass = getPasswordMasked();
 
 	if (!validCredential(reg_name, reg_password, confirm_pass))
@@ -212,8 +216,8 @@ bool Customer::login()
 		return false;
 	}
 
-	login_name = readToken("                                                      Enter Your User_Name                   ");
-	cout << "                                                      Enter Your password                    ";
+	login_name = readToken("Enter Your User_Name:   ");
+	contentPrint("Enter Your password:   ", false);
 	login_pass = getPasswordFromUser();
 
 	string s1, s2;
@@ -243,10 +247,10 @@ void Customer::forgotPassword()
 	clearScreen();
 	sectionTitle("FORGOT PASSWORD", 4);
 again32:
-	string searchString = readToken("                                                Enter Your User_Name                         ");
-	cout << "                                                Enter Your New_Password                      ";
+	string searchString = readToken("Enter Your User_Name:   ");
+	contentPrint("Enter Your New_Password:   ", false);
 	string newValue = getPasswordMasked();
-	cout << "                                                Enter Confirm New_Password                   ";
+	contentPrint("Enter Confirm New_Password:   ", false);
 	string confirm_new_val = getPasswordMasked();
 
 	if (!validCredential(searchString, newValue, confirm_new_val))
@@ -313,7 +317,7 @@ void Customer::checkoutAndSaveOrder()
 	}
 
 	cout << "\n";
-	int confirm = readIntInRange("                         Place order? 1 = YES, 0 = NO:   ", 0, 1);
+	int confirm = readIntInRange("Place order? 1 = YES, 0 = NO:   ", 0, 1);
 	if (confirm == 0)
 	{
 		infoMsg("Checkout cancelled");
@@ -388,7 +392,8 @@ void Customer::viewOrderHistory()
 		if (user == currentUser)
 		{
 			n++;
-			cout << "                         #" << id << "  |  Total: Rs. " << total << "  |  " << rest << "\n\n";
+			contentPrint("#" + id + "  |  Total: Rs. " + total + "  |  " + rest);
+			cout << "\n";
 		}
 	}
 	if (n == 0) infoMsg("You have no past orders");
@@ -406,14 +411,15 @@ void Customer::manageWishlist()
 		for (int i = 0; i < wishlist_size; i++)
 			printNumberedLine(cout, i + 1, wishlist[i], 2);
 	}
-	cout << "\n                         1) Add item name to wishlist\n";
-	cout << "                         2) Remove from wishlist\n";
-	cout << "                         3) View wishlist\n";
-	cout << "                         4) Back\n";
-	int ch = readIntInRange("                         Choice:   ", 1, 4);
+	cout << "\n";
+	contentPrint("1) Add item name to wishlist");
+	contentPrint("2) Remove from wishlist");
+	contentPrint("3) View wishlist");
+	contentPrint("4) Back");
+	int ch = readIntInRange("Choice:   ", 1, 4);
 	if (ch == 1)
 	{
-		string name = trimCopy(readLine("                         Item name:   "));
+		string name = trimCopy(readLine("Item name:   "));
 		if (name.empty())
 		{
 			errorMsg("Item name required");
@@ -443,7 +449,7 @@ void Customer::manageWishlist()
 	}
 	else if (ch == 2 && wishlist_size > 0)
 	{
-		int idx = readIntInRange("                         Item # to remove:   ", 1, wishlist_size);
+		int idx = readIntInRange("Item # to remove:   ", 1, wishlist_size);
 		idx--;
 		for (int i = idx; i < wishlist_size - 1; i++)
 			wishlist[i] = wishlist[i + 1];
@@ -478,17 +484,26 @@ bool Customer::show_customer_menu()
 		clearScreen();
 		banner("CUSTOMER VIEW - " + currentUser, 5);
 		setDefaultColor();
-		cout << "                                                  1)  Place An Order / Browse\n\n";
-		cout << "                                                  2)  Modify Cart Quantity\n\n";
-		cout << "                                                  3)  Display Cart Items\n\n";
-		cout << "                                                  4)  Search Products\n\n";
-		cout << "                                                  5)  Remove An Item From Cart\n\n";
-		cout << "                                                  6)  Show Bill / Checkout\n\n";
-		cout << "                                                  7)  Wishlist (saved)\n\n";
-		cout << "                                                  8)  Order History\n\n";
-		cout << "                                                  9)  Logout\n\n";
+		contentPrint("1)  Place An Order / Browse");
+		cout << "\n";
+		contentPrint("2)  Modify Cart Quantity");
+		cout << "\n";
+		contentPrint("3)  Display Cart Items");
+		cout << "\n";
+		contentPrint("4)  Search Products");
+		cout << "\n";
+		contentPrint("5)  Remove An Item From Cart");
+		cout << "\n";
+		contentPrint("6)  Show Bill / Checkout");
+		cout << "\n";
+		contentPrint("7)  Wishlist (saved)");
+		cout << "\n";
+		contentPrint("8)  Order History");
+		cout << "\n";
+		contentPrint("9)  Logout");
+		cout << "\n";
 
-		int choice = readIntInRange("                                           Enter Your Choice here                   ", 1, 9);
+		int choice = readIntInRange("Enter Your Choice here:   ", 1, 9);
 
 		if (choice == 1)
 		{

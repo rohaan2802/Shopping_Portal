@@ -34,10 +34,10 @@ void Admin::registraion()
 	ensureDefaultAdmin();
 	clearScreen();
 	sectionTitle("CREATE ADDITIONAL ADMIN", 5);
-	string user = readToken("                         Username (6-16 chars):   ");
-	cout << "                         Password:   ";
+	string user = readToken("Username (6-16 chars):   ");
+	contentPrint("Password:   ", false);
 	string pass = getPasswordMasked();
-	cout << "                         Confirm:    ";
+	contentPrint("Confirm:    ", false);
 	string conf = getPasswordMasked();
 	if (!validCredential(user, pass, conf))
 	{
@@ -66,8 +66,8 @@ bool Admin::login()
 	ensureDefaultAdmin();
 	clearScreen();
 	sectionTitle("ADMIN LOGIN", 4);
-	login_name = readToken("                         Username:   ");
-	cout << "                         Password:   ";
+	login_name = readToken("Username:   ");
+	contentPrint("Password:   ", false);
 	login_pass = getPasswordMasked();
 
 	ifstream in("admin_accounts.txt");
@@ -91,7 +91,9 @@ void Admin::viewUsers()
 	sectionTitle("VIEW ALL USERS", 5);
 
 	setColor(3);
-	cout << "\n                         === CUSTOMERS ===\n\n";
+	cout << "\n";
+	centerPrint("=== CUSTOMERS ===");
+	cout << "\n";
 	setDefaultColor();
 	ifstream cust("customer_account_save.txt");
 	string u, p;
@@ -102,10 +104,12 @@ void Admin::viewUsers()
 		if (!getline(cust, p)) p = "";
 		printNumberedLine(cout, i++, string("Username: ") + u, 2);
 	}
-	if (i == 1) cout << "                         (none)\n";
+	if (i == 1) contentPrint("(none)");
 
 	setColor(3);
-	cout << "\n                         === VENDORS ===\n\n";
+	cout << "\n";
+	centerPrint("=== VENDORS ===");
+	cout << "\n";
 	setDefaultColor();
 	ifstream vend("vendor_accounts.txt");
 	string company;
@@ -117,10 +121,12 @@ void Admin::viewUsers()
 		getline(vend, company);
 		printNumberedLine(cout, i++, string("Username: ") + u + "  |  Company: " + company, 2);
 	}
-	if (i == 1) cout << "                         (none)\n";
+	if (i == 1) contentPrint("(none)");
 
 	setColor(3);
-	cout << "\n                         === ADMINS ===\n\n";
+	cout << "\n";
+	centerPrint("=== ADMINS ===");
+	cout << "\n";
 	setDefaultColor();
 	ifstream adm("admin_accounts.txt");
 	i = 1;
@@ -137,20 +143,21 @@ void Admin::manageCategories()
 		clearScreen();
 		sectionTitle("MANAGE CATEGORIES", 5);
 		Item::listCategories();
-		cout << "\n                         1) Add Category\n";
-		cout << "                         2) Remove Category\n";
-		cout << "                         3) Back\n";
-		int ch = readIntInRange("\n                         Choice:   ", 1, 3);
+		cout << "\n";
+		contentPrint("1) Add Category");
+		contentPrint("2) Remove Category");
+		contentPrint("3) Back");
+		int ch = readIntInRange("\nChoice:   ", 1, 3);
 		if (ch == 3) return;
 		if (ch == 1)
 		{
-			string name = readLine("                         New category name:   ");
+			string name = readLine("New category name:   ");
 			Item::addCategory(name);
 			pauseEnter();
 		}
 		else if (ch == 2)
 		{
-			string name = readLine("                         Category name to remove:   ");
+			string name = readLine("Category name to remove:   ");
 			Item::removeCategory(name);
 			pauseEnter();
 		}
@@ -164,15 +171,16 @@ void Admin::manageProducts()
 		clearScreen();
 		sectionTitle("MANAGE PRODUCTS (CRUD)", 5);
 		Item::listCategories();
-		cout << "\n                         1) View products in category\n";
-		cout << "                         2) Add product\n";
-		cout << "                         3) Update product\n";
-		cout << "                         4) Remove product\n";
-		cout << "                         5) Back\n";
-		int ch = readIntInRange("\n                         Choice:   ", 1, 5);
+		cout << "\n";
+		contentPrint("1) View products in category");
+		contentPrint("2) Add product");
+		contentPrint("3) Update product");
+		contentPrint("4) Remove product");
+		contentPrint("5) Back");
+		int ch = readIntInRange("\nChoice:   ", 1, 5);
 		if (ch == 5) return;
 
-		string cat = readLine("                         Category name:   ");
+		string cat = readLine("Category name:   ");
 		if (ch == 1)
 		{
 			Item::viewCategoryProducts(cat);
@@ -180,23 +188,23 @@ void Admin::manageProducts()
 		}
 		else if (ch == 2)
 		{
-			string name = readLine("                         Product name:   ");
-			string price = readLine("                         Price label (e.g. 250 PKR):   ");
-			int qty = readIntInRange("                         Quantity:   ", 0, 99999);
+			string name = readLine("Product name:   ");
+			string price = readLine("Price label (e.g. 250 PKR):   ");
+			int qty = readIntInRange("Quantity:   ", 0, 99999);
 			Item::addProduct(cat, name, price, qty);
 			pauseEnter();
 		}
 		else if (ch == 3)
 		{
-			string name = readLine("                         Existing product name:   ");
-			string price = readLine("                         New price label:   ");
-			int qty = readIntInRange("                         New quantity:   ", 0, 99999);
+			string name = readLine("Existing product name:   ");
+			string price = readLine("New price label:   ");
+			int qty = readIntInRange("New quantity:   ", 0, 99999);
 			Item::updateProduct(cat, name, price, qty);
 			pauseEnter();
 		}
 		else if (ch == 4)
 		{
-			string name = readLine("                         Product name to remove:   ");
+			string name = readLine("Product name to remove:   ");
 			Item::removeProduct(cat, name);
 			pauseEnter();
 		}
@@ -218,11 +226,16 @@ void Admin::viewOrdersAndStats()
 	int count = 0;
 	double revenue = 0;
 	setDefaultColor();
-	cout << "\n                         "
-		<< right << setw(6) << "ID"
-		<< "  " << left << setw(16) << "CUSTOMER"
-		<< setw(14) << "TOTAL"
-		<< "DETAILS\n\n";
+	cout << "\n";
+	{
+		ostringstream hdr;
+		hdr << fitField("ID", 6, false) << "  "
+			<< fitField("CUSTOMER", 14, true)
+			<< fitField("TOTAL", 12, true)
+			<< "DETAILS";
+		contentPrint(hdr.str());
+		cout << "\n";
+	}
 
 	while (getline(in, line))
 	{
@@ -238,19 +251,21 @@ void Admin::viewOrdersAndStats()
 		parseDoubleSafe(totalStr, total);
 		revenue += total;
 		int idNum = 0;
-		cout << "                         ";
+		ostringstream row;
 		if (parseIntSafe(id, idNum))
-			printPaddedIndex(cout, idNum, 6);
+			row << paddedIndex(idNum, 6);
 		else
-			cout << right << setw(6) << id;
-		cout << "  " << left << setw(16) << user
-			<< "Rs. " << setw(10) << totalStr
-			<< rest << "\n";
+			row << fitField(id, 6, false);
+		row << "  " << fitField(user, 14, true)
+			<< fitField("Rs. " + totalStr, 12, true)
+			<< truncateFit(rest, CONTENT_WIDTH - 34);
+		contentPrint(row.str());
 	}
 
 	setColor(15);
-	cout << "\n\n                         Total Orders : " << count;
-	cout << "\n                         Total Revenue: Rs. " << (int)revenue << "\n";
+	cout << "\n\n";
+	contentPrint("Total Orders : " + to_string(count));
+	contentPrint("Total Revenue: Rs. " + to_string(static_cast<int>(revenue)));
 	setDefaultColor();
 }
 
@@ -261,13 +276,20 @@ bool Admin::admin_menu()
 		clearScreen();
 		banner("ADMIN DASHBOARD - " + currentUser, 4);
 		setColor(5);
-		cout << "                         1)  View All Users\n\n";
-		cout << "                         2)  Manage Categories\n\n";
-		cout << "                         3)  Manage Products (CRUD)\n\n";
-		cout << "                         4)  View Orders & Stats\n\n";
-		cout << "                         5)  Create Another Admin\n\n";
-		cout << "                         6)  Logout\n\n";
-		int ch = readIntInRange("                         Enter choice:   ", 1, 6);
+		contentPrint("1)  View All Users");
+		cout << "\n";
+		contentPrint("2)  Manage Categories");
+		cout << "\n";
+		contentPrint("3)  Manage Products (CRUD)");
+		cout << "\n";
+		contentPrint("4)  View Orders & Stats");
+		cout << "\n";
+		contentPrint("5)  Create Another Admin");
+		cout << "\n";
+		contentPrint("6)  Logout");
+		cout << "\n";
+		setDefaultColor();
+		int ch = readIntInRange("Enter choice:   ", 1, 6);
 
 		if (ch == 1) { viewUsers(); pauseEnter(); }
 		else if (ch == 2) { manageCategories(); }

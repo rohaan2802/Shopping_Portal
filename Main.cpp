@@ -34,10 +34,13 @@ back:
 		Vendor vendor;
 		clearScreen();
 		banner("VENDOR PORTAL", 5);
-		cout << "                         1) Register\n\n";
-		cout << "                         2) Login\n\n";
-		cout << "                         3) Back\n\n";
-		int vch = readIntInRange("                         Choice:   ", 1, 3);
+		contentPrint("1) Register");
+		cout << "\n";
+		contentPrint("2) Login");
+		cout << "\n";
+		contentPrint("3) Back");
+		cout << "\n";
+		int vch = readIntInRange("Choice:   ", 1, 3);
 		if (vch == 1)
 		{
 			vendor.registraion();
@@ -61,7 +64,9 @@ back:
 	else if (select_menu == 4)
 	{
 		setColor(3);
-		cout << "\n\n                         Thank you for visiting FAST Shopping Portal!\n\n";
+		cout << "\n\n";
+		centerPrint("Thank you for visiting FAST Shopping Portal!");
+		cout << "\n";
 		HWND consoleWindow = GetConsoleWindow();
 		PostMessage(consoleWindow, WM_CLOSE, 0, 0);
 		return 0;
