@@ -13,6 +13,8 @@
 #endif
 
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <limits>
 #include <string>
 #include <cctype>
@@ -31,6 +33,23 @@ using namespace std;
 inline HANDLE console()
 {
 	return GetStdHandle(STD_OUTPUT_HANDLE);
+}
+
+/** Right-pad Sr# / ITEM # so values < 10 keep a leading space (columns stay aligned). */
+inline void printPaddedIndex(ostream& out, int n, int width = 2)
+{
+	ios_base::fmtflags old = out.flags();
+	char fill = out.fill();
+	out << right << setfill(' ') << setw(width) << n;
+	out.flags(old);
+	out.fill(fill);
+}
+
+inline string paddedIndex(int n, int width = 2)
+{
+	ostringstream oss;
+	oss << right << setfill(' ') << setw(width) << n;
+	return oss.str();
 }
 
 inline void setColor(int fg)

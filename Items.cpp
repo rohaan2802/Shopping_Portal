@@ -42,10 +42,9 @@ bool Item::print_Items_Menu()
 		{
 			if (str.empty()) continue;
 			Item_Category[itemcount] = str;
-			if (itemcount < 10)
-				cout << "                                            0" << itemcount << ")  " << str << "\n\n";
-			else
-				cout << "                                            " << itemcount << ")  " << str << "\n\n";
+			cout << "                                            ";
+			printPaddedIndex(cout, itemcount, 2);
+			cout << ")  " << str << "\n\n";
 			arrayofcount[i++] = itemcount++;
 		}
 		read.close();
@@ -78,9 +77,9 @@ bool Item::print_Items_Menu()
 
 		clearScreen();
 		sectionTitle(filename, 3);
-		cout << left;
-		cout << "                         " << setw(10) << "ITEM #"
-			<< setw(28) << "ITEM NAME"
+		cout << "                         "
+			<< right << setw(6) << "ITEM#"
+			<< "  " << left << setw(28) << "ITEM NAME"
 			<< setw(20) << "PRICE"
 			<< setw(12) << "STOCK" << "\n\n";
 
@@ -105,8 +104,9 @@ bool Item::print_Items_Menu()
 			int qty = 0;
 			if (!parseIntSafe(items[itemcount1].Items_Quantity, qty))
 				qty = 0;
-			cout << "                         " << setw(10) << itemcount1
-				<< setw(28) << trimCopy(items[itemcount1].itemnames)
+			cout << "                         ";
+			printPaddedIndex(cout, itemcount1, 6);
+			cout << "  " << left << setw(28) << trimCopy(items[itemcount1].itemnames)
 				<< setw(20) << trimCopy(items[itemcount1].Items_Price)
 				<< setw(12) << qty << "\n";
 			itemcount1++;
@@ -472,14 +472,16 @@ bool Item::viewCategoryProducts(const string& category)
 		return false;
 	}
 	setDefaultColor();
-	cout << left << "\n                         " << setw(10) << "#"
-		<< setw(28) << "NAME" << setw(20) << "PRICE" << setw(10) << "QTY" << "\n\n";
-	string n, p, q;
+	cout << "\n                         "
+		<< right << setw(6) << "#"
+		<< "  " << left << setw(28) << "NAME" << setw(20) << "PRICE" << setw(10) << "QTY" << "\n\n";
 	int i = 1;
+	string n, p, q;
 	while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
 	{
-		cout << "                         " << setw(10) << i++
-			<< setw(28) << n << setw(20) << p << setw(10) << q << "\n";
+		cout << "                         ";
+		printPaddedIndex(cout, i++, 6);
+		cout << "  " << left << setw(28) << trimCopy(n) << setw(20) << trimCopy(p) << setw(10) << trimCopy(q) << "\n";
 	}
 	return true;
 }
