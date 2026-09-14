@@ -35,7 +35,11 @@ inline HANDLE console()
 
 inline void setColor(int fg)
 {
-	/* Foreground only on black background - readable dark theme */
+	/* Dark theme: never draw black-on-black; bump classic 1-6 to bright 9-14 */
+	if (fg == 0)
+		fg = 7;
+	else if (fg >= 1 && fg <= 6)
+		fg += 8;
 	SetConsoleTextAttribute(console(), static_cast<WORD>(fg & 0x0F));
 }
 
