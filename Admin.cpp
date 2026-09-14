@@ -92,7 +92,7 @@ void Admin::viewUsers()
 
 	setColor(3);
 	cout << "\n                         === CUSTOMERS ===\n\n";
-	setColor(0);
+	setDefaultColor();
 	ifstream cust("customer_account_save.txt");
 	string u, p;
 	int i = 1;
@@ -106,7 +106,7 @@ void Admin::viewUsers()
 
 	setColor(3);
 	cout << "\n                         === VENDORS ===\n\n";
-	setColor(0);
+	setDefaultColor();
 	ifstream vend("vendor_accounts.txt");
 	string company;
 	i = 1;
@@ -121,7 +121,7 @@ void Admin::viewUsers()
 
 	setColor(3);
 	cout << "\n                         === ADMINS ===\n\n";
-	setColor(0);
+	setDefaultColor();
 	ifstream adm("admin_accounts.txt");
 	i = 1;
 	while (getline(adm, u) && getline(adm, p))
@@ -217,7 +217,7 @@ void Admin::viewOrdersAndStats()
 	string line;
 	int count = 0;
 	double revenue = 0;
-	setColor(0);
+	setDefaultColor();
 	cout << left << "\n                         " << setw(8) << "ID"
 		<< setw(16) << "CUSTOMER"
 		<< setw(14) << "TOTAL"
@@ -245,7 +245,7 @@ void Admin::viewOrdersAndStats()
 	setColor(15);
 	cout << "\n\n                         Total Orders : " << count;
 	cout << "\n                         Total Revenue: Rs. " << (int)revenue << "\n";
-	setColor(0);
+	setDefaultColor();
 }
 
 bool Admin::admin_menu()
@@ -253,7 +253,7 @@ bool Admin::admin_menu()
 	while (true)
 	{
 		clearScreen();
-		banner("ADMIN DASHBOARD — " + currentUser, 4);
+		banner("ADMIN DASHBOARD - " + currentUser, 4);
 		setColor(5);
 		cout << "                         1)  View All Users\n\n";
 		cout << "                         2)  Manage Categories\n\n";

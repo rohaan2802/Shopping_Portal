@@ -26,8 +26,8 @@ bool Item::print_Items_Menu()
 
 	label:
 		clearScreen();
-		sectionTitle("ORDER PLACING — BROWSE CATEGORIES", 5);
-		setColor(0);
+		sectionTitle("ORDER PLACING - BROWSE CATEGORIES", 5);
+		setDefaultColor();
 		cout << "                         Select a category (or 0 to go back)\n\n";
 
 		ifstream read("ItemsCategory.txt");
@@ -130,7 +130,7 @@ bool Item::print_Items_Menu()
 				continue;
 			}
 
-			// Stock is not reserved until checkout — cap by catalog qty minus cart qty already held
+			// Stock is not reserved until checkout - cap by catalog qty minus cart qty already held
 			int alreadyInCart = 0;
 			for (int ci = 0; ci < c.size(); ci++)
 			{
@@ -195,7 +195,7 @@ void Item::update_items(const string& filename, const string& name, string price
 
 void Item::reset()
 {
-	c.reset_data(); // clear cart only — stock was never deducted early
+	c.reset_data(); // clear cart only - stock was never deducted early
 }
 
 bool Item::Display_Cart()
@@ -264,7 +264,7 @@ bool Item::listCategories()
 	}
 	string str;
 	int n = 1;
-	setColor(0);
+	setDefaultColor();
 	cout << "\n";
 	while (getline(read, str))
 	{
@@ -471,7 +471,7 @@ bool Item::viewCategoryProducts(const string& category)
 		errorMsg("Cannot open " + category + ".txt");
 		return false;
 	}
-	setColor(0);
+	setDefaultColor();
 	cout << left << "\n                         " << setw(10) << "#"
 		<< setw(28) << "NAME" << setw(20) << "PRICE" << setw(10) << "QTY" << "\n\n";
 	string n, p, q;
@@ -491,7 +491,7 @@ bool Item::searchAllCatalogs(const string& query)
 	string q = trimCopy(query);
 	for (char& ch : q) ch = static_cast<char>(tolower(static_cast<unsigned char>(ch)));
 	bool any = false;
-	setColor(0);
+	setDefaultColor();
 	// Deduplicate identical cat|name|price hits (e.g. duplicated file lines)
 	string seenKeys[2000];
 	int seenCount = 0;

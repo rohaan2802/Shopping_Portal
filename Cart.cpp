@@ -200,7 +200,7 @@ bool Cart::validateAndDeductStock()
 
 void Cart::DisplayItems()
 {
-	setColor(0);
+	setDefaultColor();
 	cout << "\n\n";
 	if (cart_size <= 0)
 	{
@@ -234,7 +234,7 @@ void Cart::DisplayItems()
 
 void Cart::Search(const string& query)
 {
-	setColor(0);
+	setDefaultColor();
 	cout << "\n\n                         Search results in cart for: \"" << query << "\"\n\n";
 	bool found = false;
 	string q = query;
@@ -261,7 +261,7 @@ bool Cart::modify_quantity()
 {
 	if (cart_size <= 0)
 	{
-		errorMsg("Cart is empty — nothing to modify");
+		errorMsg("Cart is empty - nothing to modify");
 		return false;
 	}
 	DisplayItems();
@@ -319,7 +319,7 @@ bool Cart::Bill(double taxPercent, double deliveryPercent)
 	total_bill = 0;
 	if (cart_size <= 0)
 	{
-		errorMsg("Cart is empty — cannot generate bill");
+		errorMsg("Cart is empty - cannot generate bill");
 		return false;
 	}
 
@@ -346,6 +346,6 @@ bool Cart::Bill(double taxPercent, double deliveryPercent)
 	cout << "                                                                                            -----------------------------------\n";
 	setColor(15);
 	cout << "\n  <<<<<<<< TOTAL AMOUNT                                                                          Rs. " << (int)total_bill << endl;
-	setColor(0);
+	setDefaultColor();
 	return true;
 }

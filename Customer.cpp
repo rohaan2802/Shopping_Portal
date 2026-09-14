@@ -105,7 +105,7 @@ void Customer::saveWishlist()
 
 	string preserved = kept.str();
 	if (preserved.empty())
-		out << "# wishlist.txt — format: username|item_name\n";
+		out << "# wishlist.txt - format: username|item_name\n";
 	else
 		out << preserved;
 
@@ -118,7 +118,7 @@ bool Customer::customer_Reg_Log_Menu()
 label1:
 	clearScreen();
 	banner("CUSTOMER GATEWAY", 3);
-	setColor(0);
+	setDefaultColor();
 	cout << "                                                    1)    Registration\n\n";
 	cout << "                                                    2)    Login\n\n";
 	cout << "                                                    3)    Forgot Password\n\n";
@@ -136,7 +136,7 @@ label1:
 		if (login())
 		{
 			show_customer_menu();
-			c.reset_data(); // logout / leave menu — cart only, stock untouched
+			c.reset_data(); // logout / leave menu - cart only, stock untouched
 			clearWishlistMemory();
 			goto label1;
 		}
@@ -187,7 +187,7 @@ again32:
 			if (!getline(read_customer_account_reg, existingPass)) existingPass = "";
 			if (trimCopy(existingUser) == reg_name)
 			{
-				errorMsg("Account Already Registered — please login");
+				errorMsg("Account Already Registered - please login");
 				read_customer_account_reg.close();
 				return;
 			}
@@ -225,7 +225,7 @@ bool Customer::login()
 		{
 			currentUser = login_name;
 			loadWishlist();
-			successMsg("LOGIN SUCCESSFUL — Welcome " + currentUser);
+			successMsg("LOGIN SUCCESSFUL - Welcome " + currentUser);
 			return true;
 		}
 	}
@@ -251,7 +251,7 @@ again32:
 
 	if (!validCredential(searchString, newValue, confirm_new_val))
 	{
-		errorMsg("Invalid password rules — try again");
+		errorMsg("Invalid password rules - try again");
 		goto again32;
 	}
 	updateValueInFile("customer_account_save.txt", searchString, newValue);
@@ -324,7 +324,7 @@ void Customer::checkoutAndSaveOrder()
 	// Deduct catalog stock only when the order is confirmed
 	if (!c.validateAndDeductStock())
 	{
-		errorMsg("Checkout aborted — stock unchanged");
+		errorMsg("Checkout aborted - stock unchanged");
 		pauseEnter();
 		return;
 	}
@@ -358,7 +358,7 @@ void Customer::checkoutAndSaveOrder()
 		<< "|" << details.str() << " @ " << buf << "\n";
 	out.close();
 
-	successMsg("ORDER PLACED — ID #" + to_string(nextId));
+	successMsg("ORDER PLACED - ID #" + to_string(nextId));
 	c.reset_data();
 	pauseEnter();
 }
@@ -366,7 +366,7 @@ void Customer::checkoutAndSaveOrder()
 void Customer::viewOrderHistory()
 {
 	clearScreen();
-	sectionTitle("ORDER HISTORY — " + currentUser, 5);
+	sectionTitle("ORDER HISTORY - " + currentUser, 5);
 	ifstream in("orders.txt");
 	if (!in.is_open())
 	{
@@ -375,7 +375,7 @@ void Customer::viewOrderHistory()
 	}
 	string line;
 	int n = 0;
-	setColor(0);
+	setDefaultColor();
 	while (getline(in, line))
 	{
 		if (line.empty()) continue;
@@ -397,12 +397,12 @@ void Customer::viewOrderHistory()
 void Customer::manageWishlist()
 {
 	clearScreen();
-	sectionTitle("WISHLIST — " + currentUser, 6);
+	sectionTitle("WISHLIST - " + currentUser, 6);
 	if (wishlist_size == 0)
 		infoMsg("Wishlist is empty");
 	else
 	{
-		setColor(0);
+		setDefaultColor();
 		for (int i = 0; i < wishlist_size; i++)
 			cout << "                         " << (i + 1) << ")  " << wishlist[i] << "\n";
 	}
@@ -454,7 +454,7 @@ void Customer::manageWishlist()
 	}
 	else if (ch == 2 && wishlist_size == 0)
 	{
-		infoMsg("Wishlist is empty — nothing to remove");
+		infoMsg("Wishlist is empty - nothing to remove");
 	}
 	else if (ch == 3)
 	{
@@ -462,7 +462,7 @@ void Customer::manageWishlist()
 			infoMsg("Wishlist is empty");
 		else
 		{
-			setColor(0);
+			setDefaultColor();
 			cout << "\n";
 			for (int i = 0; i < wishlist_size; i++)
 				cout << "                         " << (i + 1) << ")  " << wishlist[i] << "\n";
@@ -476,8 +476,8 @@ bool Customer::show_customer_menu()
 	while (true)
 	{
 		clearScreen();
-		banner("CUSTOMER VIEW — " + currentUser, 5);
-		setColor(0);
+		banner("CUSTOMER VIEW - " + currentUser, 5);
+		setDefaultColor();
 		cout << "                                                  1)  Place An Order / Browse\n\n";
 		cout << "                                                  2)  Modify Cart Quantity\n\n";
 		cout << "                                                  3)  Display Cart Items\n\n";
@@ -528,7 +528,7 @@ bool Customer::show_customer_menu()
 		{
 			items.reset();
 			clearWishlistMemory();
-			successMsg("Logged out — cart cleared (stock unchanged)");
+			successMsg("Logged out - cart cleared (stock unchanged)");
 			return false;
 		}
 	}
