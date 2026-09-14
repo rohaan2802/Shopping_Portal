@@ -15,9 +15,10 @@ namespace
 {
 	string productHeader()
 	{
+		/* 6+2+26+18+10 = CONTENT_WIDTH (62) */
 		ostringstream hdr;
 		hdr << fitField("ITEM#", 6, false) << "  "
-			<< fitField("ITEM NAME", 28, true)
+			<< fitField("ITEM NAME", 26, true)
 			<< fitField("PRICE", 18, true)
 			<< fitField("STOCK", 10, true);
 		return hdr.str();
@@ -27,7 +28,7 @@ namespace
 	{
 		ostringstream row;
 		row << paddedIndex(idx, 6) << "  "
-			<< fitField(trimCopy(name), 28, true)
+			<< fitField(trimCopy(name), 26, true)
 			<< fitField(trimCopy(price), 18, true)
 			<< fitField(trimCopy(stock), 10, true);
 		return row.str();
@@ -493,7 +494,7 @@ bool Item::viewCategoryProducts(const string& category)
 	{
 		ostringstream hdr;
 		hdr << fitField("#", 6, false) << "  "
-			<< fitField("NAME", 28, true)
+			<< fitField("NAME", 26, true)
 			<< fitField("PRICE", 18, true)
 			<< fitField("QTY", 10, true);
 		contentPrint(hdr.str());
