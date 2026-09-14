@@ -358,6 +358,12 @@ void Customer::checkoutAndSaveOrder()
 	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M", &local);
 
 	ofstream out("orders.txt", ios::app);
+	if (!out.is_open())
+	{
+		errorMsg("Could not write orders.txt - order not saved (stock already deducted)");
+		pauseEnter();
+		return;
+	}
 	out << nextId << "|" << currentUser << "|" << (int)c.lastBillTotal()
 		<< "|" << details.str() << " @ " << buf << "\n";
 	out.close();
@@ -371,32 +377,39 @@ void Customer::viewOrderHistory()
 {
 	clearScreen();
 	sectionTitle("ORDER HISTORY - " + currentUser, 5);
-	ifstream in("orders.txt");
-	if (!in.is_open())
+	try
 	{
-		infoMsg("No orders found");
-		return;
-	}
-	string line;
-	int n = 0;
-	setDefaultColor();
-	while (getline(in, line))
-	{
-		if (line.empty()) continue;
-		stringstream ss(line);
-		string id, user, total, rest;
-		getline(ss, id, '|');
-		getline(ss, user, '|');
-		getline(ss, total, '|');
-		getline(ss, rest);
-		if (user == currentUser)
+		ifstream in("orders.txt");
+		if (!in.is_open())
 		{
-			n++;
-			contentPrint("#" + id + "  |  Total: Rs. " + total + "  |  " + rest);
-			cout << "\n";
+			infoMsg("No orders found (orders.txt missing)");
+			return;
 		}
+		string line;
+		int n = 0;
+		setDefaultColor();
+		while (getline(in, line))
+		{
+			if (line.empty()) continue;
+			stringstream ss(line);
+			string id, user, total, rest;
+			getline(ss, id, '|');
+			getline(ss, user, '|');
+			getline(ss, total, '|');
+			getline(ss, rest);
+			if (user == currentUser)
+			{
+				n++;
+				contentPrint("#" + id + "  |  Total: Rs. " + total + "  |  " + rest);
+				cout << "\n";
+			}
+		}
+		if (n == 0) infoMsg("You have no past orders");
 	}
-	if (n == 0) infoMsg("You have no past orders");
+	catch (...)
+	{
+		errorMsg("Could not read orders.txt");
+	}
 }
 
 void Customer::manageWishlist()

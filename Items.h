@@ -30,6 +30,15 @@ public:
 	static bool removeProduct(const string& category, const string& name);
 	static bool viewCategoryProducts(const string& category);
 	static bool searchAllCatalogs(const string& query);
+
+	/** True if trimmed name appears as a non-empty line in ItemsCategory.txt. */
+	static bool categoryExists(const string& name);
+	/** Create empty category .txt if missing; returns false if cannot create. */
+	static bool ensureCategoryFile(const string& name);
+	/** Fill out[] with category names from ItemsCategory.txt; returns count (capped at maxCount). */
+	static int listCategoriesFromFile(string* out, int maxCount);
+	/** True if category .txt exists and contains at least one product line. */
+	static bool categoryHasProducts(const string& name);
 };
 
 #endif // !ITEMS_H

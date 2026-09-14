@@ -65,9 +65,9 @@ bool Item::print_Items_Menu()
 		i = 1;
 		while (getline(read, str))
 		{
-			if (str.empty()) continue;
-			Item_Category[itemcount] = str;
-			printNumberedLine(cout, itemcount, str, 2);
+			if (trimCopy(str).empty()) continue;
+			Item_Category[itemcount] = trimCopy(str);
+			printNumberedLine(cout, itemcount, Item_Category[itemcount], 2);
 			cout << "\n";
 			arrayofcount[i++] = itemcount++;
 		}
@@ -176,39 +176,52 @@ bool Item::print_Items_Menu()
 
 void Item::update_items(const string& filename, const string& name, string price, const string& newValue)
 {
-	string file_name = filename + ".txt";
-	ifstream inputFile(file_name);
-	if (!inputFile)
+	try
 	{
-		errorMsg("Unable to open " + file_name);
-		return;
+		string file_name = trimCopy(filename) + ".txt";
+		ifstream inputFile(file_name);
+		if (!inputFile)
+		{
+			errorMsg("Unable to open " + file_name);
+			return;
+		}
+
+		ofstream tempFile("temp.txt");
+		if (!tempFile.is_open())
+		{
+			errorMsg("Unable to write temp file");
+			return;
+		}
+		Item items[1000];
+		int itemcount1 = 0;
+		bool first = true;
+
+		while (getline(inputFile, items[itemcount1].itemnames, '-') &&
+			getline(inputFile, items[itemcount1].Items_Price, ',') &&
+			getline(inputFile >> ws, items[itemcount1].Items_Quantity))
+		{
+			if (!first) tempFile << "\n";
+			first = false;
+
+			if (trimCopy(items[itemcount1].itemnames) == trimCopy(name) &&
+				trimCopy(items[itemcount1].Items_Price) == trimCopy(price))
+				tempFile << items[itemcount1].itemnames << '-' << items[itemcount1].Items_Price << ", " << newValue;
+			else
+				tempFile << items[itemcount1].itemnames << '-' << items[itemcount1].Items_Price << ", " << items[itemcount1].Items_Quantity;
+
+			itemcount1++;
+			if (itemcount1 >= 1000) break;
+		}
+
+		inputFile.close();
+		tempFile.close();
+		remove(file_name.c_str());
+		rename("temp.txt", file_name.c_str());
 	}
-
-	ofstream tempFile("temp.txt");
-	Item items[1000];
-	int itemcount1 = 0;
-	bool first = true;
-
-	while (getline(inputFile, items[itemcount1].itemnames, '-') &&
-		getline(inputFile, items[itemcount1].Items_Price, ',') &&
-		getline(inputFile >> ws, items[itemcount1].Items_Quantity))
+	catch (...)
 	{
-		if (!first) tempFile << "\n";
-		first = false;
-
-		if (trimCopy(items[itemcount1].itemnames) == trimCopy(name) &&
-			trimCopy(items[itemcount1].Items_Price) == trimCopy(price))
-			tempFile << items[itemcount1].itemnames << '-' << items[itemcount1].Items_Price << ", " << newValue;
-		else
-			tempFile << items[itemcount1].itemnames << '-' << items[itemcount1].Items_Price << ", " << items[itemcount1].Items_Quantity;
-
-		itemcount1++;
+		errorMsg("Failed to update catalog stock");
 	}
-
-	inputFile.close();
-	tempFile.close();
-	remove(file_name.c_str());
-	rename("temp.txt", file_name.c_str());
 }
 
 void Item::reset()
@@ -272,107 +285,309 @@ bool Item::Bill()
 	return false;
 }
 
-bool Item::listCategories()
+bool Item::categoryExists(const string& name)
 {
-	ifstream read("ItemsCategory.txt");
-	if (!read.is_open())
+	string target = trimCopy(name);
+	if (target.empty()) return false;
+	try
 	{
-		errorMsg("ItemsCategory.txt not found");
+		ifstream read("ItemsCategory.txt");
+		if (!read.is_open())
+			return false;
+		string line;
+		while (getline(read, line))
+		{
+			if (trimCopy(line) == target)
+				return true;
+		}
+	}
+	catch (...)
+	{
 		return false;
 	}
-	string str;
-	int n = 1;
-	setDefaultColor();
-	cout << "\n";
-	while (getline(read, str))
+	return false;
+}
+
+bool Item::ensureCategoryFile(const string& name)
+{
+	string target = trimCopy(name);
+	if (target.empty()) return false;
+	string path = target + ".txt";
+	try
 	{
-		if (str.empty()) continue;
-		printNumberedLine(cout, n++, str, 2);
+		ifstream check(path);
+		if (check.is_open())
+		{
+			check.close();
+			return true;
+		}
+		ofstream create(path, ios::app);
+		if (!create.is_open())
+			return false;
+		create.close();
+		return true;
 	}
-	return true;
+	catch (...)
+	{
+		return false;
+	}
+}
+
+int Item::listCategoriesFromFile(string* out, int maxCount)
+{
+	if (!out || maxCount <= 0) return 0;
+	int count = 0;
+	try
+	{
+		ifstream read("ItemsCategory.txt");
+		if (!read.is_open())
+			return 0;
+		string line;
+		while (getline(read, line) && count < maxCount)
+		{
+			string cat = trimCopy(line);
+			if (cat.empty()) continue;
+			out[count++] = cat;
+		}
+	}
+	catch (...)
+	{
+		return count;
+	}
+	return count;
+}
+
+bool Item::categoryHasProducts(const string& name)
+{
+	string target = trimCopy(name);
+	if (target.empty()) return false;
+	try
+	{
+		ifstream in(target + ".txt");
+		if (!in.is_open())
+			return false;
+		string n, p, q;
+		if (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
+		{
+			if (!trimCopy(n).empty())
+				return true;
+		}
+	}
+	catch (...)
+	{
+		return false;
+	}
+	return false;
+}
+
+bool Item::listCategories()
+{
+	try
+	{
+		ifstream read("ItemsCategory.txt");
+		if (!read.is_open())
+		{
+			errorMsg("ItemsCategory.txt not found");
+			return false;
+		}
+		string str;
+		int n = 1;
+		setDefaultColor();
+		cout << "\n";
+		while (getline(read, str))
+		{
+			if (trimCopy(str).empty()) continue;
+			printNumberedLine(cout, n++, trimCopy(str), 2);
+		}
+		if (n == 1)
+			infoMsg("No categories registered");
+		return true;
+	}
+	catch (...)
+	{
+		errorMsg("Failed to read ItemsCategory.txt");
+		return false;
+	}
 }
 
 bool Item::addCategory(const string& name)
 {
 	string target = trimCopy(name);
-	if (target.empty()) return false;
-	ifstream check("ItemsCategory.txt");
-	string line;
-	bool emptyFile = true;
-	while (getline(check, line))
+	if (target.empty())
 	{
-		if (trimCopy(line).empty()) continue;
-		emptyFile = false;
-		if (trimCopy(line) == target)
+		errorMsg("Category name required");
+		return false;
+	}
+	if (categoryExists(target))
+	{
+		errorMsg("Category already exists");
+		return false;
+	}
+
+	try
+	{
+		bool emptyFile = true;
 		{
-			errorMsg("Category already exists");
+			ifstream check("ItemsCategory.txt");
+			if (check.is_open())
+			{
+				string line;
+				while (getline(check, line))
+				{
+					if (!trimCopy(line).empty())
+					{
+						emptyFile = false;
+						break;
+					}
+				}
+			}
+		}
+
+		ofstream out("ItemsCategory.txt", ios::app);
+		if (!out.is_open())
+		{
+			errorMsg("Cannot write ItemsCategory.txt");
 			return false;
 		}
+		if (!emptyFile) out << "\n";
+		out << target;
+		out.close();
+
+		if (!ensureCategoryFile(target))
+		{
+			errorMsg("Category listed but could not create file: " + target + ".txt");
+			return false;
+		}
+		successMsg("Category added: " + target);
+		return true;
 	}
-	check.close();
-
-	ofstream out("ItemsCategory.txt", ios::app);
-	if (!emptyFile) out << "\n";
-	out << target;
-	out.close();
-
-	ofstream cat(target + ".txt", ios::app);
-	cat.close();
-	successMsg("Category added: " + target);
-	return true;
+	catch (...)
+	{
+		errorMsg("Failed to add category");
+		return false;
+	}
 }
 
 bool Item::removeCategory(const string& name)
 {
-	ifstream in("ItemsCategory.txt");
-	ofstream temp("temp.txt");
-	string line;
-	bool found = false;
-	bool first = true;
-	while (getline(in, line))
+	string target = trimCopy(name);
+	if (target.empty())
 	{
-		if (line.empty()) continue;
-		if (line == name)
-		{
-			found = true;
-			continue;
-		}
-		if (!first) temp << "\n";
-		temp << line;
-		first = false;
-	}
-	in.close();
-	temp.close();
-	if (!found)
-	{
-		remove("temp.txt");
-		errorMsg("Category not found");
+		errorMsg("Category name required");
 		return false;
 	}
-	remove("ItemsCategory.txt");
-	rename("temp.txt", "ItemsCategory.txt");
-	remove((name + ".txt").c_str());
-	successMsg("Category removed: " + name);
-	return true;
+	if (!categoryExists(target))
+	{
+		errorMsg("Category not found in ItemsCategory.txt");
+		return false;
+	}
+	// Safer UX: block delete when products still exist in the category file
+	if (categoryHasProducts(target))
+	{
+		errorMsg("Cannot delete \"" + target + "\": products still exist");
+		return false;
+	}
+
+	try
+	{
+		ifstream in("ItemsCategory.txt");
+		if (!in.is_open())
+		{
+			errorMsg("ItemsCategory.txt not found");
+			return false;
+		}
+		ofstream temp("temp.txt");
+		if (!temp.is_open())
+		{
+			errorMsg("Cannot write temp file");
+			return false;
+		}
+		string line;
+		bool found = false;
+		bool first = true;
+		while (getline(in, line))
+		{
+			if (trimCopy(line).empty()) continue;
+			if (trimCopy(line) == target)
+			{
+				found = true;
+				continue;
+			}
+			if (!first) temp << "\n";
+			temp << trimCopy(line);
+			first = false;
+		}
+		in.close();
+		temp.close();
+		if (!found)
+		{
+			remove("temp.txt");
+			errorMsg("Category not found");
+			return false;
+		}
+		remove("ItemsCategory.txt");
+		rename("temp.txt", "ItemsCategory.txt");
+		remove((target + ".txt").c_str());
+		successMsg("Category removed: " + target);
+		return true;
+	}
+	catch (...)
+	{
+		errorMsg("Failed to remove category");
+		return false;
+	}
 }
 
 bool Item::addProduct(const string& category, const string& name, const string& priceLabel, int qty)
 {
-	string path = category + ".txt";
+	string cat = trimCopy(category);
 	string target = trimCopy(name);
+	string price = trimCopy(priceLabel);
+
+	if (cat.empty())
+	{
+		errorMsg("Category name required");
+		return false;
+	}
+	if (!categoryExists(cat))
+	{
+		errorMsg("Invalid category \"" + cat + "\": not listed in ItemsCategory.txt");
+		return false;
+	}
+	if (!fileExists(cat + ".txt"))
+	{
+		errorMsg("Category file missing: " + cat + ".txt");
+		return false;
+	}
 	if (target.empty())
 	{
 		errorMsg("Product name required");
 		return false;
 	}
-
-	bool empty = true;
+	if (price.empty())
 	{
-		ifstream check(path);
-		if (check.is_open())
+		errorMsg("Price label required");
+		return false;
+	}
+	if (qty < 0)
+	{
+		errorMsg("Quantity cannot be negative");
+		return false;
+	}
+
+	try
+	{
+		string path = cat + ".txt";
+		bool empty = true;
 		{
+			ifstream check(path);
+			if (!check.is_open())
+			{
+				errorMsg("Cannot open category file: " + path);
+				return false;
+			}
 			check.seekg(0, ios::end);
-			empty = (check.tellg() == 0);
+			empty = (check.tellg() <= 0);
 			check.clear();
 			check.seekg(0, ios::beg);
 			string n, p, q;
@@ -385,172 +600,303 @@ bool Item::addProduct(const string& category, const string& name, const string& 
 				}
 			}
 		}
+		ofstream out(path, ios::app);
+		if (!out.is_open())
+		{
+			errorMsg("Cannot open category file");
+			return false;
+		}
+		if (!empty) out << "\n";
+		out << target << " - " << price << ", " << qty;
+		out.close();
+		successMsg("Product added");
+		return true;
 	}
-	ofstream out(path, ios::app);
-	if (!out.is_open())
+	catch (...)
 	{
-		errorMsg("Cannot open category file");
+		errorMsg("Failed to add product");
 		return false;
 	}
-	if (!empty) out << "\n";
-	out << target << " - " << trimCopy(priceLabel) << ", " << qty;
-	out.close();
-	successMsg("Product added");
-	return true;
 }
 
 bool Item::updateProduct(const string& category, const string& name, const string& newPriceLabel, int newQty)
 {
-	string path = category + ".txt";
-	ifstream in(path);
-	if (!in.is_open())
-	{
-		errorMsg("Category file missing");
-		return false;
-	}
-	ofstream temp("temp.txt");
-	string n, p, q;
-	bool found = false;
-	bool first = true;
+	string cat = trimCopy(category);
 	string target = trimCopy(name);
-	while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
-	{
-		if (!first) temp << "\n";
-		first = false;
+	string price = trimCopy(newPriceLabel);
 
-		if (trimCopy(n) == target)
-		{
-			found = true;
-			temp << target << " - " << trimCopy(newPriceLabel) << ", " << newQty;
-		}
-		else
-		{
-			temp << n << '-' << p << ", " << q;
-		}
-	}
-	in.close();
-	temp.close();
-	if (!found)
+	if (cat.empty())
 	{
-		remove("temp.txt");
-		errorMsg("Product not found");
+		errorMsg("Category name required");
 		return false;
 	}
-	remove(path.c_str());
-	rename("temp.txt", path.c_str());
-	successMsg("Product updated");
-	return true;
+	if (!categoryExists(cat))
+	{
+		errorMsg("Invalid category \"" + cat + "\": not listed in ItemsCategory.txt");
+		return false;
+	}
+	if (!fileExists(cat + ".txt"))
+	{
+		errorMsg("Category file missing: " + cat + ".txt");
+		return false;
+	}
+	if (target.empty())
+	{
+		errorMsg("Product name required");
+		return false;
+	}
+	if (price.empty())
+	{
+		errorMsg("Price label required");
+		return false;
+	}
+	if (newQty < 0)
+	{
+		errorMsg("Quantity cannot be negative");
+		return false;
+	}
+
+	try
+	{
+		string path = cat + ".txt";
+		ifstream in(path);
+		if (!in.is_open())
+		{
+			errorMsg("Category file missing");
+			return false;
+		}
+		ofstream temp("temp.txt");
+		if (!temp.is_open())
+		{
+			errorMsg("Cannot write temp file");
+			return false;
+		}
+		string n, p, q;
+		bool found = false;
+		bool first = true;
+		while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
+		{
+			if (!first) temp << "\n";
+			first = false;
+
+			if (trimCopy(n) == target)
+			{
+				found = true;
+				temp << target << " - " << price << ", " << newQty;
+			}
+			else
+			{
+				temp << n << '-' << p << ", " << q;
+			}
+		}
+		in.close();
+		temp.close();
+		if (!found)
+		{
+			remove("temp.txt");
+			errorMsg("Product not found");
+			return false;
+		}
+		remove(path.c_str());
+		rename("temp.txt", path.c_str());
+		successMsg("Product updated");
+		return true;
+	}
+	catch (...)
+	{
+		errorMsg("Failed to update product");
+		return false;
+	}
 }
 
 bool Item::removeProduct(const string& category, const string& name)
 {
-	string path = category + ".txt";
-	ifstream in(path);
-	if (!in.is_open())
-	{
-		errorMsg("Category file missing");
-		return false;
-	}
-	ofstream temp("temp.txt");
-	string n, p, q;
-	bool found = false;
-	bool first = true;
+	string cat = trimCopy(category);
 	string target = trimCopy(name);
-	while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
+
+	if (cat.empty())
 	{
-		if (trimCopy(n) == target)
-		{
-			found = true;
-			continue;
-		}
-		if (!first) temp << "\n";
-		first = false;
-		temp << n << '-' << p << ", " << q;
-	}
-	in.close();
-	temp.close();
-	if (!found)
-	{
-		remove("temp.txt");
-		errorMsg("Product not found");
+		errorMsg("Category name required");
 		return false;
 	}
-	remove(path.c_str());
-	rename("temp.txt", path.c_str());
-	successMsg("Product removed");
-	return true;
+	if (!categoryExists(cat))
+	{
+		errorMsg("Invalid category \"" + cat + "\": not listed in ItemsCategory.txt");
+		return false;
+	}
+	if (!fileExists(cat + ".txt"))
+	{
+		errorMsg("Category file missing: " + cat + ".txt");
+		return false;
+	}
+	if (target.empty())
+	{
+		errorMsg("Product name required");
+		return false;
+	}
+
+	try
+	{
+		string path = cat + ".txt";
+		ifstream in(path);
+		if (!in.is_open())
+		{
+			errorMsg("Category file missing");
+			return false;
+		}
+		ofstream temp("temp.txt");
+		if (!temp.is_open())
+		{
+			errorMsg("Cannot write temp file");
+			return false;
+		}
+		string n, p, q;
+		bool found = false;
+		bool first = true;
+		while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
+		{
+			if (trimCopy(n) == target)
+			{
+				found = true;
+				continue;
+			}
+			if (!first) temp << "\n";
+			first = false;
+			temp << n << '-' << p << ", " << q;
+		}
+		in.close();
+		temp.close();
+		if (!found)
+		{
+			remove("temp.txt");
+			errorMsg("Product not found");
+			return false;
+		}
+		remove(path.c_str());
+		rename("temp.txt", path.c_str());
+		successMsg("Product removed");
+		return true;
+	}
+	catch (...)
+	{
+		errorMsg("Failed to remove product");
+		return false;
+	}
 }
 
 bool Item::viewCategoryProducts(const string& category)
 {
-	ifstream in(category + ".txt");
-	if (!in.is_open())
+	string cat = trimCopy(category);
+	if (cat.empty())
 	{
-		errorMsg("Cannot open " + category + ".txt");
+		errorMsg("Category name required");
 		return false;
 	}
-	setDefaultColor();
-	cout << "\n";
+	if (!categoryExists(cat))
 	{
-		ostringstream hdr;
-		hdr << fitField("#", 6, false) << "  "
-			<< fitField("NAME", 26, true)
-			<< fitField("PRICE", 18, true)
-			<< fitField("QTY", 10, true);
-		contentPrint(hdr.str());
+		errorMsg("Invalid category \"" + cat + "\": not listed in ItemsCategory.txt");
+		return false;
+	}
+	try
+	{
+		ifstream in(cat + ".txt");
+		if (!in.is_open())
+		{
+			errorMsg("Cannot open " + cat + ".txt (file missing)");
+			return false;
+		}
+		setDefaultColor();
 		cout << "\n";
+		{
+			ostringstream hdr;
+			hdr << fitField("#", 6, false) << "  "
+				<< fitField("NAME", 26, true)
+				<< fitField("PRICE", 18, true)
+				<< fitField("QTY", 10, true);
+			contentPrint(hdr.str());
+			cout << "\n";
+		}
+		int i = 1;
+		string n, p, q;
+		while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
+		{
+			contentPrint(productRow(i++, n, p, q));
+		}
+		if (i == 1)
+			infoMsg("No products in this category");
+		return true;
 	}
-	int i = 1;
-	string n, p, q;
-	while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
+	catch (...)
 	{
-		contentPrint(productRow(i++, n, p, q));
+		errorMsg("Failed to read category products");
+		return false;
 	}
-	return true;
 }
 
 bool Item::searchAllCatalogs(const string& query)
 {
-	ifstream cats("ItemsCategory.txt");
-	string cat;
 	string q = trimCopy(query);
+	if (q.empty())
+	{
+		errorMsg("Empty search");
+		return false;
+	}
 	for (char& ch : q) ch = static_cast<char>(tolower(static_cast<unsigned char>(ch)));
 	bool any = false;
 	setDefaultColor();
-	// Deduplicate identical cat|name|price hits (e.g. duplicated file lines)
 	string seenKeys[2000];
 	int seenCount = 0;
 
-	while (getline(cats, cat))
+	try
 	{
-		cat = trimCopy(cat);
-		if (cat.empty()) continue;
-		ifstream in(cat + ".txt");
-		if (!in.is_open()) continue;
-		string n, p, qty;
-		while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, qty))
+		ifstream cats("ItemsCategory.txt");
+		if (!cats.is_open())
 		{
-			string name = trimCopy(n);
-			string price = trimCopy(p);
-			string lower = name;
-			for (char& ch : lower) ch = static_cast<char>(tolower(static_cast<unsigned char>(ch)));
-			if (lower.find(q) == string::npos)
-				continue;
-
-			string key = cat + "|" + lower + "|" + price;
-			bool already = false;
-			for (int i = 0; i < seenCount; i++)
+			errorMsg("ItemsCategory.txt not found");
+			return false;
+		}
+		string cat;
+		while (getline(cats, cat))
+		{
+			cat = trimCopy(cat);
+			if (cat.empty()) continue;
+			ifstream in(cat + ".txt");
+			if (!in.is_open())
 			{
-				if (seenKeys[i] == key) { already = true; break; }
+				infoMsg("Skipping missing category file: " + cat + ".txt");
+				continue;
 			}
-			if (already) continue;
-			if (seenCount < 2000)
-				seenKeys[seenCount++] = key;
+			string n, p, qty;
+			while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, qty))
+			{
+				string name = trimCopy(n);
+				string price = trimCopy(p);
+				string lower = name;
+				for (char& ch : lower) ch = static_cast<char>(tolower(static_cast<unsigned char>(ch)));
+				if (lower.find(q) == string::npos)
+					continue;
 
-			any = true;
-			contentPrint("[" + cat + "]  " + name + "  | " + price + "  | Stock: " + trimCopy(qty));
+				string key = cat + "|" + lower + "|" + price;
+				bool already = false;
+				for (int i = 0; i < seenCount; i++)
+				{
+					if (seenKeys[i] == key) { already = true; break; }
+				}
+				if (already) continue;
+				if (seenCount < 2000)
+					seenKeys[seenCount++] = key;
+
+				any = true;
+				contentPrint("[" + cat + "]  " + name + "  | " + price + "  | Stock: " + trimCopy(qty));
+			}
 		}
 	}
+	catch (...)
+	{
+		errorMsg("Search failed due to a file error");
+		return false;
+	}
+
 	if (!any)
 		infoMsg("No products matched \"" + query + "\"");
 	return any;
