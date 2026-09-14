@@ -297,13 +297,13 @@ inline void Welcome_Message()
 	setColor(11);
 	cout << "\n\n\n";
 	cout << "               ================================================================================================\n";
-	cout << "                                    WELCOME TO FAST SHOPPING PORTAL\n";
+	cout << "                                        WELCOME TO FAST SHOPPING PORTAL\n";
 	cout << "               ================================================================================================\n";
 	setColor(14);
 	cout << "\n";
-	cout << "                                   Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z\n";
+	cout << "                                Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z\n";
 	setColor(7);
-	cout << "                                   OOP Console Shopping Portal - Admin | Vendor | Customer\n\n\n";
+	cout << "                            OOP Console Shopping Portal - Admin | Vendor | Customer\n\n\n";
 	setDefaultColor();
 }
 
