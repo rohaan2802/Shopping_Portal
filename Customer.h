@@ -23,7 +23,6 @@ public:
 	void checkoutAndSaveOrder();
 	void viewOrderHistory();
 	void manageWishlist();
-	void addToWishlist();
 };
 
 #endif // !CUSTOMER_H

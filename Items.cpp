@@ -17,11 +17,11 @@ bool Item::print_Items_Menu()
 	{
 		Item items[500];
 		int arrayofcount[100] = { 0 };
-		int str_to_int, i_q, str_to_int1;
+		int i_q, itemref;
 		ifstream read1;
 		string filename;
 		string Item_Category[100];
-		int itemcount = 1, i = 1, itemcount1 = 1, itemref;
+		int itemcount = 1, i = 1, itemcount1 = 1;
 		string str;
 
 	label:
@@ -89,12 +89,28 @@ bool Item::print_Items_Menu()
 			getline(read1, items[itemcount1].Items_Price, ',') &&
 			getline(read1 >> ws, items[itemcount1].Items_Quantity))
 		{
-			str_to_int = stoi(items[itemcount1].Items_Quantity);
+			// Skip duplicate name+price rows inside the same category file
+			bool dup = false;
+			for (int d = 1; d < itemcount1; d++)
+			{
+				if (trimCopy(items[d].itemnames) == trimCopy(items[itemcount1].itemnames) &&
+					trimCopy(items[d].Items_Price) == trimCopy(items[itemcount1].Items_Price))
+				{
+					dup = true;
+					break;
+				}
+			}
+			if (dup) continue;
+
+			int qty = 0;
+			if (!parseIntSafe(items[itemcount1].Items_Quantity, qty))
+				qty = 0;
 			cout << "                         " << setw(10) << itemcount1
-				<< setw(28) << items[itemcount1].itemnames
-				<< setw(20) << items[itemcount1].Items_Price
-				<< setw(12) << str_to_int << "\n";
+				<< setw(28) << trimCopy(items[itemcount1].itemnames)
+				<< setw(20) << trimCopy(items[itemcount1].Items_Price)
+				<< setw(12) << qty << "\n";
 			itemcount1++;
+			if (itemcount1 >= 500) break;
 		}
 		read1.close();
 
@@ -107,16 +123,16 @@ bool Item::print_Items_Menu()
 				break;
 			}
 
-			str_to_int1 = stoi(items[itemref].Items_Quantity);
-			if (str_to_int1 == 0)
+			int avail = 0;
+			if (!parseIntSafe(items[itemref].Items_Quantity, avail) || avail <= 0)
 			{
 				infoMsg("Item Is Not Available");
 				continue;
 			}
 
-			i_q = readIntInRange("                         Enter quantity:   ", 1, str_to_int1);
-			str_to_int1 -= i_q;
-			string new_val = to_string(str_to_int1);
+			i_q = readIntInRange("                         Enter quantity:   ", 1, avail);
+			avail -= i_q;
+			string new_val = to_string(avail);
 			c.add_item(items[itemref].itemnames, items[itemref].Items_Price, i_q);
 			update_items(filename, items[itemref].itemnames, items[itemref].Items_Price, new_val);
 			items[itemref].Items_Quantity = new_val;
@@ -138,18 +154,21 @@ void Item::update_items(const string& filename, const string& name, string price
 	ofstream tempFile("temp.txt");
 	Item items[1000];
 	int itemcount1 = 0;
+	bool first = true;
 
 	while (getline(inputFile, items[itemcount1].itemnames, '-') &&
 		getline(inputFile, items[itemcount1].Items_Price, ',') &&
 		getline(inputFile >> ws, items[itemcount1].Items_Quantity))
 	{
-		if (items[itemcount1].itemnames == name && items[itemcount1].Items_Price == price)
+		if (!first) tempFile << "\n";
+		first = false;
+
+		if (trimCopy(items[itemcount1].itemnames) == trimCopy(name) &&
+			trimCopy(items[itemcount1].Items_Price) == trimCopy(price))
 			tempFile << items[itemcount1].itemnames << '-' << items[itemcount1].Items_Price << ", " << newValue;
 		else
 			tempFile << items[itemcount1].itemnames << '-' << items[itemcount1].Items_Price << ", " << items[itemcount1].Items_Quantity;
 
-		if (!inputFile.eof())
-			tempFile << "\n";
 		itemcount1++;
 	}
 
@@ -157,6 +176,11 @@ void Item::update_items(const string& filename, const string& name, string price
 	tempFile.close();
 	remove(file_name.c_str());
 	rename("temp.txt", file_name.c_str());
+}
+
+void Item::reset()
+{
+	c.restock_all_and_clear();
 }
 
 bool Item::Display_Cart()
@@ -215,11 +239,6 @@ bool Item::Bill()
 	return false;
 }
 
-void Item::reset()
-{
-	c.reset_data();
-}
-
 bool Item::listCategories()
 {
 	ifstream read("ItemsCategory.txt");
@@ -242,12 +261,16 @@ bool Item::listCategories()
 
 bool Item::addCategory(const string& name)
 {
-	if (name.empty()) return false;
+	string target = trimCopy(name);
+	if (target.empty()) return false;
 	ifstream check("ItemsCategory.txt");
 	string line;
+	bool emptyFile = true;
 	while (getline(check, line))
 	{
-		if (line == name)
+		if (trimCopy(line).empty()) continue;
+		emptyFile = false;
+		if (trimCopy(line) == target)
 		{
 			errorMsg("Category already exists");
 			return false;
@@ -256,12 +279,13 @@ bool Item::addCategory(const string& name)
 	check.close();
 
 	ofstream out("ItemsCategory.txt", ios::app);
-	out << "\n" << name;
+	if (!emptyFile) out << "\n";
+	out << target;
 	out.close();
 
-	ofstream cat(name + ".txt", ios::app);
+	ofstream cat(target + ".txt", ios::app);
 	cat.close();
-	successMsg("Category added: " + name);
+	successMsg("Category added: " + target);
 	return true;
 }
 
@@ -302,6 +326,13 @@ bool Item::removeCategory(const string& name)
 bool Item::addProduct(const string& category, const string& name, const string& priceLabel, int qty)
 {
 	string path = category + ".txt";
+	string target = trimCopy(name);
+	if (target.empty())
+	{
+		errorMsg("Product name required");
+		return false;
+	}
+
 	bool empty = true;
 	{
 		ifstream check(path);
@@ -309,6 +340,17 @@ bool Item::addProduct(const string& category, const string& name, const string& 
 		{
 			check.seekg(0, ios::end);
 			empty = (check.tellg() == 0);
+			check.clear();
+			check.seekg(0, ios::beg);
+			string n, p, q;
+			while (getline(check, n, '-') && getline(check, p, ',') && getline(check >> ws, q))
+			{
+				if (trimCopy(n) == target)
+				{
+					errorMsg("Product already exists in this category");
+					return false;
+				}
+			}
 		}
 	}
 	ofstream out(path, ios::app);
@@ -318,7 +360,7 @@ bool Item::addProduct(const string& category, const string& name, const string& 
 		return false;
 	}
 	if (!empty) out << "\n";
-	out << name << " - " << priceLabel << ", " << qty;
+	out << target << " - " << trimCopy(priceLabel) << ", " << qty;
 	out.close();
 	successMsg("Product added");
 	return true;
@@ -337,21 +379,16 @@ bool Item::updateProduct(const string& category, const string& name, const strin
 	string n, p, q;
 	bool found = false;
 	bool first = true;
+	string target = trimCopy(name);
 	while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
 	{
-		// trim trailing spaces from name comparison
-		string trimmed = n;
-		while (!trimmed.empty() && trimmed.back() == ' ') trimmed.pop_back();
-		string target = name;
-		while (!target.empty() && target.back() == ' ') target.pop_back();
-
 		if (!first) temp << "\n";
 		first = false;
 
-		if (trimmed == target || n == name || n.find(name) != string::npos)
+		if (trimCopy(n) == target)
 		{
 			found = true;
-			temp << name << " - " << newPriceLabel << ", " << newQty;
+			temp << target << " - " << trimCopy(newPriceLabel) << ", " << newQty;
 		}
 		else
 		{
@@ -385,11 +422,10 @@ bool Item::removeProduct(const string& category, const string& name)
 	string n, p, q;
 	bool found = false;
 	bool first = true;
+	string target = trimCopy(name);
 	while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
 	{
-		string trimmed = n;
-		while (!trimmed.empty() && trimmed.back() == ' ') trimmed.pop_back();
-		if (trimmed == name || n.find(name) != string::npos)
+		if (trimCopy(n) == target)
 		{
 			found = true;
 			continue;
@@ -437,26 +473,43 @@ bool Item::searchAllCatalogs(const string& query)
 {
 	ifstream cats("ItemsCategory.txt");
 	string cat;
-	string q = query;
+	string q = trimCopy(query);
 	for (char& ch : q) ch = static_cast<char>(tolower(static_cast<unsigned char>(ch)));
 	bool any = false;
 	setColor(0);
+	// Deduplicate identical cat|name|price hits (e.g. duplicated file lines)
+	string seenKeys[2000];
+	int seenCount = 0;
+
 	while (getline(cats, cat))
 	{
+		cat = trimCopy(cat);
 		if (cat.empty()) continue;
 		ifstream in(cat + ".txt");
 		if (!in.is_open()) continue;
 		string n, p, qty;
 		while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, qty))
 		{
-			string lower = n;
+			string name = trimCopy(n);
+			string price = trimCopy(p);
+			string lower = name;
 			for (char& ch : lower) ch = static_cast<char>(tolower(static_cast<unsigned char>(ch)));
-			if (lower.find(q) != string::npos)
+			if (lower.find(q) == string::npos)
+				continue;
+
+			string key = cat + "|" + lower + "|" + price;
+			bool already = false;
+			for (int i = 0; i < seenCount; i++)
 			{
-				any = true;
-				cout << "                         [" << cat << "]  " << n
-					<< "  | " << p << "  | Stock: " << qty << "\n";
+				if (seenKeys[i] == key) { already = true; break; }
 			}
+			if (already) continue;
+			if (seenCount < 2000)
+				seenKeys[seenCount++] = key;
+
+			any = true;
+			cout << "                         [" << cat << "]  " << name
+				<< "  | " << price << "  | Stock: " << trimCopy(qty) << "\n";
 		}
 	}
 	if (!any)

@@ -36,10 +36,10 @@ again:
 	string u, p, c;
 	while (getline(in, u))
 	{
-		if (u.empty()) continue;
+		if (trimCopy(u).empty()) continue;
 		getline(in, p);
 		getline(in, c);
-		if (u == reg_name)
+		if (trimCopy(u) == reg_name)
 		{
 			errorMsg("Vendor already registered — please login");
 			return;
@@ -144,10 +144,40 @@ void Vendor::manageOwnStock()
 			string name = readLine("                         Product name:   ");
 			string price = readLine("                         Price label (e.g. 500 PKR):   ");
 			int qty = readIntInRange("                         Stock quantity:   ", 0, 99999);
+
+			// Reject duplicate ownership rows for this vendor
+			ifstream ownCheck("vendor_products.txt");
+			string line;
+			bool alreadyOwns = false;
+			while (getline(ownCheck, line))
+			{
+				if (trimCopy(line).empty()) continue;
+				stringstream ss(line);
+				string vendor, vcat, vname, vprice, vqty;
+				getline(ss, vendor, '|');
+				getline(ss, vcat, '|');
+				getline(ss, vname, '|');
+				getline(ss, vprice, '|');
+				getline(ss, vqty, '|');
+				if (vendor == currentUser && trimCopy(vcat) == trimCopy(cat) && trimCopy(vname) == trimCopy(name))
+				{
+					alreadyOwns = true;
+					break;
+				}
+			}
+			ownCheck.close();
+			if (alreadyOwns)
+			{
+				errorMsg("You already listed that product — use Update instead");
+				pauseEnter();
+				continue;
+			}
+
 			if (Item::addProduct(cat, name, price, qty))
 			{
 				ofstream own("vendor_products.txt", ios::app);
-				own << currentUser << "|" << cat << "|" << name << "|" << price << "|" << qty << "\n";
+				own << currentUser << "|" << trimCopy(cat) << "|" << trimCopy(name)
+					<< "|" << trimCopy(price) << "|" << qty << "\n";
 				own.close();
 			}
 			pauseEnter();

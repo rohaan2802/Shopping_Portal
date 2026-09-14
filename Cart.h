@@ -7,7 +7,7 @@ using namespace std;
 
 class Cart
 {
-	static int cart_size; // number of items currently in cart (0 = empty)
+	int cart_size; // number of items currently in cart (0 = empty)
 	string itemnames[500];
 	string Items_Price[500];
 	int Items_Quantity[500];
@@ -21,6 +21,7 @@ public:
 	bool modify_quantity();
 	void remove_item();
 	void reset_data();
+	void restock_all_and_clear(); // restore catalog stock then empty cart (logout / abandon)
 	int size() const { return cart_size; }
 	bool isEmpty() const { return cart_size <= 0; }
 	string getName(int i) const { return itemnames[i]; }

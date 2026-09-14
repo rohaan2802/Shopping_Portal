@@ -16,10 +16,54 @@
 #include <limits>
 #include <string>
 #include <cctype>
+#include <cstdlib>
+#include <io.h>
+#include <stdio.h>
 #include <windows.h>
 #include <conio.h>
 
 using namespace std;
+
+inline string trimCopy(string s)
+{
+	while (!s.empty() && isspace(static_cast<unsigned char>(s.front())))
+		s.erase(s.begin());
+	while (!s.empty() && isspace(static_cast<unsigned char>(s.back())))
+		s.pop_back();
+	return s;
+}
+
+inline bool parseIntSafe(const string& s, int& out)
+{
+	try
+	{
+		size_t idx = 0;
+		string t = trimCopy(s);
+		if (t.empty()) return false;
+		out = stoi(t, &idx);
+		return idx > 0;
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
+
+inline bool parseDoubleSafe(const string& s, double& out)
+{
+	try
+	{
+		size_t idx = 0;
+		string t = trimCopy(s);
+		if (t.empty()) return false;
+		out = stod(t, &idx);
+		return true;
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
 
 // Console color helpers (Other_Fun style — spacious colorful UI)
 // 0 Black  1 Blue  2 Green  3 Cyan  4 Red  5 Magenta  6 Yellow  7 White
@@ -56,7 +100,7 @@ inline void pauseEnter()
 	setColor(8);
 	cout << "\n\n                         Press Enter to continue...";
 	cin.clear();
-	cin.ignore((numeric_limits<streamsize>::max)(), '\n');
+	// One getline only: leftover '\n' from cin>> returns immediately; empty buffer waits for Enter.
 	string dummy;
 	getline(cin, dummy);
 }
@@ -135,6 +179,14 @@ inline string readToken(const string& prompt)
 
 inline string getPasswordMasked()
 {
+	// Piped/redirected stdin (smoke tests): read a normal line instead of _getch.
+	if (!_isatty(_fileno(stdin)))
+	{
+		string password;
+		getline(cin, password);
+		return password;
+	}
+
 	string password;
 	char ch;
 	while ((ch = static_cast<char>(_getch())) != '\r')
