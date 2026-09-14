@@ -4,10 +4,6 @@ Windows **console OOP shopping application** with working **Admin**, **Vendor**,
 
 **Author:** Mohammad Rohaan · **22I-2327** · **Sec-Z** · [rohaan2802](https://github.com/rohaan2802)
 
----
-
-## Overview
-
 FAST Shopping Portal is a course OOP project upgraded to a professional real-world console workflow:
 
 - Role-based entry: Admin / Vendor / Customer / Exit
@@ -31,6 +27,10 @@ run.bat
 
 Or open `Shopping_Portal.sln` in Visual Studio and run with the project folder as the working directory (so `*.txt` catalogs resolve).
 
+---
+
+## Features by role
+
 **Demo accounts**
 
 | Role | Username | Password |
@@ -38,10 +38,6 @@ Or open `Shopping_Portal.sln` in Visual Studio and run with the project folder a
 | Admin | `admin` | `admin123` |
 | Vendor | `vendor1` | `vendor1` |
 | Customer | `rohaan` | `123456` |
-
----
-
-## Features by role
 
 ### Admin
 - Login (default admin seeded automatically)
@@ -70,65 +66,9 @@ Or open `Shopping_Portal.sln` in Visual Studio and run with the project folder a
 
 ---
 
-## Architecture
-
-```text
-Main.cpp                 Role picker → Admin | Vendor | Customer
-Other_Fun.h              Console colors, banners, validated input helpers
-Role.h                   Abstract registraion() + login()
-Admin.h/.cpp             Admin dashboard + catalog/user/order ops
-Vendor.h/.cpp            Vendor auth + owned stock management
-Customer.h/.cpp          Auth, menus, wishlist, checkout, history
-Items.h/.cpp             Category/product I/O + browse/search UI
-Cart.h/.cpp              Cart arrays, Search, Modify, Bill, restock-safe remove
-```
-
-OOP inheritance: `Admin` / `Vendor` / `Customer` implement `Role`. Catalog lines keep the original format:
-
-```text
-Apples - 150 PKR, 2
-```
-
----
-
-## Menus / keymap
-
-| Screen | Keys |
-|--------|------|
-| Role select | `1` Admin · `2` Vendor · `3` Customer · `4` Exit |
-| Customer gateway | `1` Register · `2` Login · `3` Forgot password · `4` Back |
-| Customer view | `1` Order · `2` Modify · `3` Cart · `4` Search · `5` Remove · `6` Checkout · `7` Wishlist · `8` History · `9` Logout |
-| Admin dashboard | `1` Users · `2` Categories · `3` Products · `4` Orders/Stats · `5` New admin · `6` Logout |
-| Vendor dashboard | `1` Stock · `2` Categories · `3` Search · `4` Logout |
-
----
-
-## Data files
-
-| File | Purpose |
-|------|---------|
-| `ItemsCategory.txt` | Category list |
-| `<Category>.txt` | Stock lines (`Name - price, qty`) |
-| `customer_account_save.txt` | Customer username/password pairs |
-| `admin_accounts.txt` | Admin credentials |
-| `vendor_accounts.txt` | Vendor username / password / company |
-| `vendor_products.txt` | Vendor ownership (`user\|cat\|name\|price\|qty`) |
-| `orders.txt` | Placed orders (`id\|user\|total\|details`) |
-| `temp.txt` | Scratch file during rewrites (gitignored) |
-
----
-
-## Build notes
-
-- `build.bat` locates `vcvars64.bat`, compiles with `/std:c++17` and `/D_HAS_STD_BYTE=0` (avoids Windows `byte` clash).
-- Output: `build\Shopping_Portal.exe`
-- Screenshots regenerable via: `python scripts/generate_screenshots.py` (Pillow)
-
----
-
 ## Screenshot gallery
 
-Console UI mockups covering every major feature (SS01–SS35). Regenerate anytime with the Python script above.
+Console UI mockups covering every major feature (SS01–SS35). Regenerate anytime with: `python scripts/generate_screenshots.py` (Pillow).
 
 ### SS01 — Welcome Banner
 ![SS01](docs/screenshots/ss01.png)
@@ -234,6 +174,62 @@ Console UI mockups covering every major feature (SS01–SS35). Regenerate anytim
 
 ### SS35 — Logout and Exit
 ![SS35](docs/screenshots/ss35.png)
+
+---
+
+## Architecture
+
+```text
+Main.cpp                 Role picker → Admin | Vendor | Customer
+Other_Fun.h              Console colors, banners, validated input helpers
+Role.h                   Abstract registraion() + login()
+Admin.h/.cpp             Admin dashboard + catalog/user/order ops
+Vendor.h/.cpp            Vendor auth + owned stock management
+Customer.h/.cpp          Auth, menus, wishlist, checkout, history
+Items.h/.cpp             Category/product I/O + browse/search UI
+Cart.h/.cpp              Cart arrays, Search, Modify, Bill, restock-safe remove
+```
+
+OOP inheritance: `Admin` / `Vendor` / `Customer` implement `Role`. Catalog lines keep the original format:
+
+```text
+Apples - 150 PKR, 2
+```
+
+---
+
+## Menus / keymap
+
+| Screen | Keys |
+|--------|------|
+| Role select | `1` Admin · `2` Vendor · `3` Customer · `4` Exit |
+| Customer gateway | `1` Register · `2` Login · `3` Forgot password · `4` Back |
+| Customer view | `1` Order · `2` Modify · `3` Cart · `4` Search · `5` Remove · `6` Checkout · `7` Wishlist · `8` History · `9` Logout |
+| Admin dashboard | `1` Users · `2` Categories · `3` Products · `4` Orders/Stats · `5` New admin · `6` Logout |
+| Vendor dashboard | `1` Stock · `2` Categories · `3` Search · `4` Logout |
+
+---
+
+## Data files
+
+| File | Purpose |
+|------|---------|
+| `ItemsCategory.txt` | Category list |
+| `<Category>.txt` | Stock lines (`Name - price, qty`) |
+| `customer_account_save.txt` | Customer username/password pairs |
+| `admin_accounts.txt` | Admin credentials |
+| `vendor_accounts.txt` | Vendor username / password / company |
+| `vendor_products.txt` | Vendor ownership (`user\|cat\|name\|price\|qty`) |
+| `orders.txt` | Placed orders (`id\|user\|total\|details`) |
+| `temp.txt` | Scratch file during rewrites (gitignored) |
+
+---
+
+## Build notes
+
+- `build.bat` locates `vcvars64.bat`, compiles with `/std:c++17` and `/D_HAS_STD_BYTE=0` (avoids Windows `byte` clash).
+- Output: `build\Shopping_Portal.exe`
+- Screenshots regenerable via: `python scripts/generate_screenshots.py` (Pillow)
 
 ---
 
