@@ -105,11 +105,12 @@ namespace
 
 	string cartHeader()
 	{
+		/* 6+2+22+12+6+14 = CONTENT_WIDTH (62) */
 		ostringstream hdr;
 		hdr << fitField("ITEM#", 6, false) << "  "
-			<< fitField("ITEM NAME", 26, true)
-			<< fitField("UNIT PRICE", 14, true)
-			<< fitField("QTY", 8, true)
+			<< fitField("ITEM NAME", 22, true)
+			<< fitField("UNIT PRICE", 12, true)
+			<< fitField("QTY", 6, true)
 			<< fitField("LINE TOTAL", 14, true);
 		return hdr.str();
 	}
@@ -118,17 +119,19 @@ namespace
 	{
 		ostringstream row;
 		row << paddedIndex(idx, 6) << "  "
-			<< fitField(trimCopy(name), 26, true)
-			<< fitField("Rs. " + to_string(unit), 14, true)
-			<< fitField(to_string(qty), 8, true)
+			<< fitField(trimCopy(name), 22, true)
+			<< fitField("Rs. " + to_string(unit), 12, true)
+			<< fitField(to_string(qty), 6, true)
 			<< fitField("Rs. " + to_string(lineTotal), 14, true);
 		return row.str();
 	}
 
 	string billLine(const string& label, int amount)
 	{
+		/* 46+16 = CONTENT_WIDTH (62) */
 		ostringstream row;
-		row << fitField(label, 52, true) << "Rs. " << amount;
+		row << fitField(label, 46, true)
+			<< fitField("Rs. " + to_string(amount), 16, false);
 		return row.str();
 	}
 }

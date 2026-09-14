@@ -30,9 +30,11 @@ using namespace std;
 /* 0 Black  1 Blue  2 Green  3 Cyan  4 Red  5 Magenta  6 Brown/Yellow  7 LightGray */
 /* 8 DarkGray  9 LBlue  10 LGreen  11 LCyan  12 LRed  13 LMagenta  14 LYellow  15 White */
 
-/** Fixed content block width; menus/tables/prompts are left-aligned inside this block,
- *  and the block itself is centered in the console window. */
-constexpr int CONTENT_WIDTH = 78;
+/** Standard content column (~62 chars). Capped usable width avoids maximized-console
+ *  "everything shoved to the right" and next-line wrap. */
+constexpr int CONTENT_WIDTH = 62;
+constexpr int USABLE_WIDTH_MAX = 88;
+constexpr int USABLE_WIDTH_MIN = 70;
 
 inline HANDLE console()
 {
@@ -63,22 +65,33 @@ inline int getConsoleWidth()
 		if (w >= 40)
 			return w;
 	}
-	return 100;
+	return 80;
 }
 
-/** Left pad so a CONTENT_WIDTH block sits centered in the window. */
+/** Cap width so ultra-wide / bad buffer reports cannot push UI to the right. */
+inline int getUsableWidth()
+{
+	int w = getConsoleWidth();
+	if (w > USABLE_WIDTH_MAX)
+		w = USABLE_WIDTH_MAX;
+	if (w < USABLE_WIDTH_MIN)
+		w = USABLE_WIDTH_MIN;
+	return w;
+}
+
 inline int contentLeftPad()
 {
-	int pad = (getConsoleWidth() - CONTENT_WIDTH) / 2;
-	return pad < 0 ? 0 : pad;
+	int pad = (getUsableWidth() - CONTENT_WIDTH) / 2;
+	if (pad < 2)
+		pad = 2;
+	if (pad > 14)
+		pad = 14;
+	return pad;
 }
 
-/** Max printable chars for a single centered line (avoid wrap). */
 inline int maxLineChars()
 {
-	int m = getConsoleWidth() - 4;
-	if (m < 20) m = 20;
-	return m;
+	return CONTENT_WIDTH;
 }
 
 inline string truncateFit(const string& s, int maxLen)
@@ -101,12 +114,14 @@ inline string fitField(const string& s, int width, bool leftAlign = true)
 	return oss.str();
 }
 
+/** Center inside the content column (standard look — not full-screen ultra-wide). */
 inline void centerPrint(const string& text, bool newline = true)
 {
-	string t = truncateFit(text, maxLineChars());
-	int pad = (getConsoleWidth() - static_cast<int>(t.size())) / 2;
-	if (pad < 0) pad = 0;
-	cout << string(static_cast<size_t>(pad), ' ') << t;
+	string t = truncateFit(text, CONTENT_WIDTH);
+	int inner = (CONTENT_WIDTH - static_cast<int>(t.size())) / 2;
+	if (inner < 0)
+		inner = 0;
+	cout << string(static_cast<size_t>(contentLeftPad() + inner), ' ') << t;
 	if (newline)
 		cout << "\n";
 }
@@ -118,7 +133,7 @@ inline void centerPrintColored(const string& text, int color, bool newline = tru
 	setDefaultColor();
 }
 
-/** Print text left-aligned inside the centered CONTENT_WIDTH block. */
+/** Left-aligned inside the centered CONTENT_WIDTH column. */
 inline void contentPrint(const string& text, bool newline = true)
 {
 	string t = truncateFit(text, CONTENT_WIDTH);
@@ -134,7 +149,6 @@ inline void contentPrintColored(const string& text, int color, bool newline = tr
 	setDefaultColor();
 }
 
-/** Right-pad Sr# / ITEM # so values < 10 keep a leading space (columns stay aligned). */
 inline void printPaddedIndex(ostream& out, int n, int width = 2)
 {
 	ostringstream oss;
@@ -149,11 +163,10 @@ inline string paddedIndex(int n, int width = 2)
 	return oss.str();
 }
 
-/** Standard list line centered as a block: "  1)  Name" / " 10)  Name". */
 inline void printNumberedLine(ostream& out, int n, const string& text, int width = 2)
 {
 	ostringstream line;
-	line << "  " << paddedIndex(n, width) << ")  " << text;
+	line << paddedIndex(n, width) << ")  " << text;
 	string s = truncateFit(line.str(), CONTENT_WIDTH);
 	out << string(static_cast<size_t>(contentLeftPad()), ' ') << s << "\n";
 }
