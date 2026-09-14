@@ -289,11 +289,40 @@ inline void sectionTitle(const string& title, int color = 14)
 	setDefaultColor();
 }
 
+/** Word-wrap full message into CONTENT_WIDTH lines (no "..." truncation). */
+inline void contentPrintWrapped(const string& text)
+{
+	string remaining = text;
+	while (!remaining.empty())
+	{
+		if (static_cast<int>(remaining.size()) <= CONTENT_WIDTH)
+		{
+			contentPrint(remaining);
+			break;
+		}
+		int cut = CONTENT_WIDTH;
+		/* Prefer breaking at a space so words stay readable */
+		int breakAt = cut;
+		for (int i = cut; i >= CONTENT_WIDTH / 2; --i)
+		{
+			if (remaining[static_cast<size_t>(i)] == ' ')
+			{
+				breakAt = i;
+				break;
+			}
+		}
+		contentPrint(remaining.substr(0, static_cast<size_t>(breakAt)));
+		remaining = remaining.substr(static_cast<size_t>(breakAt));
+		while (!remaining.empty() && remaining.front() == ' ')
+			remaining.erase(remaining.begin());
+	}
+}
+
 inline void successMsg(const string& msg)
 {
 	setColor(10); /* bright green */
 	cout << "\n\n";
-	centerPrint("[OK]  " + msg);
+	contentPrintWrapped("[OK]  " + msg);
 	cout << "\n";
 	setDefaultColor();
 }
@@ -302,7 +331,7 @@ inline void errorMsg(const string& msg)
 {
 	setColor(12); /* bright red */
 	cout << "\n\n";
-	centerPrint("[ERROR]  " + msg);
+	contentPrintWrapped("[ERROR]  " + msg);
 	cout << "\n";
 	setDefaultColor();
 }
@@ -311,7 +340,7 @@ inline void infoMsg(const string& msg)
 {
 	setColor(11); /* bright cyan */
 	cout << "\n";
-	centerPrint("[INFO]  " + msg);
+	contentPrintWrapped("[INFO]  " + msg);
 	setDefaultColor();
 }
 
