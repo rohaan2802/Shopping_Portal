@@ -111,10 +111,8 @@ void Vendor::viewOwnProducts()
 		if (vendor == currentUser)
 		{
 			n++;
-			cout << "                         ";
-			printPaddedIndex(cout, n, 2);
-			cout << ") [" << cat << "] " << name
-				<< "  |  " << price << "  |  Stock: " << qty << "\n";
+			printNumberedLine(cout, n,
+				"[" + cat + "] " + name + "  |  " + price + "  |  Stock: " + qty, 2);
 		}
 	}
 	if (n == 0) infoMsg("You have no products yet");
