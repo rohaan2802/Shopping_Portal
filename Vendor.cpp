@@ -111,7 +111,9 @@ void Vendor::viewOwnProducts()
 		if (vendor == currentUser)
 		{
 			n++;
-			cout << "                         " << n << ") [" << cat << "] " << name
+			cout << "                         ";
+			printPaddedIndex(cout, n, 2);
+			cout << ") [" << cat << "] " << name
 				<< "  |  " << price << "  |  Stock: " << qty << "\n";
 		}
 	}

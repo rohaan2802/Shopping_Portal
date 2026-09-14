@@ -100,7 +100,9 @@ void Admin::viewUsers()
 	{
 		if (u.empty()) continue;
 		if (!getline(cust, p)) p = "";
-		cout << "                         " << i++ << ")  Username: " << u << "\n";
+		cout << "                         ";
+		printPaddedIndex(cout, i++, 2);
+		cout << ")  Username: " << u << "\n";
 	}
 	if (i == 1) cout << "                         (none)\n";
 
@@ -115,7 +117,9 @@ void Admin::viewUsers()
 		if (u.empty()) continue;
 		getline(vend, p);
 		getline(vend, company);
-		cout << "                         " << i++ << ")  Username: " << u << "  |  Company: " << company << "\n";
+		cout << "                         ";
+		printPaddedIndex(cout, i++, 2);
+		cout << ")  Username: " << u << "  |  Company: " << company << "\n";
 	}
 	if (i == 1) cout << "                         (none)\n";
 
@@ -126,7 +130,9 @@ void Admin::viewUsers()
 	i = 1;
 	while (getline(adm, u) && getline(adm, p))
 	{
-		cout << "                         " << i++ << ")  Username: " << u << "\n";
+		cout << "                         ";
+		printPaddedIndex(cout, i++, 2);
+		cout << ")  Username: " << u << "\n";
 	}
 }
 
@@ -218,8 +224,9 @@ void Admin::viewOrdersAndStats()
 	int count = 0;
 	double revenue = 0;
 	setDefaultColor();
-	cout << left << "\n                         " << setw(8) << "ID"
-		<< setw(16) << "CUSTOMER"
+	cout << "\n                         "
+		<< right << setw(6) << "ID"
+		<< "  " << left << setw(16) << "CUSTOMER"
 		<< setw(14) << "TOTAL"
 		<< "DETAILS\n\n";
 
@@ -236,8 +243,13 @@ void Admin::viewOrdersAndStats()
 		double total = 0;
 		parseDoubleSafe(totalStr, total);
 		revenue += total;
-		cout << "                         " << setw(8) << id
-			<< setw(16) << user
+		int idNum = 0;
+		cout << "                         ";
+		if (parseIntSafe(id, idNum))
+			printPaddedIndex(cout, idNum, 6);
+		else
+			cout << right << setw(6) << id;
+		cout << "  " << left << setw(16) << user
 			<< "Rs. " << setw(10) << totalStr
 			<< rest << "\n";
 	}

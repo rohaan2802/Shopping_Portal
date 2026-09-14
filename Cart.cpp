@@ -209,9 +209,9 @@ void Cart::DisplayItems()
 	}
 
 	cout << "                                           <<<<<<<<<<<<<<<<<<<  DISPLAYING ITEMS IN CART   <<<<<<<<<<<<<<<<<<<\n\n";
-	cout << left;
-	cout << "                         " << setw(10) << "ITEM #"
-		<< setw(28) << "ITEM NAME"
+	cout << "                         "
+		<< right << setw(6) << "ITEM#"
+		<< "  " << left << setw(28) << "ITEM NAME"
 		<< setw(18) << "UNIT PRICE"
 		<< setw(12) << "QTY"
 		<< setw(16) << "LINE TOTAL" << "\n\n";
@@ -223,8 +223,9 @@ void Cart::DisplayItems()
 		parseDoubleSafe(numeric, unit);
 		double line = unit * Items_Quantity[i];
 
-		cout << "                         " << setw(10) << (i + 1)
-			<< setw(28) << trimCopy(itemnames[i])
+		cout << "                         ";
+		printPaddedIndex(cout, i + 1, 6);
+		cout << "  " << left << setw(28) << trimCopy(itemnames[i])
 			<< "Rs. " << setw(14) << (int)unit
 			<< setw(12) << Items_Quantity[i]
 			<< "Rs. " << setw(12) << (int)line << "\n";
@@ -248,7 +249,9 @@ void Cart::Search(const string& query)
 		if (lower.find(q) != string::npos)
 		{
 			found = true;
-			cout << "                         " << (i + 1) << ") " << trimCopy(itemnames[i])
+			cout << "                         ";
+			printPaddedIndex(cout, i + 1, 2);
+			cout << ") " << trimCopy(itemnames[i])
 				<< "  |  " << trimCopy(Items_Price[i]) << "  |  Qty: " << Items_Quantity[i] << "\n";
 		}
 	}
