@@ -145,16 +145,23 @@ void Vendor::manageOwnStock()
 		else if (ch == 2)
 		{
 			Item::listCategories();
-			string cat = readLine("\nCategory:   ");
-			string name = readLine("Product name:   ");
-			string price = readLine("Price label (e.g. 500 PKR):   ");
+			string cat = trimCopy(readLine("\nCategory:   "));
+			string name = trimCopy(readLine("Product name:   "));
+			string price = trimCopy(readLine("Price label (e.g. 500 PKR):   "));
 			int qty = readIntInRange("Stock quantity:   ", 0, 99999);
+
+			if (cat.empty() || name.empty() || price.empty())
+			{
+				errorMsg("Category, product name, and price are required");
+				pauseEnter();
+				continue;
+			}
 
 			// Reject duplicate ownership rows for this vendor
 			ifstream ownCheck("vendor_products.txt");
 			string line;
 			bool alreadyOwns = false;
-			while (getline(ownCheck, line))
+			while (ownCheck.is_open() && getline(ownCheck, line))
 			{
 				if (trimCopy(line).empty()) continue;
 				stringstream ss(line);
@@ -164,7 +171,7 @@ void Vendor::manageOwnStock()
 				getline(ss, vname, '|');
 				getline(ss, vprice, '|');
 				getline(ss, vqty, '|');
-				if (vendor == currentUser && trimCopy(vcat) == trimCopy(cat) && trimCopy(vname) == trimCopy(name))
+				if (trimCopy(vendor) == currentUser && trimCopy(vcat) == cat && trimCopy(vname) == name)
 				{
 					alreadyOwns = true;
 					break;
@@ -181,26 +188,38 @@ void Vendor::manageOwnStock()
 			if (Item::addProduct(cat, name, price, qty))
 			{
 				ofstream own("vendor_products.txt", ios::app);
-				own << currentUser << "|" << trimCopy(cat) << "|" << trimCopy(name)
-					<< "|" << trimCopy(price) << "|" << qty << "\n";
-				own.close();
+				if (!own.is_open())
+					errorMsg("Product added to catalog but could not update vendor_products.txt");
+				else
+				{
+					own << currentUser << "|" << cat << "|" << name
+						<< "|" << price << "|" << qty << "\n";
+					own.close();
+				}
 			}
 			pauseEnter();
 		}
 		else if (ch == 3)
 		{
 			viewOwnProducts();
-			string cat = readLine("\nCategory:   ");
-			string name = readLine("Product name:   ");
-			string price = readLine("New price label:   ");
+			string cat = trimCopy(readLine("\nCategory:   "));
+			string name = trimCopy(readLine("Product name:   "));
+			string price = trimCopy(readLine("New price label:   "));
 			int qty = readIntInRange("New stock:   ", 0, 99999);
+
+			if (cat.empty() || name.empty() || price.empty())
+			{
+				errorMsg("Category, product name, and price are required");
+				pauseEnter();
+				continue;
+			}
 
 			// Verify ownership
 			ifstream in("vendor_products.txt");
 			ofstream temp("temp_vendor.txt");
 			string line;
 			bool owned = false;
-			while (getline(in, line))
+			while (in.is_open() && getline(in, line))
 			{
 				stringstream ss(line);
 				string vendor, vcat, vname, vprice, vqty;
@@ -209,7 +228,7 @@ void Vendor::manageOwnStock()
 				getline(ss, vname, '|');
 				getline(ss, vprice, '|');
 				getline(ss, vqty, '|');
-				if (vendor == currentUser && vcat == cat && vname == name)
+				if (trimCopy(vendor) == currentUser && trimCopy(vcat) == cat && trimCopy(vname) == name)
 				{
 					owned = true;
 					temp << vendor << "|" << cat << "|" << name << "|" << price << "|" << qty << "\n";
@@ -226,25 +245,36 @@ void Vendor::manageOwnStock()
 				remove("temp_vendor.txt");
 				errorMsg("You do not own that product");
 			}
+			else if (!Item::updateProduct(cat, name, price, qty))
+			{
+				remove("temp_vendor.txt");
+				errorMsg("Catalog update failed - ownership file unchanged");
+			}
 			else
 			{
 				remove("vendor_products.txt");
 				rename("temp_vendor.txt", "vendor_products.txt");
-				Item::updateProduct(cat, name, price, qty);
 			}
 			pauseEnter();
 		}
 		else if (ch == 4)
 		{
 			viewOwnProducts();
-			string cat = readLine("\nCategory:   ");
-			string name = readLine("Product name to remove:   ");
+			string cat = trimCopy(readLine("\nCategory:   "));
+			string name = trimCopy(readLine("Product name to remove:   "));
+
+			if (cat.empty() || name.empty())
+			{
+				errorMsg("Category and product name are required");
+				pauseEnter();
+				continue;
+			}
 
 			ifstream in("vendor_products.txt");
 			ofstream temp("temp_vendor.txt");
 			string line;
 			bool owned = false;
-			while (getline(in, line))
+			while (in.is_open() && getline(in, line))
 			{
 				stringstream ss(line);
 				string vendor, vcat, vname, vprice, vqty;
@@ -253,7 +283,7 @@ void Vendor::manageOwnStock()
 				getline(ss, vname, '|');
 				getline(ss, vprice, '|');
 				getline(ss, vqty, '|');
-				if (vendor == currentUser && vcat == cat && vname == name)
+				if (trimCopy(vendor) == currentUser && trimCopy(vcat) == cat && trimCopy(vname) == name)
 				{
 					owned = true;
 					continue;
@@ -267,11 +297,15 @@ void Vendor::manageOwnStock()
 				remove("temp_vendor.txt");
 				errorMsg("You do not own that product");
 			}
+			else if (!Item::removeProduct(cat, name))
+			{
+				remove("temp_vendor.txt");
+				errorMsg("Catalog remove failed - ownership file unchanged");
+			}
 			else
 			{
 				remove("vendor_products.txt");
 				rename("temp_vendor.txt", "vendor_products.txt");
-				Item::removeProduct(cat, name);
 			}
 			pauseEnter();
 		}

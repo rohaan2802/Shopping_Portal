@@ -149,15 +149,15 @@ void Admin::manageCategories()
 		contentPrint("3) Back");
 		int ch = readIntInRange("\nChoice:   ", 1, 3);
 		if (ch == 3) return;
-		if (ch == 1)
+		else if (ch == 1)
 		{
-			string name = readLine("New category name:   ");
+			string name = trimCopy(readLine("New category name:   "));
 			Item::addCategory(name);
 			pauseEnter();
 		}
 		else if (ch == 2)
 		{
-			string name = readLine("Category name to remove:   ");
+			string name = trimCopy(readLine("Category name to remove:   "));
 			Item::removeCategory(name);
 			pauseEnter();
 		}
@@ -180,7 +180,13 @@ void Admin::manageProducts()
 		int ch = readIntInRange("\nChoice:   ", 1, 5);
 		if (ch == 5) return;
 
-		string cat = readLine("Category name:   ");
+		string cat = trimCopy(readLine("Category name:   "));
+		if (cat.empty())
+		{
+			errorMsg("Category name required");
+			pauseEnter();
+			continue;
+		}
 		if (ch == 1)
 		{
 			Item::viewCategoryProducts(cat);
@@ -188,23 +194,23 @@ void Admin::manageProducts()
 		}
 		else if (ch == 2)
 		{
-			string name = readLine("Product name:   ");
-			string price = readLine("Price label (e.g. 250 PKR):   ");
+			string name = trimCopy(readLine("Product name:   "));
+			string price = trimCopy(readLine("Price label (e.g. 250 PKR):   "));
 			int qty = readIntInRange("Quantity:   ", 0, 99999);
 			Item::addProduct(cat, name, price, qty);
 			pauseEnter();
 		}
 		else if (ch == 3)
 		{
-			string name = readLine("Existing product name:   ");
-			string price = readLine("New price label:   ");
+			string name = trimCopy(readLine("Existing product name:   "));
+			string price = trimCopy(readLine("New price label:   "));
 			int qty = readIntInRange("New quantity:   ", 0, 99999);
 			Item::updateProduct(cat, name, price, qty);
 			pauseEnter();
 		}
 		else if (ch == 4)
 		{
-			string name = readLine("Product name to remove:   ");
+			string name = trimCopy(readLine("Product name to remove:   "));
 			Item::removeProduct(cat, name);
 			pauseEnter();
 		}

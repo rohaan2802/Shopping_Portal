@@ -314,6 +314,68 @@ def main() -> int:
             )
         )
 
+        # --- Test 7: admin rejects product add on fake category ---
+        restore_data(tmp)
+        proc = run_portal(
+            nl(
+                [
+                    "1",  # Admin
+                    "admin",
+                    "admin123",
+                    "3",  # Manage Products
+                    "2",  # Add product
+                    "DefinitelyNotARealCategory",
+                    "SmokeFakeProd",
+                    "99 PKR",
+                    "5",
+                    "",  # pause
+                    "5",  # back
+                    "6",  # logout
+                    "4",  # exit
+                ]
+            )
+        )
+        out = (proc.stdout or "") + (proc.stderr or "")
+        ok = "not listed in ItemsCategory" in out or "Invalid category" in out
+        fake_file = ROOT / "DefinitelyNotARealCategory.txt"
+        ok = ok and not fake_file.exists()
+        results.append(
+            (
+                "reject product add on fake category",
+                ok,
+                f"msg_ok={('Invalid category' in out) or ('not listed in ItemsCategory' in out)}, file_created={fake_file.exists()}",
+            )
+        )
+
+        # --- Test 8: admin cannot delete category that still has products ---
+        restore_data(tmp)
+        proc = run_portal(
+            nl(
+                [
+                    "1",
+                    "admin",
+                    "admin123",
+                    "2",  # Manage Categories
+                    "2",  # Remove Category
+                    "Groceries",
+                    "",  # pause
+                    "3",  # back
+                    "6",
+                    "4",
+                ]
+            )
+        )
+        out = (proc.stdout or "") + (proc.stderr or "")
+        cats = (ROOT / "ItemsCategory.txt").read_text(encoding="utf-8", errors="replace")
+        ok = ("products still exist" in out or "Cannot delete" in out) and "Groceries" in cats
+        results.append(
+            (
+                "reject delete category with products",
+                ok,
+                f"msg_ok={('products still exist' in out) or ('Cannot delete' in out)}, still_listed={'Groceries' in cats}",
+            )
+        )
+
     except subprocess.TimeoutExpired:
         results.append(("portal run", False, "TIMEOUT"))
     finally:

@@ -13,6 +13,7 @@
 #endif
 
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <limits>
@@ -226,12 +227,23 @@ inline bool parseDoubleSafe(const string& s, double& out)
 		string t = trimCopy(s);
 		if (t.empty()) return false;
 		out = stod(t, &idx);
-		return true;
+		return idx > 0;
 	}
 	catch (...)
 	{
 		return false;
 	}
+}
+
+inline bool fileExists(const string& path)
+{
+	ifstream f(path);
+	return f.good();
+}
+
+inline bool isBlank(const string& s)
+{
+	return trimCopy(s).empty();
 }
 
 inline void clearScreen()
