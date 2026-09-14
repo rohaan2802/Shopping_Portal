@@ -12,28 +12,51 @@ using namespace std;
 Admin::Admin()
 {
 	currentUser = "";
-	ensureDefaultAdmin();
 }
 
-void Admin::ensureDefaultAdmin()
+bool Admin::hasRegisteredAdmin()
 {
-	ifstream check("admin_accounts.txt");
-	if (check.good() && check.peek() != EOF)
+	return countAdmins() >= 1;
+}
+
+int Admin::countAdmins()
+{
+	ifstream in("admin_accounts.txt");
+	if (!in.is_open())
+		return 0;
+	string u, p;
+	int n = 0;
+	try
 	{
-		check.close();
-		return;
+		while (getline(in, u))
+		{
+			if (trimCopy(u).empty())
+				continue;
+			if (!getline(in, p))
+				p = "";
+			n++;
+		}
 	}
-	check.close();
-	ofstream out("admin_accounts.txt");
-	out << "admin\nadmin123\n";
-	out.close();
+	catch (...)
+	{
+		return n;
+	}
+	return n;
 }
 
 void Admin::registraion()
 {
-	ensureDefaultAdmin();
 	clearScreen();
-	sectionTitle("CREATE ADDITIONAL ADMIN", 5);
+	sectionTitle("ADMIN REGISTRATION (SINGLETON)", 5);
+	contentPrint("Only ONE admin account is allowed for this portal.");
+	cout << "\n";
+
+	if (hasRegisteredAdmin())
+	{
+		errorMsg("Admin already registered (Singleton). New admin cannot be created. Please use Login.");
+		return;
+	}
+
 	string user = readToken("Username (6-16 chars):   ");
 	contentPrint("Password:   ", false);
 	string pass = getPasswordMasked();
@@ -44,45 +67,99 @@ void Admin::registraion()
 		errorMsg("Invalid credentials (6-16 chars, no spaces, passwords must match)");
 		return;
 	}
-	ifstream in("admin_accounts.txt");
-	string u, p;
-	while (getline(in, u) && getline(in, p))
+
+	ofstream out("admin_accounts.txt", ios::trunc);
+	if (!out.is_open())
 	{
-		if (u == user)
-		{
-			errorMsg("Admin already exists");
-			return;
-		}
+		errorMsg("Cannot write admin_accounts.txt");
+		return;
 	}
-	in.close();
-	ofstream out("admin_accounts.txt", ios::app);
 	out << user << "\n" << pass << "\n";
 	out.close();
-	successMsg("Admin account created");
+	successMsg("Admin account created successfully (Singleton). You can now login.");
 }
 
 bool Admin::login()
 {
-	ensureDefaultAdmin();
 	clearScreen();
 	sectionTitle("ADMIN LOGIN", 4);
+
+	if (!hasRegisteredAdmin())
+	{
+		errorMsg("No admin account exists yet. Please choose Registration first (Singleton setup).");
+		return false;
+	}
+
 	login_name = readToken("Username:   ");
 	contentPrint("Password:   ", false);
 	login_pass = getPasswordMasked();
 
 	ifstream in("admin_accounts.txt");
-	string u, p;
-	while (getline(in, u) && getline(in, p))
+	if (!in.is_open())
 	{
-		if (u == login_name && p == login_pass)
+		errorMsg("Cannot open admin_accounts.txt");
+		return false;
+	}
+
+	string u, p;
+	try
+	{
+		while (getline(in, u) && getline(in, p))
 		{
-			currentUser = login_name;
-			successMsg("ADMIN LOGIN SUCCESSFUL");
-			return true;
+			if (trimCopy(u) == trimCopy(login_name) && p == login_pass)
+			{
+				currentUser = trimCopy(login_name);
+				successMsg("ADMIN LOGIN SUCCESSFUL");
+				return true;
+			}
 		}
+	}
+	catch (...)
+	{
+		errorMsg("Failed to read admin accounts");
+		return false;
 	}
 	errorMsg("Invalid admin credentials");
 	return false;
+}
+
+bool Admin::admin_Reg_Log_Menu()
+{
+	while (true)
+	{
+		clearScreen();
+		banner("ADMIN PORTAL", 4);
+		contentPrint("1)    Registration");
+		cout << "\n";
+		contentPrint("2)    Login");
+		cout << "\n";
+		contentPrint("3)    Go Back");
+		cout << "\n";
+		if (hasRegisteredAdmin())
+			infoMsg("Admin already exists (Singleton) - use Login");
+		else
+			infoMsg("No admin yet - use Registration once to create the only admin");
+
+		int choice = readIntInRange("Enter Your Choice:   ", 1, 3);
+		if (choice == 1)
+		{
+			registraion();
+			pauseEnter();
+		}
+		else if (choice == 2)
+		{
+			if (login())
+			{
+				admin_menu();
+				return true;
+			}
+			pauseEnter();
+		}
+		else if (choice == 3)
+		{
+			return false;
+		}
+	}
 }
 
 void Admin::viewUsers()
@@ -290,18 +367,15 @@ bool Admin::admin_menu()
 		cout << "\n";
 		contentPrint("4)  View Orders & Stats");
 		cout << "\n";
-		contentPrint("5)  Create Another Admin");
-		cout << "\n";
-		contentPrint("6)  Logout");
+		contentPrint("5)  Logout");
 		cout << "\n";
 		setDefaultColor();
-		int ch = readIntInRange("Enter choice:   ", 1, 6);
+		int ch = readIntInRange("Enter choice:   ", 1, 5);
 
 		if (ch == 1) { viewUsers(); pauseEnter(); }
 		else if (ch == 2) { manageCategories(); }
 		else if (ch == 3) { manageProducts(); }
 		else if (ch == 4) { viewOrdersAndStats(); pauseEnter(); }
-		else if (ch == 5) { registraion(); pauseEnter(); }
-		else if (ch == 6) { successMsg("Admin logged out"); return false; }
+		else if (ch == 5) { successMsg("Admin logged out"); return false; }
 	}
 }

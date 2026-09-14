@@ -33,19 +33,20 @@ Or open `Shopping_Portal.sln` in Visual Studio and run with the project folder a
 
 **Demo accounts**
 
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | `admin` | `admin123` |
-| Vendor | `vendor1` | `vendor1` |
-| Customer | `rohaan` | `123456` |
+| Role | Username | Password | Notes |
+|------|----------|----------|-------|
+| Admin | *(none seeded)* | — | First-time Admin must **Register once** (Singleton: one account only), then use **Login** thereafter |
+| Vendor | `vendor1` | `vendor1` | Or register a new vendor |
+| Customer | `rohaan` | `123456` | Or register a new customer |
 
 ### Admin
-- Login (default admin seeded automatically)
-- View customers, vendors, and admins
+- Portal menu: **Registration / Login / Back** (same pattern as Customer/Vendor)
+- **Singleton:** only one admin account may exist in `admin_accounts.txt` (starts empty)
+- First run: choose Registration once to create the sole admin, then Login only
+- View customers, vendors, and the admin
 - Manage categories (add / remove)
 - Product CRUD per category
 - View orders and revenue statistics
-- Create additional admin accounts
 
 ### Vendor
 - Register (username, password, company) or login
@@ -184,7 +185,7 @@ Console UI mockups covering every major feature (SS01–SS35). Regenerate anytim
 Main.cpp                 Role picker → Admin | Vendor | Customer
 Other_Fun.h              Console colors, banners, validated input helpers
 Role.h                   Abstract registraion() + login()
-Admin.h/.cpp             Admin dashboard + catalog/user/order ops
+Admin.h/.cpp             Admin Singleton auth (Reg/Login/Back) + dashboard ops
 Vendor.h/.cpp            Vendor auth + owned stock management
 Customer.h/.cpp          Auth, menus, wishlist, checkout, history
 Items.h/.cpp             Category/product I/O + browse/search UI
@@ -204,9 +205,10 @@ Apples - 150 PKR, 2
 | Screen | Keys |
 |--------|------|
 | Role select | `1` Admin · `2` Vendor · `3` Customer · `4` Exit |
+| Admin portal | `1` Register · `2` Login · `3` Back |
 | Customer gateway | `1` Register · `2` Login · `3` Forgot password · `4` Back |
 | Customer view | `1` Order · `2` Modify · `3` Cart · `4` Search · `5` Remove · `6` Checkout · `7` Wishlist (saved) · `8` History · `9` Logout |
-| Admin dashboard | `1` Users · `2` Categories · `3` Products · `4` Orders/Stats · `5` New admin · `6` Logout |
+| Admin dashboard | `1` Users · `2` Categories · `3` Products · `4` Orders/Stats · `5` Logout |
 | Vendor dashboard | `1` Stock · `2` Categories · `3` Search · `4` Logout |
 
 ---
@@ -218,7 +220,7 @@ Apples - 150 PKR, 2
 | `ItemsCategory.txt` | Category list |
 | `<Category>.txt` | Stock lines (`Name - price, qty`) |
 | `customer_account_save.txt` | Customer username/password pairs |
-| `admin_accounts.txt` | Admin credentials |
+| `admin_accounts.txt` | Sole admin credentials (empty until first Registration; Singleton) |
 | `vendor_accounts.txt` | Vendor username / password / company |
 | `vendor_products.txt` | Vendor ownership (`user\|cat\|name\|price\|qty`) |
 | `orders.txt` | Placed orders (`id\|user\|total\|details`) |

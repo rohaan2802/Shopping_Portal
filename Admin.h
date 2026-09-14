@@ -6,19 +6,28 @@
 #include <string>
 using namespace std;
 
+/**
+ * Admin role with Singleton account policy:
+ * only ONE admin account may ever be registered in admin_accounts.txt.
+ * Portal entry: Registration / Login / Back (same pattern as Customer/Vendor).
+ */
 class Admin : public Role
 {
 	string currentUser;
+
+	static bool hasRegisteredAdmin();
+	static int countAdmins();
+
 public:
 	Admin();
-	void registraion() override; // seed default admin if missing
+	void registraion() override; /* create the single admin if none exists */
 	bool login() override;
+	bool admin_Reg_Log_Menu(); /* 1 Register, 2 Login, 3 Back */
 	bool admin_menu();
 	void viewUsers();
 	void manageCategories();
 	void manageProducts();
 	void viewOrdersAndStats();
-	static void ensureDefaultAdmin();
 };
 
 #endif // !ADMIN_H
