@@ -23,10 +23,7 @@ back:
 	if (select_menu == 1)
 	{
 		Admin admin;
-		if (admin.login())
-			admin.admin_menu();
-		else
-			pauseEnter();
+		admin.admin_Reg_Log_Menu();
 		goto back;
 	}
 	else if (select_menu == 2)

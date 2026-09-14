@@ -315,11 +315,14 @@ def main() -> int:
         )
 
         # --- Test 7: admin rejects product add on fake category ---
+        # admin_accounts.txt may be empty (Singleton: no seeded admin); write fixture once
         restore_data(tmp)
+        (ROOT / "admin_accounts.txt").write_text("admin\nadmin123\n", encoding="utf-8")
         proc = run_portal(
             nl(
                 [
                     "1",  # Admin
+                    "2",  # Login (Reg/Login/Back portal)
                     "admin",
                     "admin123",
                     "3",  # Manage Products
@@ -330,7 +333,7 @@ def main() -> int:
                     "5",
                     "",  # pause
                     "5",  # back
-                    "6",  # logout
+                    "5",  # logout
                     "4",  # exit
                 ]
             )
@@ -349,10 +352,12 @@ def main() -> int:
 
         # --- Test 8: admin cannot delete category that still has products ---
         restore_data(tmp)
+        (ROOT / "admin_accounts.txt").write_text("admin\nadmin123\n", encoding="utf-8")
         proc = run_portal(
             nl(
                 [
                     "1",
+                    "2",  # Login
                     "admin",
                     "admin123",
                     "2",  # Manage Categories
@@ -360,7 +365,7 @@ def main() -> int:
                     "Groceries",
                     "",  # pause
                     "3",  # back
-                    "6",
+                    "5",  # logout
                     "4",
                 ]
             )
