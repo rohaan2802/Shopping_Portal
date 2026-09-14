@@ -44,7 +44,7 @@ label1:
 		if (login())
 		{
 			show_customer_menu();
-			c.reset_data();
+			c.restock_all_and_clear();
 			goto label1;
 		}
 		else
@@ -85,14 +85,17 @@ again32:
 	}
 
 	read_customer_account_reg.open("customer_account_save.txt");
-	string str1;
+	string existingUser, existingPass;
 	if (read_customer_account_reg.is_open())
 	{
-		while (getline(read_customer_account_reg, str1))
+		while (getline(read_customer_account_reg, existingUser))
 		{
-			if (str1 == reg_name)
+			if (trimCopy(existingUser).empty()) continue;
+			if (!getline(read_customer_account_reg, existingPass)) existingPass = "";
+			if (trimCopy(existingUser) == reg_name)
 			{
 				errorMsg("Account Already Registered — please login");
+				read_customer_account_reg.close();
 				return;
 			}
 		}
@@ -306,11 +309,31 @@ void Customer::manageWishlist()
 	int ch = readIntInRange("                         Choice:   ", 1, 3);
 	if (ch == 1)
 	{
-		string name = readLine("                         Item name:   ");
-		if (!name.empty() && wishlist_size < 100)
+		string name = trimCopy(readLine("                         Item name:   "));
+		if (name.empty())
 		{
-			wishlist[wishlist_size++] = name;
-			successMsg("Added to wishlist");
+			errorMsg("Item name required");
+		}
+		else
+		{
+			bool exists = false;
+			for (int i = 0; i < wishlist_size; i++)
+			{
+				if (trimCopy(wishlist[i]) == name)
+				{
+					exists = true;
+					break;
+				}
+			}
+			if (exists)
+				errorMsg("Already on wishlist");
+			else if (wishlist_size < 100)
+			{
+				wishlist[wishlist_size++] = name;
+				successMsg("Added to wishlist");
+			}
+			else
+				errorMsg("Wishlist is full");
 		}
 	}
 	else if (ch == 2 && wishlist_size > 0)

@@ -9,10 +9,104 @@
 
 using namespace std;
 
-int Cart::cart_size = 0;
+namespace
+{
+	bool namesMatch(const string& a, const string& b)
+	{
+		return trimCopy(a) == trimCopy(b);
+	}
+
+	bool pricesMatch(const string& a, const string& b)
+	{
+		return trimCopy(a) == trimCopy(b);
+	}
+
+	// Adjust stock for one catalog line matching name+price. Returns true if a file was updated.
+	bool adjustCatalogStock(const string& itemName, const string& itemPrice, int delta)
+	{
+		ifstream cats("ItemsCategory.txt");
+		if (!cats.is_open())
+			return false;
+
+		string cat;
+		while (getline(cats, cat))
+		{
+			if (trimCopy(cat).empty()) continue;
+			cat = trimCopy(cat);
+			string path = cat + ".txt";
+			ifstream in(path);
+			if (!in.is_open()) continue;
+
+			ofstream temp("temp.txt");
+			string n, p, q;
+			bool touched = false;
+			bool first = true;
+			while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
+			{
+				if (!first) temp << "\n";
+				first = false;
+
+				if (namesMatch(n, itemName) && pricesMatch(p, itemPrice))
+				{
+					int stock = 0;
+					parseIntSafe(q, stock);
+					stock += delta;
+					if (stock < 0) stock = 0;
+					temp << n << '-' << p << ", " << stock;
+					touched = true;
+				}
+				else
+				{
+					temp << n << '-' << p << ", " << q;
+				}
+			}
+			in.close();
+			temp.close();
+
+			if (touched)
+			{
+				remove(path.c_str());
+				rename("temp.txt", path.c_str());
+				cats.close();
+				return true;
+			}
+			remove("temp.txt");
+		}
+		cats.close();
+		return false;
+	}
+
+	int findCatalogStock(const string& itemName, const string& itemPrice)
+	{
+		ifstream cats("ItemsCategory.txt");
+		if (!cats.is_open())
+			return -1;
+
+		string cat;
+		while (getline(cats, cat))
+		{
+			if (trimCopy(cat).empty()) continue;
+			cat = trimCopy(cat);
+			ifstream in(cat + ".txt");
+			if (!in.is_open()) continue;
+			string n, p, q;
+			while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
+			{
+				if (namesMatch(n, itemName) && pricesMatch(p, itemPrice))
+				{
+					int stock = 0;
+					if (!parseIntSafe(q, stock)) return 0;
+					return stock;
+				}
+			}
+		}
+		return -1;
+	}
+}
 
 Cart::Cart()
 {
+	cart_size = 0;
 	total_bill = 0;
 	for (int i = 0; i < 500; i++)
 	{
@@ -27,7 +121,8 @@ void Cart::add_item(string i_n, string i_p, int i_q)
 	int index = -1;
 	for (int i = 0; i < cart_size; i++)
 	{
-		if (itemnames[i] == i_n)
+		// Same product = same name AND same price (avoids merging cross-category lookalikes)
+		if (namesMatch(itemnames[i], i_n) && pricesMatch(Items_Price[i], i_p))
 		{
 			index = i;
 			break;
@@ -66,6 +161,16 @@ void Cart::reset_data()
 	}
 }
 
+void Cart::restock_all_and_clear()
+{
+	for (int i = 0; i < cart_size; i++)
+	{
+		if (Items_Quantity[i] > 0)
+			adjustCatalogStock(itemnames[i], Items_Price[i], Items_Quantity[i]);
+	}
+	reset_data();
+}
+
 void Cart::DisplayItems()
 {
 	setColor(0);
@@ -87,11 +192,12 @@ void Cart::DisplayItems()
 	for (int i = 0; i < cart_size; i++)
 	{
 		string numeric = extractPriceNumber(Items_Price[i]);
-		double unit = stod(numeric);
+		double unit = 0;
+		parseDoubleSafe(numeric, unit);
 		double line = unit * Items_Quantity[i];
 
 		cout << "                         " << setw(10) << (i + 1)
-			<< setw(28) << itemnames[i]
+			<< setw(28) << trimCopy(itemnames[i])
 			<< "Rs. " << setw(14) << (int)unit
 			<< setw(12) << Items_Quantity[i]
 			<< "Rs. " << setw(12) << (int)line << "\n";
@@ -115,8 +221,8 @@ void Cart::Search(const string& query)
 		if (lower.find(q) != string::npos)
 		{
 			found = true;
-			cout << "                         " << (i + 1) << ") " << itemnames[i]
-				<< "  |  " << Items_Price[i] << "  |  Qty: " << Items_Quantity[i] << "\n";
+			cout << "                         " << (i + 1) << ") " << trimCopy(itemnames[i])
+				<< "  |  " << trimCopy(Items_Price[i]) << "  |  Qty: " << Items_Quantity[i] << "\n";
 		}
 	}
 	if (!found)
@@ -137,52 +243,29 @@ bool Cart::modify_quantity()
 		return false;
 
 	index -= 1;
-	int newQty = readIntInRange("                         Enter new quantity (1 or more):   ", 1, 9999);
 	int oldQty = Items_Quantity[index];
-	Items_Quantity[index] = newQty;
+	int newQty = readIntInRange("                         Enter new quantity (1 or more):   ", 1, 9999);
 
-	// Restock / deduct difference in catalog files
-	int delta = oldQty - newQty; // positive => return to stock
-	if (delta != 0)
+	int delta = oldQty - newQty; // positive => return to stock; negative => take more
+	if (delta < 0)
 	{
-		ifstream cats("ItemsCategory.txt");
-		string cat;
-		bool updated = false;
-		while (getline(cats, cat))
+		int need = -delta;
+		int stock = findCatalogStock(itemnames[index], Items_Price[index]);
+		if (stock < 0)
 		{
-			if (cat.empty()) continue;
-			string path = cat + ".txt";
-			ifstream in(path);
-			if (!in.is_open()) continue;
-
-			ofstream temp("temp.txt");
-			string n, p, q;
-			while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
-			{
-				if (n == itemnames[index] && p == Items_Price[index])
-				{
-					int stock = stoi(q) + delta;
-					if (stock < 0) stock = 0;
-					temp << n << '-' << p << ", " << stock;
-					updated = true;
-				}
-				else
-				{
-					temp << n << '-' << p << ", " << q;
-				}
-				if (!in.eof()) temp << "\n";
-			}
-			in.close();
-			temp.close();
-			if (updated)
-			{
-				remove(path.c_str());
-				rename("temp.txt", path.c_str());
-				break;
-			}
-			remove("temp.txt");
+			errorMsg("Could not locate product in catalog to increase quantity");
+			return false;
+		}
+		if (stock < need)
+		{
+			errorMsg("Not enough stock. Available to add: " + to_string(stock));
+			return false;
 		}
 	}
+
+	Items_Quantity[index] = newQty;
+	if (delta != 0)
+		adjustCatalogStock(itemnames[index], Items_Price[index], delta);
 
 	successMsg("Quantity updated");
 	return true;
@@ -199,46 +282,7 @@ void Cart::remove_item()
 	int index = readIntInRange("\n\n                             Choose The item_# To Remove From Cart:   ", 1, cart_size);
 	index -= 1; // 0-based
 
-	// Restock into the correct category file
-	ifstream cats("ItemsCategory.txt");
-	string cat;
-	bool restocked = false;
-	while (getline(cats, cat))
-	{
-		if (cat.empty()) continue;
-		string path = cat + ".txt";
-		ifstream in(path);
-		if (!in.is_open()) continue;
-
-		ofstream temp("temp.txt");
-		string n, p, q;
-		bool touched = false;
-		while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
-		{
-			if (n == itemnames[index] && p == Items_Price[index])
-			{
-				int stock = stoi(q) + Items_Quantity[index];
-				temp << n << '-' << p << ", " << stock;
-				touched = true;
-			}
-			else
-			{
-				temp << n << '-' << p << ", " << q;
-			}
-			if (!in.eof()) temp << "\n";
-		}
-		in.close();
-		temp.close();
-		if (touched)
-		{
-			remove(path.c_str());
-			rename("temp.txt", path.c_str());
-			restocked = true;
-			break;
-		}
-		remove("temp.txt");
-	}
-	cats.close();
+	bool restocked = adjustCatalogStock(itemnames[index], Items_Price[index], Items_Quantity[index]);
 
 	for (int i = index; i < cart_size - 1; i++)
 	{
@@ -269,7 +313,9 @@ bool Cart::Bill(double taxPercent, double deliveryPercent)
 	for (int i = 0; i < cart_size; i++)
 	{
 		string numeric = extractPriceNumber(Items_Price[i]);
-		subtotal += stod(numeric) * Items_Quantity[i];
+		double unit = 0;
+		parseDoubleSafe(numeric, unit);
+		subtotal += unit * Items_Quantity[i];
 	}
 
 	double tax = (subtotal * taxPercent) / 100.0;

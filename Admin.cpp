@@ -233,7 +233,9 @@ void Admin::viewOrdersAndStats()
 		getline(ss, user, '|');
 		getline(ss, totalStr, '|');
 		getline(ss, rest);
-		revenue += stod(totalStr);
+		double total = 0;
+		parseDoubleSafe(totalStr, total);
+		revenue += total;
 		cout << "                         " << setw(8) << id
 			<< setw(16) << user
 			<< "Rs. " << setw(10) << totalStr
