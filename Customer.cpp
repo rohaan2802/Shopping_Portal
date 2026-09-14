@@ -1,412 +1,190 @@
-#include<iostream>
-#include<string>
-#include<cstdio>
-#include<cstring>
-#include<fstream>
-#include<windows.h>
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <ctime>
+#include <windows.h>
 #include <conio.h>
-#include"Cart.h"
-#include<stdlib.h>
-#include"Items.h"
+#include "Cart.h"
+#include "Items.h"
+#include "Customer.h"
+#include "Other_Fun.h"
+
 using namespace std;
-#include"Customer.h"
+
+extern Cart c;
+
+Customer::Customer()
+{
+	currentUser = "";
+	wishlist_size = 0;
+	for (int i = 0; i < 100; i++) wishlist[i] = "";
+}
 
 bool Customer::customer_Reg_Log_Menu()
 {
 label1:
-	Customer cus;
-	int choice;
-	do
+	clearScreen();
+	banner("CUSTOMER GATEWAY", 3);
+	setColor(0);
+	cout << "                                                    1)    Registration\n\n";
+	cout << "                                                    2)    Login\n\n";
+	cout << "                                                    3)    Forgot Password\n\n";
+	cout << "                                                    4)    Go Back\n\n";
+	int choice = readIntInRange("                                      Enter Your Choice here                   ", 1, 4);
+
+	if (choice == 1)
 	{
-
-		HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-		cout << "\n\n";
-		cout << "                                                    1)    Registration\n\n";
-		cout << "                                                    2)    Login\n\n";
-		cout << "                                                    3)    Go Back\n\n";
-		cout << "                                      Enter Your Choice here                   ";
-		while (!(cin >> choice) || choice < 1 || choice >3)
+		registraion();
+		pauseEnter();
+		goto label1;
+	}
+	if (choice == 2)
+	{
+		if (login())
 		{
-			SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-			cout << "                Invalid input. Please enter an integer value in Given Range:   ";
-			cin.clear();
-			cin.ignore(MAXDWORD, '\n');
+			show_customer_menu();
+			c.reset_data();
+			goto label1;
 		}
-		if (choice == 1)
+		else
 		{
-			cus.registraion();
+			pauseEnter();
+			goto label1;
 		}
-		if (choice == 2)
-		{
-			if (cus.login() == true)
-			{
-				system("cls");
-				SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 15);
-				cout << "\n\n                                                ---------------  LOGIN SUCCESFULLY  -------------\n\n";
-				if (show_customer_menu() == false)
-				{
-					system("cls");
-					goto label1;
-				}
-				break;
-			}
+	}
+	if (choice == 3)
+	{
+		forgotPassword();
+		pauseEnter();
+		goto label1;
+	}
+	if (choice == 4)
+		return false;
 
-			//                           ---------------------------------------------------------------------------
-			else
-			{
-				int Num;
-				cout << "\n\n                                  Do you Want To Forgot Password, PRESS 1 FOR [YES] AND 0 FOR [NO]                          ";
-				while (!(cin >> Num) || Num < 0 || Num > 1)
-				{
-					SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-					cout << "                Invalid input. Please enter an integer value in Given Range:   ";
-					cin.clear();
-					cin.ignore(MAXDWORD, '\n');
-				}
-				if (Num == 1)
-				{
-				again32:
-					string filename = "customer_account_save.txt", searchString, newValue, confirm_new_val;
-
-
-					SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-
-					cout << "\n\n                                                Enter Your User_Name                         ";
-					cin >> searchString;
-					cout << "\n\n                                                Enter Your New_Password                      ";
-					cin >> newValue;
-					cout << "\n\n                                                Enter Confirm New_Password                   ";
-					cin >> confirm_new_val;
-
-					if (newValue != confirm_new_val || newValue.length() < 6 || newValue.length() > 10 || newValue == " " || searchString == " ")
-					{
-						SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-						system("cls");
-
-						cout << "\n\n\n ERROR REGISTRATION --> USER_NAME OR PASSWORD SHOULD NOT CONTAINS SPACES OR 7 CHARACTERS MINIMUM OR VERIFY YOUR CONFIRM PASSWORD\n\n";
-						goto again32;
-					}
-
-					updateValueInFile(filename, searchString, newValue);
-				}
-				if (Num == 0)
-				{
-					goto label1;
-				}
-
-
-
-
-			}
-
-			//                           ---------------------------------------------------------------------------
-
-		}
-		if (choice == 3)
-		{
-			return false;
-		}
-	} while (true);
+	return false;
 }
 
 void Customer::registraion()
 {
-	string str1;
 	ofstream write_customer_account_reg;
 	ifstream read_customer_account_reg;
-	read_customer_account_reg.open("customer_account_save.txt");
-	write_customer_account_reg.open("customer_account_save.txt", ios::app);
-	system("cls");
+	clearScreen();
+	sectionTitle("CUSTOMER REGISTRATION", 5);
 again32:
-	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-	cout << "\n\n\n";
-	cout << "                                                Enter Your User_Name                       ";
-	cin >> reg_name;
+	reg_name = readToken("                                                Enter Your User_Name                       ");
 	cout << "                                                Enter Your password                        ";
-	cin >> reg_password;
+	reg_password = getPasswordMasked();
 	cout << "                                                Enter Confirm_Password                     ";
-	cin >> confirm_pass;
-	if (reg_password != confirm_pass || reg_name.length() < 6 || reg_name.length() > 10 || reg_password.length() < 6 || reg_password.length() > 10 || reg_password == " " || reg_name == " ")
-	{
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-		system("cls");
+	confirm_pass = getPasswordMasked();
 
-		cout << "\n\n\n ERROR REGISTRATION --> USER_NAME OR PASSWORD SHOULD NOT CONTAINS SPACES OR 7 CHARACTERS MINIMUM OR VERIFY YOUR CONFIRM PASSWORD\n\n";
+	if (!validCredential(reg_name, reg_password, confirm_pass))
+	{
+		errorMsg("USERNAME/PASSWORD 6-16 chars, no spaces, confirm must match");
 		goto again32;
 	}
+
+	read_customer_account_reg.open("customer_account_save.txt");
+	string str1;
 	if (read_customer_account_reg.is_open())
 	{
-		while (!read_customer_account_reg.eof())
+		while (getline(read_customer_account_reg, str1))
 		{
-			getline(read_customer_account_reg, str1);
 			if (str1 == reg_name)
 			{
-				SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-				system("cls");
-				cout << "\n\n                     Account Already Registered, Youu Can Login By Your User_Name and password\n\n\n";
+				errorMsg("Account Already Registered — please login");
 				return;
 			}
 		}
 	}
-	else
-	{
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-		cout << "\n\n                      ******** FILE NOT FOUND *******  \n\n";
-		return;
-	}
-	write_customer_account_reg << reg_name << endl;
-	write_customer_account_reg << reg_password << endl;
+	read_customer_account_reg.close();
+
+	write_customer_account_reg.open("customer_account_save.txt", ios::app);
+	write_customer_account_reg << reg_name << "\n" << reg_password << "\n";
 	write_customer_account_reg.close();
-	SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 15);
-	system("cls");
-	cout << "\n\n                                     ---------------  REGISTERED SUCCESFULLY  -------------\n\n";
-	return;
+	successMsg("REGISTERED SUCCESSFULLY");
 }
 
 bool Customer::login()
 {
-	string s1, s2;
-	int choice;
-	ifstream read_customer_account_log;
-	read_customer_account_log.open("customer_account_save.txt");
-	system("cls");
-	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-	if (read_customer_account_log.is_open())
+	ifstream read_customer_account_log("customer_account_save.txt");
+	clearScreen();
+	sectionTitle("CUSTOMER LOGIN", 5);
+	if (!read_customer_account_log.is_open())
 	{
-		cout << "\n\n                                                      Enter Your User_Name                   ";
-		cin >> login_name;
-		cout << "\n\n                                                      Enter Your password                    ";
-		login_pass = getPasswordFromUser();
-		cout << "\n\n";
-		while (!read_customer_account_log.eof())
-		{
-			getline(read_customer_account_log, s1);
-			getline(read_customer_account_log, s2);
-			if (s1 == login_name && s2 == login_pass)
-			{
-				system("cls");
-				SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 15);
-				return true;
-				read_customer_account_log.seekg(0, std::ios::beg);
-				read_customer_account_log.close();
-			}
-		}
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-		system("cls");
-		cout << "\n\n                                      NO REGISTRATION/ACCOUNT FOUND\n\n";
-
-
-	}
-
-	else
-	{
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-		system("cls");
-		cout << "\n\n                                      NO REGISTRATION/ACCOUNT FOUND\n\n";
+		errorMsg("NO REGISTRATION/ACCOUNT FOUND");
 		return false;
 	}
+
+	login_name = readToken("                                                      Enter Your User_Name                   ");
+	cout << "                                                      Enter Your password                    ";
+	login_pass = getPasswordFromUser();
+
+	string s1, s2;
+	while (getline(read_customer_account_log, s1))
+	{
+		if (s1.empty()) continue;
+		if (!getline(read_customer_account_log, s2)) s2 = "";
+		if (s1 == login_name && s2 == login_pass)
+		{
+			currentUser = login_name;
+			successMsg("LOGIN SUCCESSFUL — Welcome " + currentUser);
+			return true;
+		}
+	}
+	errorMsg("NO REGISTRATION/ACCOUNT FOUND");
+	return false;
 }
 
 string Customer::getPasswordFromUser()
 {
-
-	string password;
-	char ch;
-	while ((ch = _getch()) != '\r')
-	{  // Read characters until Enter key is pressed
-		if (ch == '\b')
-		{  // Handle backspace
-			if (!password.empty())
-			{
-				password.erase(password.size() - 1);  // Remove the last character from the string
-				cout << "\b \b";  // Erase the last asterisk from the console
-			}
-		}
-		else
-		{
-			password.push_back(ch);
-			cout << '*';  // Display an asterisk for each character
-		}
-	}
-	cout << endl;  // Move cursor to the next line
-	return password;
+	return getPasswordMasked();
 }
 
-// Customer Menu
-bool Customer::show_customer_menu()
+void Customer::forgotPassword()
 {
-label:
+	clearScreen();
+	sectionTitle("FORGOT PASSWORD", 4);
+again32:
+	string searchString = readToken("                                                Enter Your User_Name                         ");
+	cout << "                                                Enter Your New_Password                      ";
+	string newValue = getPasswordMasked();
+	cout << "                                                Enter Confirm New_Password                   ";
+	string confirm_new_val = getPasswordMasked();
 
-
-	Item items;
-	do
+	if (!validCredential(searchString, newValue, confirm_new_val))
 	{
-		HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-		cout << "\n\n                                            ####################  CUSTOMER VIEW ####################\n\n";
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 5);
-
-		int choice;
-		cout << "\n\n                                                 What Do You Want To Do? Choose From The Given Above:\n\n";
-		cout << "                                                  1) Place An Order,     Press 1\n\n";
-		cout << "                                                  2) Modify An Item,     Press 2\n\n";
-		cout << "                                                  3) Display Cart Items, Press 3\n\n";
-		cout << "                                                  4) Search An Item,     Press 4\n\n";
-		cout << "                                                  5) Remove An Item,     Press 5\n\n";
-		cout << "                                                  6) Show Total Bill,    Press 6\n\n";
-		cout << "                                                  7) Go Back,            Press 7\n\n\n";
-		cout << "                                           Enter Your Choice here                   ";
-		while (!(cin >> choice) || choice < 1 || choice > 7)
-		{
-			SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-			cout << "                Invalid input. Please enter an integer value in Given Range:   ";
-			cin.clear();
-			cin.ignore(MAXDWORD, '\n');
-		}
-		if (choice == 1)
-		{
-			SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-			system("cls");
-			if (items.print_Items_Menu() == false)
-			{
-				system("cls");
-				goto label;
-
-			}
-			break;
-		}
-		if (choice == 2)
-		{
-			SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-			system("cls");
-			break;
-		}
-
-		if (choice == 3)
-		{
-			SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-			system("cls");
-			if (items.Display_Cart() == false)
-			{
-				system("cls");
-				goto label;
-
-			}
-			break;
-		}
-
-		if (choice == 5)
-		{
-			SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-			system("cls");
-			if (items.Item_Remove_from_Cart() == false)
-			{
-				system("cls");
-				goto label;
-
-			}
-			break;
-		}
-		if (choice == 6)
-		{
-			SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-			system("cls");
-			if (items.Bill() == false)
-			{
-				system("cls");
-				goto label;
-
-			}
-			break;
-		}
-
-
-		if (choice == 7)
-		{
-			items.reset();
-			return false;
-		}
-
-	} while (true);
+		errorMsg("Invalid password rules — try again");
+		goto again32;
+	}
+	updateValueInFile("customer_account_save.txt", searchString, newValue);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-//void Customer::display_Customer()
-//{
-//	string s1,s2;
-//	ifstream read_customer_account_dis;
-//
-//	read_customer_account_dis.open("customer_account_save.txt");
-//
-//	if (read_customer_account_dis.is_open())
-//	{
-//
-//		while (!read_customer_account_dis.eof())
-//		{
-//			getline(read_customer_account_dis, s1);
-//			getline(read_customer_account_dis, s2);
-//
-//			cout << " User Name   " << s1 << "     Customer ID   "  << " \n\n";
-//
-//		}
-//
-//
-//	}
-//
-//	else
-//	{
-//		cout << "\n\n File is Empty\n\n";
-//		return;
-//	}
-//}
-
-
-
-
-
-void Customer::updateValueInFile(const std::string& filename, const std::string& searchString, const std::string& newValue)
+void Customer::updateValueInFile(const string& filename, const string& searchString, const string& newValue)
 {
-	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
 	ifstream inputFile(filename);
 	if (!inputFile)
 	{
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-		cout << "\n\n                               Unable to open the file. \n\n";
+		errorMsg("Unable to open the file");
 		return;
 	}
 
-	std::ofstream tempFile("temp.txt");
-	if (!tempFile) {
-		std::cout << "Unable to create a temporary file." << std::endl;
-		return;
-	}
-
-	std::string line;
+	ofstream tempFile("temp.txt");
+	string line;
 	bool found = false;
 
-	while (getline(inputFile, line)) {
-		if (line == searchString) {
+	while (getline(inputFile, line))
+	{
+		if (line == searchString)
+		{
 			found = true;
-			tempFile << line << std::endl;
-			std::getline(inputFile, line); // Skip the next line
-			tempFile << newValue << std::endl;
+			tempFile << line << "\n";
+			getline(inputFile, line); // skip old password
+			tempFile << newValue << "\n";
 		}
-		else {
-			tempFile << line << std::endl;
+		else
+		{
+			tempFile << line << "\n";
 		}
 	}
 
@@ -415,26 +193,196 @@ void Customer::updateValueInFile(const std::string& filename, const std::string&
 
 	if (!found)
 	{
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-		system("cls");
-		cout << "\n\n                                        User_Name not found in the file.\n\n";
 		remove("temp.txt");
+		errorMsg("User_Name not found");
 		return;
 	}
 
-	// Delete the existing file
 	remove(filename.c_str());
-
-	// Rename the temporary file
 	if (rename("temp.txt", filename.c_str()) == 0)
+		successMsg("PASSWORD UPDATED SUCCESSFULLY");
+	else
+		errorMsg("Error renaming the file");
+}
+
+void Customer::checkoutAndSaveOrder()
+{
+	clearScreen();
+	sectionTitle("CHECKOUT & BILL", 3);
+	if (!c.Bill(5.0, 5.0))
 	{
-		system("cls");
-		cout << "\n\n                                          PASSWORD UPDATED SUCCESSFULLY.\n\n";
+		pauseEnter();
+		return;
 	}
+
+	cout << "\n";
+	int confirm = readIntInRange("                         Place order? 1 = YES, 0 = NO:   ", 0, 1);
+	if (confirm == 0)
+	{
+		infoMsg("Checkout cancelled");
+		pauseEnter();
+		return;
+	}
+
+	// Generate order id
+	int nextId = 1001;
+	ifstream check("orders.txt");
+	string line;
+	while (getline(check, line))
+	{
+		if (line.empty()) continue;
+		nextId++;
+	}
+	check.close();
+
+	ostringstream details;
+	for (int i = 0; i < c.size(); i++)
+	{
+		if (i) details << "; ";
+		details << c.getName(i) << " x" << c.getQty(i);
+	}
+
+	time_t now = time(nullptr);
+	tm local{};
+	localtime_s(&local, &now);
+	char buf[64];
+	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M", &local);
+
+	ofstream out("orders.txt", ios::app);
+	out << nextId << "|" << currentUser << "|" << (int)c.lastBillTotal()
+		<< "|" << details.str() << " @ " << buf << "\n";
+	out.close();
+
+	successMsg("ORDER PLACED — ID #" + to_string(nextId));
+	c.reset_data();
+	pauseEnter();
+}
+
+void Customer::viewOrderHistory()
+{
+	clearScreen();
+	sectionTitle("ORDER HISTORY — " + currentUser, 5);
+	ifstream in("orders.txt");
+	if (!in.is_open())
+	{
+		infoMsg("No orders found");
+		return;
+	}
+	string line;
+	int n = 0;
+	setColor(0);
+	while (getline(in, line))
+	{
+		if (line.empty()) continue;
+		stringstream ss(line);
+		string id, user, total, rest;
+		getline(ss, id, '|');
+		getline(ss, user, '|');
+		getline(ss, total, '|');
+		getline(ss, rest);
+		if (user == currentUser)
+		{
+			n++;
+			cout << "                         #" << id << "  |  Total: Rs. " << total << "  |  " << rest << "\n\n";
+		}
+	}
+	if (n == 0) infoMsg("You have no past orders");
+}
+
+void Customer::manageWishlist()
+{
+	clearScreen();
+	sectionTitle("WISHLIST", 6);
+	if (wishlist_size == 0)
+		infoMsg("Wishlist is empty");
 	else
 	{
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-		system("cls");
-		cout << "\n\n                                            Error renaming the file.\n\n";
+		for (int i = 0; i < wishlist_size; i++)
+			cout << "                         " << (i + 1) << ")  " << wishlist[i] << "\n";
+	}
+	cout << "\n                         1) Add item name to wishlist\n";
+	cout << "                         2) Remove from wishlist\n";
+	cout << "                         3) Back\n";
+	int ch = readIntInRange("                         Choice:   ", 1, 3);
+	if (ch == 1)
+	{
+		string name = readLine("                         Item name:   ");
+		if (!name.empty() && wishlist_size < 100)
+		{
+			wishlist[wishlist_size++] = name;
+			successMsg("Added to wishlist");
+		}
+	}
+	else if (ch == 2 && wishlist_size > 0)
+	{
+		int idx = readIntInRange("                         Item # to remove:   ", 1, wishlist_size);
+		idx--;
+		for (int i = idx; i < wishlist_size - 1; i++)
+			wishlist[i] = wishlist[i + 1];
+		wishlist_size--;
+		successMsg("Removed from wishlist");
+	}
+}
+
+bool Customer::show_customer_menu()
+{
+	Item items;
+	while (true)
+	{
+		clearScreen();
+		banner("CUSTOMER VIEW — " + currentUser, 5);
+		setColor(0);
+		cout << "                                                  1)  Place An Order / Browse\n\n";
+		cout << "                                                  2)  Modify Cart Quantity\n\n";
+		cout << "                                                  3)  Display Cart Items\n\n";
+		cout << "                                                  4)  Search Products\n\n";
+		cout << "                                                  5)  Remove An Item From Cart\n\n";
+		cout << "                                                  6)  Show Bill / Checkout\n\n";
+		cout << "                                                  7)  Wishlist\n\n";
+		cout << "                                                  8)  Order History\n\n";
+		cout << "                                                  9)  Logout\n\n";
+
+		int choice = readIntInRange("                                           Enter Your Choice here                   ", 1, 9);
+
+		if (choice == 1)
+		{
+			items.print_Items_Menu();
+		}
+		else if (choice == 2)
+		{
+			items.Modify_Cart_Item();
+		}
+		else if (choice == 3)
+		{
+			items.Display_Cart();
+		}
+		else if (choice == 4)
+		{
+			items.Search_Catalog();
+		}
+		else if (choice == 5)
+		{
+			items.Item_Remove_from_Cart();
+		}
+		else if (choice == 6)
+		{
+			checkoutAndSaveOrder();
+		}
+		else if (choice == 7)
+		{
+			manageWishlist();
+			pauseEnter();
+		}
+		else if (choice == 8)
+		{
+			viewOrderHistory();
+			pauseEnter();
+		}
+		else if (choice == 9)
+		{
+			items.reset();
+			successMsg("Logged out — cart cleared");
+			return false;
+		}
 	}
 }

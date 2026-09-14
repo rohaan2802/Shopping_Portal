@@ -1,16 +1,29 @@
-#include<iostream>
-#include<Windows.h>
-#include<fstream>
-#include<iomanip>
-#include<string>
-#include"Items.h"
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <string>
 #include <cctype>
+#include <windows.h>
+#include "Cart.h"
+#include "Other_Fun.h"
+
 using namespace std;
-#include"Cart.h"
+
+int Cart::cart_size = 0;
+
+Cart::Cart()
+{
+	total_bill = 0;
+	for (int i = 0; i < 500; i++)
+	{
+		itemnames[i] = "";
+		Items_Price[i] = "";
+		Items_Quantity[i] = 0;
+	}
+}
 
 void Cart::add_item(string i_n, string i_p, int i_q)
 {
-	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	int index = -1;
 	for (int i = 0; i < cart_size; i++)
 	{
@@ -23,6 +36,11 @@ void Cart::add_item(string i_n, string i_p, int i_q)
 
 	if (index == -1)
 	{
+		if (cart_size >= 500)
+		{
+			errorMsg("Cart is full");
+			return;
+		}
 		itemnames[cart_size] = i_n;
 		Items_Price[cart_size] = i_p;
 		Items_Quantity[cart_size] = i_q;
@@ -33,255 +51,239 @@ void Cart::add_item(string i_n, string i_p, int i_q)
 		Items_Quantity[index] += i_q;
 	}
 
-
-	SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 1);
-	cout << "\n  <<<<<<<<<   Item(s) Added to Cart Successfuly!    <<<<<<<<<";
+	infoMsg("Item(s) Added to Cart Successfully!");
 }
-
-
-int Cart::cart_size = 1;
 
 void Cart::reset_data()
 {
-	memset(&cart_size, 0, sizeof(cart_size));
+	cart_size = 0;
+	total_bill = 0;
+	for (int i = 0; i < 500; i++)
+	{
+		itemnames[i] = "";
+		Items_Price[i] = "";
+		Items_Quantity[i] = 0;
+	}
 }
 
 void Cart::DisplayItems()
 {
-	double pr = 0;
-	if (cart_size > 1)
+	setColor(0);
+	cout << "\n\n";
+	if (cart_size <= 0)
 	{
-		HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-		cout << "\n\n";
-		cout << "                                           <<<<<<<<<<<<<<<<<<<  DISPLAYING ITEMS IN CART   <<<<<<<<<<<<<<<<<<<\n\n";
-		cout << left;
-		//cout << "                         " << setw(20) << "ITEM NAMES" << "                        " << setw(28) << "ITEM PRICES" << setw(32) << "Items Quantity" << "\n\n";
-		cout << "                         " << setw(15) << "ITEM #" << "         " << setw(20) << "ITEM NAMES" << "             " << setw(28) << "ITEM PRICES" << setw(32) << "Items Quantity" << endl;
-
-		/*for (int i = 1; i < cart_size; i++)
-		{
-
-			cout << setw(25) << "                  " << setw(25) << itemnames[i] << "                    " << setw(34) << Items_Price[i];
-
-			if (Items_Quantity[i] < 10)
-				cout << 0 << setw(15) << Items_Quantity[i] << endl;
-			else
-				cout << setw(15) << Items_Quantity[i] << endl;
-		}*/
-		string numeric_part;
-
-		for (int i = 1; i < cart_size; i++)
-		{
-			for (char c : Items_Price[i]) {
-				if (isdigit(c) || c == '.')
-				{
-					numeric_part += c;
-				}
-			}
-			pr += (stoi(numeric_part)) * Items_Quantity[i];
-
-			if (cart_size < 10)
-				cout << setw(20) << "                          0" << i << ")                    ";
-			else
-				cout << setw(20) << "                          " << i << ")                    ";
-
-			cout << setw(25) << itemnames[i] << "          Rs. " << setw(30) << pr;
-
-			if (Items_Quantity[i] < 10)
-				cout << 0 << setw(22) << Items_Quantity[i] << endl;
-			else
-				cout << setw(22) << Items_Quantity[i] << endl;
-		}
-		cout << "\n\n";
-	}
-	else
-	{
-		cout << "\n\n";
 		cout << "                                           <<<<<<<<<<<<<<<<<<<  CART IS EMPTY   <<<<<<<<<<<<<<<<<<<\n\n";
+		return;
 	}
+
+	cout << "                                           <<<<<<<<<<<<<<<<<<<  DISPLAYING ITEMS IN CART   <<<<<<<<<<<<<<<<<<<\n\n";
+	cout << left;
+	cout << "                         " << setw(10) << "ITEM #"
+		<< setw(28) << "ITEM NAME"
+		<< setw(18) << "UNIT PRICE"
+		<< setw(12) << "QTY"
+		<< setw(16) << "LINE TOTAL" << "\n\n";
+
+	for (int i = 0; i < cart_size; i++)
+	{
+		string numeric = extractPriceNumber(Items_Price[i]);
+		double unit = stod(numeric);
+		double line = unit * Items_Quantity[i];
+
+		cout << "                         " << setw(10) << (i + 1)
+			<< setw(28) << itemnames[i]
+			<< "Rs. " << setw(14) << (int)unit
+			<< setw(12) << Items_Quantity[i]
+			<< "Rs. " << setw(12) << (int)line << "\n";
+	}
+	cout << "\n\n";
 }
 
-
-
-
-void Cart::remove_item()
+void Cart::Search(const string& query)
 {
-	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	int index;
-	Cart c1;
-	if (cart_size > 1)
+	setColor(0);
+	cout << "\n\n                         Search results in cart for: \"" << query << "\"\n\n";
+	bool found = false;
+	string q = query;
+	for (char& c : q) c = static_cast<char>(tolower(static_cast<unsigned char>(c)));
+
+	for (int i = 0; i < cart_size; i++)
 	{
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 0);
-		cout << "\n\n                             Choose The item_# To Remove The Item From Cart                       ";
-		while (!(cin >> index) || index < 1 || index >= cart_size)
+		string name = itemnames[i];
+		string lower = name;
+		for (char& c : lower) c = static_cast<char>(tolower(static_cast<unsigned char>(c)));
+		if (lower.find(q) != string::npos)
 		{
-			SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 4);
-			cout << "                            Invalid input. Please enter an integer value in Given Range:           ";
-			cin.clear();
-			cin.ignore(MAXDWORD, '\n');
+			found = true;
+			cout << "                         " << (i + 1) << ") " << itemnames[i]
+				<< "  |  " << Items_Price[i] << "  |  Qty: " << Items_Quantity[i] << "\n";
 		}
+	}
+	if (!found)
+		infoMsg("No matching items in cart");
+	cout << "\n";
+}
 
+bool Cart::modify_quantity()
+{
+	if (cart_size <= 0)
+	{
+		errorMsg("Cart is empty — nothing to modify");
+		return false;
+	}
+	DisplayItems();
+	int index = readIntInRange("\n                         Choose ITEM # to modify quantity (0 = cancel):   ", 0, cart_size);
+	if (index == 0)
+		return false;
 
+	index -= 1;
+	int newQty = readIntInRange("                         Enter new quantity (1 or more):   ", 1, 9999);
+	int oldQty = Items_Quantity[index];
+	Items_Quantity[index] = newQty;
 
-		///////////////////////////////////////////////////////////////////////
-		ifstream read("ItemsCategory.txt");
-		string str, str1;
-		string  Item_Category[100];
-		int itemcount = 1, itemcount1 = 1, i = 1;
-		ifstream read1;
-		string filename;
-		//	Item* items = new Item[500];
-		string* n = new string[500];
-		string* p = new string[500];
-		string* q = new string[500];
-		int str_to_int;
-		ofstream tempFile("temp.txt");
-		if (!tempFile) {
-			cout << "Unable to create a temporary file." << std::endl;
-			return;
-		}
-		while (!read.eof())
+	// Restock / deduct difference in catalog files
+	int delta = oldQty - newQty; // positive => return to stock
+	if (delta != 0)
+	{
+		ifstream cats("ItemsCategory.txt");
+		string cat;
+		bool updated = false;
+		while (getline(cats, cat))
 		{
-			getline(read, str);
-			Item_Category[itemcount] = str;
-			itemcount++;
-		}
-		read.close();
+			if (cat.empty()) continue;
+			string path = cat + ".txt";
+			ifstream in(path);
+			if (!in.is_open()) continue;
 
-		for (int i = 1; i <= itemcount; i++)
-		{
-
-
-			filename = Item_Category[i];
-			read1.open(filename + ".txt");
-
-
-
-			while (!read1.eof())
+			ofstream temp("temp.txt");
+			string n, p, q;
+			while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
 			{
-
-
-				getline(read1, n[itemcount1], '-');
-				getline(read1, p[itemcount1], ',');
-				getline(read1 >> ws, q[itemcount1]);
-				str_to_int = stoi(q[itemcount1]);
-				if (n[itemcount1] == itemnames[index] && p[itemcount1] == Items_Price[index])
+				if (n == itemnames[index] && p == Items_Price[index])
 				{
-					int x = stoi(q[itemcount1]);
-					x += Items_Quantity[index];
-					str1 = to_string(x);
-					tempFile << n[itemcount1] << '-' << p[itemcount1] << ',' << ' ' << str1;
-
+					int stock = stoi(q) + delta;
+					if (stock < 0) stock = 0;
+					temp << n << '-' << p << ", " << stock;
+					updated = true;
 				}
 				else
 				{
-					tempFile << n[itemcount1] << '-' << p[itemcount1] << ',' << ' ' << q[itemcount1];
-
+					temp << n << '-' << p << ", " << q;
 				}
-
-				// Check if it's the last line before writing a newline character
-				if (!read1.eof())
-				{
-					tempFile << endl;
-				}
-				itemcount1++;
-
+				if (!in.eof()) temp << "\n";
 			}
-
-
-
-
-		}
-
-		read1.close();
-
-		tempFile.close();
-
-
-
-		// Delete the existing file
-		remove(filename.c_str());
-
-		// Rename the temporary file
-		rename("temp.txt", filename.c_str());
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		for (int i = index; i < cart_size - 1; i++)
-		{
-			itemnames[i] = itemnames[i + 1];
-			Items_Price[i] = Items_Price[i + 1];
-			Items_Quantity[i] = Items_Quantity[i + 1];
-		}
-		cart_size--;
-		SetConsoleTextAttribute(consoleHandle, BACKGROUND_INTENSITY | 1);
-		cout << "\n\n";
-		cout << "           <<<<<<<<<<<<<<<<<<<  ITEMS(S) REMOVED SUCCESSFULY  <<<<<<<<<<<<<<<<<<<\n\n";
-
-	}
-
-}
-
-
-bool Cart::Bill()
-{
-	if (cart_size > 1)
-	{
-
-
-
-		// Remove the currency symbol and whitespace from the string
-		string numeric_part;
-		for (int i = 1; i < cart_size; i++)
-		{
-			for (char c : Items_Price[i]) {
-				if (isdigit(c) || c == '.')
-				{
-					numeric_part += c;
-				}
+			in.close();
+			temp.close();
+			if (updated)
+			{
+				remove(path.c_str());
+				rename("temp.txt", path.c_str());
+				break;
 			}
-			total_bill += (stoi(numeric_part)) * Items_Quantity[i];
-
+			remove("temp.txt");
 		}
-
-
-		cout << "                                                                                            -----------------------------------\n";
-		cout << "\n\n  <<<<<<<< Delivery Charges                                                                      " << (total_bill * 5) / 100 << endl;
-		cout << "                                                                                            -----------------------------------\n";
-		cout << "\n\n  <<<<<<<< TOTAL AMOUNT                                                                      " << total_bill << endl;
-
-
 	}
-	else
-	{
-		return false;
-		/* cout << "\n\n";
-		 cout << "                                           <<<<<<<<<<<<<<<<<<<  CART IS EMPTY   <<<<<<<<<<<<<<<<<<<\n\n";*/
-	}
+
+	successMsg("Quantity updated");
 	return true;
 }
 
+void Cart::remove_item()
+{
+	if (cart_size <= 0)
+	{
+		errorMsg("Cart is empty");
+		return;
+	}
 
+	int index = readIntInRange("\n\n                             Choose The item_# To Remove From Cart:   ", 1, cart_size);
+	index -= 1; // 0-based
 
+	// Restock into the correct category file
+	ifstream cats("ItemsCategory.txt");
+	string cat;
+	bool restocked = false;
+	while (getline(cats, cat))
+	{
+		if (cat.empty()) continue;
+		string path = cat + ".txt";
+		ifstream in(path);
+		if (!in.is_open()) continue;
 
+		ofstream temp("temp.txt");
+		string n, p, q;
+		bool touched = false;
+		while (getline(in, n, '-') && getline(in, p, ',') && getline(in >> ws, q))
+		{
+			if (n == itemnames[index] && p == Items_Price[index])
+			{
+				int stock = stoi(q) + Items_Quantity[index];
+				temp << n << '-' << p << ", " << stock;
+				touched = true;
+			}
+			else
+			{
+				temp << n << '-' << p << ", " << q;
+			}
+			if (!in.eof()) temp << "\n";
+		}
+		in.close();
+		temp.close();
+		if (touched)
+		{
+			remove(path.c_str());
+			rename("temp.txt", path.c_str());
+			restocked = true;
+			break;
+		}
+		remove("temp.txt");
+	}
+	cats.close();
 
+	for (int i = index; i < cart_size - 1; i++)
+	{
+		itemnames[i] = itemnames[i + 1];
+		Items_Price[i] = Items_Price[i + 1];
+		Items_Quantity[i] = Items_Quantity[i + 1];
+	}
+	cart_size--;
+	itemnames[cart_size] = "";
+	Items_Price[cart_size] = "";
+	Items_Quantity[cart_size] = 0;
 
+	infoMsg(restocked ? "Item(s) Removed Successfully (stock restored)" : "Item(s) Removed Successfully");
+}
 
+bool Cart::Bill(double taxPercent, double deliveryPercent)
+{
+	total_bill = 0;
+	if (cart_size <= 0)
+	{
+		errorMsg("Cart is empty — cannot generate bill");
+		return false;
+	}
+
+	DisplayItems();
+
+	double subtotal = 0;
+	for (int i = 0; i < cart_size; i++)
+	{
+		string numeric = extractPriceNumber(Items_Price[i]);
+		subtotal += stod(numeric) * Items_Quantity[i];
+	}
+
+	double tax = (subtotal * taxPercent) / 100.0;
+	double delivery = (subtotal * deliveryPercent) / 100.0;
+	total_bill = subtotal + tax + delivery;
+
+	setColor(3);
+	cout << "                                                                                            -----------------------------------\n";
+	cout << "\n  <<<<<<<< SUBTOTAL                                                                              Rs. " << (int)subtotal << endl;
+	cout << "\n  <<<<<<<< TAX (" << taxPercent << "%)                                                                          Rs. " << (int)tax << endl;
+	cout << "\n  <<<<<<<< Delivery Charges (" << deliveryPercent << "%)                                                           Rs. " << (int)delivery << endl;
+	cout << "                                                                                            -----------------------------------\n";
+	setColor(15);
+	cout << "\n  <<<<<<<< TOTAL AMOUNT                                                                          Rs. " << (int)total_bill << endl;
+	setColor(0);
+	return true;
+}
