@@ -735,7 +735,7 @@ inline void Welcome_Message()
 	setColor(11);
 	cout << "\n\n\n";
 	contentPrint(bar);
-	contentPrint("WELCOME TO FAST SHOPPING PORTAL");
+	contentPrint("                WELCOME TO FAST SHOPPING PORTAL");
 	contentPrint(bar);
 	setColor(14);
 	cout << "\n";
@@ -750,7 +750,7 @@ inline int Select_Role()
 {
 	setColor(14);
 	cout << "\n\n";
-	centerPrint("What Is Your Login Type?");
+	contentPrint("What Is Your Login Type?");
 	cout << "\n";
 	setColor(15);
 	contentPrint("1. Admin");
