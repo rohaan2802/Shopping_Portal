@@ -1,2 +1,3 @@
 # wishlist.txt — format: username|item_name
 # Persists across app exit/reopen. One item per line; duplicates are ignored on load.
+customer1|Apple

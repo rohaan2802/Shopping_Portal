@@ -1,5 +1,5 @@
-Apples - 150 PKR, 2
-Bananas - 80 PKR, 15
+Apples - 150 PKR, 0
+Bananas - 80 PKR, 13
 Bread - 120 PKR, 5
 Milk - 180 PKR, 8
 Eggs - 200 PKR, 12
