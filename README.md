@@ -9,7 +9,7 @@ FAST Shopping Portal is a course OOP project upgraded to a professional real-wor
 - Role-based entry: Admin / Vendor / Customer / Exit
 - Persistent text-file data (accounts, stock, orders)
 - Full customer shopping loop: browse → search → cart → bill → checkout → history
-- Admin catalog CRUD + user overview + revenue stats
+- Admin catalog management + user overview + revenue stats
 - Vendor registration and ownership-scoped stock management
 
 Assignment notes live in [`docs/Classes.txt`](docs/Classes.txt) and [`docs/OOP_Project_Description.pdf`](docs/OOP_Project_Description.pdf).
@@ -35,17 +35,17 @@ Or open `Shopping_Portal.sln` in Visual Studio and run with the project folder a
 
 | Role | Username | Password | Notes |
 |------|----------|----------|-------|
-| Admin | *(none seeded)* | — | First-time Admin must **Register once** (Singleton: one account only), then use **Login** thereafter |
+| Admin | *(none seeded)* | — | First-time Admin must **Register once** (only one admin allowed), then use **Login** |
 | Vendor | `vendor1` | `vendor1` | Or register a new vendor |
 | Customer | `rohaan` | `123456` | Or register a new customer |
 
 ### Admin
 - Portal menu: **Registration / Login / Back** (same pattern as Customer/Vendor)
-- **Singleton:** only one admin account may exist in `admin_accounts.txt` (starts empty)
-- First run: choose Registration once to create the sole admin, then Login only
+- Only **one** admin account can be created for the whole portal (starts with no admin)
+- First run: choose Registration once, then Login only
 - View customers, vendors, and the admin
 - Manage categories (add / remove)
-- Product CRUD per category
+- Add, update, and remove products per category
 - View orders and revenue statistics
 
 ### Vendor
@@ -96,7 +96,7 @@ Console UI mockups covering every major feature (SS01–SS35). Regenerate anytim
 ### SS08 — Admin — Add Category Success
 ![SS08](docs/screenshots/ss08.png)
 
-### SS09 — Admin — Manage Products CRUD
+### SS09 — Admin — Manage Products
 ![SS09](docs/screenshots/ss09.png)
 
 ### SS10 — Admin — View Category Products
@@ -185,7 +185,7 @@ Console UI mockups covering every major feature (SS01–SS35). Regenerate anytim
 Main.cpp                 Role picker → Admin | Vendor | Customer
 Other_Fun.h              Console colors, banners, validated input helpers
 Role.h                   Abstract registraion() + login()
-Admin.h/.cpp             Admin Singleton auth (Reg/Login/Back) + dashboard ops
+Admin.h/.cpp             Admin auth (Reg/Login/Back) + dashboard ops
 Vendor.h/.cpp            Vendor auth + owned stock management
 Customer.h/.cpp          Auth, menus, wishlist, checkout, history
 Items.h/.cpp             Category/product I/O + browse/search UI
@@ -220,7 +220,7 @@ Apples - 150 PKR, 2
 | `ItemsCategory.txt` | Category list |
 | `<Category>.txt` | Stock lines (`Name - price, qty`) |
 | `customer_account_save.txt` | Customer username/password pairs |
-| `admin_accounts.txt` | Sole admin credentials (empty until first Registration; Singleton) |
+| `admin_accounts.txt` | Sole admin credentials (empty until first Registration) |
 | `vendor_accounts.txt` | Vendor username / password / company |
 | `vendor_products.txt` | Vendor ownership (`user\|cat\|name\|price\|qty`) |
 | `orders.txt` | Placed orders (`id\|user\|total\|details`) |

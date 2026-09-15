@@ -18,18 +18,27 @@ void Vendor::registraion()
 {
 	clearScreen();
 	sectionTitle("VENDOR REGISTRATION", 5);
+	infoMsg("Type 0 at username to go back");
 again:
-	reg_name = readToken("Username (6-16):   ");
+	if (readTokenOrCancel("Username (6-16, 0 = Back):   ", reg_name))
+		return;
 	contentPrint("Password:   ", false);
 	reg_password = getPasswordMasked();
 	contentPrint("Confirm:    ", false);
 	confirm_pass = getPasswordMasked();
-	company = readLine("Company name:   ");
+	company = trimCopy(readLine("Company name (0 = Back):   "));
+	if (isCancelToken(company) || company.empty())
+	{
+		infoMsg("Going back...");
+		return;
+	}
 
 	if (!validCredential(reg_name, reg_password, confirm_pass) || company.empty())
 	{
 		errorMsg("Invalid data - username/password 6-16 chars, no spaces; company required");
-		goto again;
+		if (askRetryOrBack())
+			goto again;
+		return;
 	}
 
 	ifstream in("vendor_accounts.txt");
@@ -62,7 +71,9 @@ bool Vendor::login()
 {
 	clearScreen();
 	sectionTitle("VENDOR LOGIN", 5);
-	login_name = readToken("Username:   ");
+	infoMsg("Type 0 at username to go back");
+	if (readTokenOrCancel("Username (0 = Back):   ", login_name))
+		return false;
 	contentPrint("Password:   ", false);
 	login_pass = getPasswordMasked();
 
@@ -144,13 +155,25 @@ void Vendor::manageOwnStock()
 		}
 		else if (ch == 2)
 		{
+			clearScreen();
+			sectionTitle("ADD PRODUCT TO CATEGORY", 5);
 			Item::listCategories();
-			string cat = trimCopy(readLine("\nCategory:   "));
-			string name = trimCopy(readLine("Product name:   "));
+			cout << "\n";
+			string cat, name;
+			if (readLineOrCancel("Category (0 = Back):   ", cat))
+			{
+				pauseEnter();
+				continue;
+			}
+			if (readLineOrCancel("Product name (0 = Back):   ", name))
+			{
+				pauseEnter();
+				continue;
+			}
 			string price = trimCopy(readLine("Price label (e.g. 500 PKR):   "));
 			int qty = readIntInRange("Stock quantity:   ", 0, 99999);
 
-			if (cat.empty() || name.empty() || price.empty())
+			if (price.empty())
 			{
 				errorMsg("Category, product name, and price are required");
 				pauseEnter();
@@ -189,7 +212,7 @@ void Vendor::manageOwnStock()
 			{
 				ofstream own("vendor_products.txt", ios::app);
 				if (!own.is_open())
-					errorMsg("Product added to catalog but could not update vendor_products.txt");
+					errorMsg("Product added to catalog but could not update ownership list");
 				else
 				{
 					own << currentUser << "|" << cat << "|" << name
@@ -202,12 +225,23 @@ void Vendor::manageOwnStock()
 		else if (ch == 3)
 		{
 			viewOwnProducts();
-			string cat = trimCopy(readLine("\nCategory:   "));
-			string name = trimCopy(readLine("Product name:   "));
+			cout << "\n";
+			infoMsg("Update product stock / price");
+			string cat, name;
+			if (readLineOrCancel("Category (0 = Back):   ", cat))
+			{
+				pauseEnter();
+				continue;
+			}
+			if (readLineOrCancel("Product name (0 = Back):   ", name))
+			{
+				pauseEnter();
+				continue;
+			}
 			string price = trimCopy(readLine("New price label:   "));
 			int qty = readIntInRange("New stock:   ", 0, 99999);
 
-			if (cat.empty() || name.empty() || price.empty())
+			if (price.empty())
 			{
 				errorMsg("Category, product name, and price are required");
 				pauseEnter();
@@ -260,12 +294,16 @@ void Vendor::manageOwnStock()
 		else if (ch == 4)
 		{
 			viewOwnProducts();
-			string cat = trimCopy(readLine("\nCategory:   "));
-			string name = trimCopy(readLine("Product name to remove:   "));
-
-			if (cat.empty() || name.empty())
+			cout << "\n";
+			infoMsg("Remove a product you own");
+			string cat, name;
+			if (readLineOrCancel("Category (0 = Back):   ", cat))
 			{
-				errorMsg("Category and product name are required");
+				pauseEnter();
+				continue;
+			}
+			if (readLineOrCancel("Product name to remove (0 = Back):   ", name))
+			{
 				pauseEnter();
 				continue;
 			}
@@ -339,7 +377,16 @@ bool Vendor::vendor_menu()
 		else if (ch == 3)
 		{
 			clearScreen();
-			string q = readLine("Search:   ");
+			sectionTitle("SEARCH CATALOG", 3);
+			infoMsg("Type 0 to go back");
+			string q;
+			if (readLineOrCancel("Search (0 = Back):   ", q))
+			{
+				pauseEnter();
+				continue;
+			}
+			clearScreen();
+			sectionTitle("SEARCH RESULTS", 3);
 			Item::searchAllCatalogs(q);
 			pauseEnter();
 		}

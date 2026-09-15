@@ -7,9 +7,8 @@
 using namespace std;
 
 /**
- * Admin role with Singleton account policy:
- * only ONE admin account may ever be registered in admin_accounts.txt.
- * Portal entry: Registration / Login / Back (same pattern as Customer/Vendor).
+ * Admin role: only one admin account may be registered (stored in admin_accounts.txt).
+ * Portal entry: Registration / Login / Back (same as Customer/Vendor).
  */
 class Admin : public Role
 {

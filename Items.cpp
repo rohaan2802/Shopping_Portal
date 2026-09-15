@@ -168,6 +168,16 @@ bool Item::print_Items_Menu()
 
 			i_q = readIntInRange("Enter quantity:   ", 1, remaining);
 			c.add_item(items[itemref].itemnames, items[itemref].Items_Price, i_q);
+			clearScreen();
+			sectionTitle(filename, 3);
+			contentPrint(productHeader());
+			cout << "\n";
+			for (int r = 1; r < itemcount1; r++)
+			{
+				int qtyShow = 0;
+				parseIntSafe(items[r].Items_Quantity, qtyShow);
+				contentPrint(productRow(r, items[r].itemnames, items[r].Items_Price, to_string(qtyShow)));
+			}
 			// Catalog files unchanged until checkout
 		} while (true);
 
@@ -262,12 +272,14 @@ bool Item::Search_Catalog()
 {
 	clearScreen();
 	sectionTitle("SEARCH PRODUCTS", 3);
-	string query = readLine("Enter search keyword:   ");
-	if (query.empty())
+	infoMsg("Type 0 to go back");
+	string query;
+	if (readLineOrCancel("Search keyword (0 = Back):   ", query))
 	{
-		errorMsg("Empty search");
 		return false;
 	}
+	clearScreen();
+	sectionTitle("SEARCH RESULTS - " + query, 3);
 	searchAllCatalogs(query);
 	cout << "\n";
 	sectionTitle("SEARCH IN CART", 5);
