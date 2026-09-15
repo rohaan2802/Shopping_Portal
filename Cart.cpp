@@ -299,6 +299,12 @@ bool Cart::modify_quantity()
 		return false;
 
 	index -= 1;
+	clearScreen();
+	sectionTitle("MODIFY QUANTITY", 6);
+	contentPrint("Item: " + trimCopy(itemnames[index]));
+	contentPrint("Price: " + trimCopy(Items_Price[index]));
+	contentPrint("Current Qty: " + to_string(Items_Quantity[index]));
+	cout << "\n";
 	int newQty = readIntInRange("Enter new quantity (1 or more):   ", 1, 9999);
 
 	int stock = findCatalogStock(itemnames[index], Items_Price[index]);
@@ -326,7 +332,12 @@ void Cart::remove_item()
 		return;
 	}
 
-	int index = readIntInRange("\n\nChoose The item_# To Remove From Cart:   ", 1, cart_size);
+	int index = readIntInRange("\n\nChoose item # to remove (0 = Back):   ", 0, cart_size);
+	if (index == 0)
+	{
+		infoMsg("Going back...");
+		return;
+	}
 	index -= 1; // 0-based
 
 	for (int i = index; i < cart_size - 1; i++)

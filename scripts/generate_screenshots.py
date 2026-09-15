@@ -174,7 +174,7 @@ SCREENS = [
             "",
             "                          2)  Manage Categories",
             "",
-            "                          3)  Manage Products (CRUD)",
+            "                          3)  Manage Products",
             "",
             "                          4)  View Orders & Stats",
             "",
@@ -231,10 +231,10 @@ SCREENS = [
     ),
     (
         "SS09",
-        "Admin — Manage Products CRUD",
+        "Admin — Manage Products",
         [
             "",
-            "              ####################  MANAGE PRODUCTS (CRUD)  ####################",
+            "              ####################  MANAGE PRODUCTS  ####################",
             "",
             "                          1) View products in category",
             "                          2) Add product",

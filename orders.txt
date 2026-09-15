@@ -1,2 +1,2 @@
-1001|rohaan|450|Apples x2; Bread x1 @ 2026-09-14 18:00
-1002|rohaan|890|Milk x2; Eggs x1 @ 2026-09-14 18:30
+1001|rohaan|450|2026-09-14 18:00|Apples:2;Bread:1
+1002|rohaan|890|2026-09-14 18:30|Milk:2;Eggs:1

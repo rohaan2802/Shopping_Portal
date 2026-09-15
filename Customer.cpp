@@ -168,8 +168,10 @@ void Customer::registraion()
 	ifstream read_customer_account_reg;
 	clearScreen();
 	sectionTitle("CUSTOMER REGISTRATION", 5);
+	infoMsg("Type 0 at username to go back");
 again32:
-	reg_name = readToken("Enter Your User_Name:   ");
+	if (readTokenOrCancel("Username (6-16 chars, 0 = Back):   ", reg_name))
+		return;
 	contentPrint("Enter Your password:   ", false);
 	reg_password = getPasswordMasked();
 	contentPrint("Enter Confirm_Password:   ", false);
@@ -178,7 +180,9 @@ again32:
 	if (!validCredential(reg_name, reg_password, confirm_pass))
 	{
 		errorMsg("USERNAME/PASSWORD 6-16 chars, no spaces, confirm must match");
-		goto again32;
+		if (askRetryOrBack())
+			goto again32;
+		return;
 	}
 
 	read_customer_account_reg.open("customer_account_save.txt");
@@ -210,13 +214,15 @@ bool Customer::login()
 	ifstream read_customer_account_log("customer_account_save.txt");
 	clearScreen();
 	sectionTitle("CUSTOMER LOGIN", 5);
+	infoMsg("Type 0 at username to go back");
 	if (!read_customer_account_log.is_open())
 	{
 		errorMsg("NO REGISTRATION/ACCOUNT FOUND");
 		return false;
 	}
 
-	login_name = readToken("Enter Your User_Name:   ");
+	if (readTokenOrCancel("Username (0 = Back):   ", login_name))
+		return false;
 	contentPrint("Enter Your password:   ", false);
 	login_pass = getPasswordFromUser();
 
@@ -246,8 +252,11 @@ void Customer::forgotPassword()
 {
 	clearScreen();
 	sectionTitle("FORGOT PASSWORD", 4);
+	infoMsg("Type 0 at username to go back");
 again32:
-	string searchString = readToken("Enter Your User_Name:   ");
+	string searchString;
+	if (readTokenOrCancel("Username (0 = Back):   ", searchString))
+		return;
 	contentPrint("Enter Your New_Password:   ", false);
 	string newValue = getPasswordMasked();
 	contentPrint("Enter Confirm New_Password:   ", false);
@@ -256,7 +265,9 @@ again32:
 	if (!validCredential(searchString, newValue, confirm_new_val))
 	{
 		errorMsg("Invalid password rules - try again");
-		goto again32;
+		if (askRetryOrBack())
+			goto again32;
+		return;
 	}
 	updateValueInFile("customer_account_save.txt", searchString, newValue);
 }
@@ -347,8 +358,8 @@ void Customer::checkoutAndSaveOrder()
 	ostringstream details;
 	for (int i = 0; i < c.size(); i++)
 	{
-		if (i) details << "; ";
-		details << c.getName(i) << " x" << c.getQty(i);
+		if (i) details << ";";
+		details << c.getName(i) << ":" << c.getQty(i);
 	}
 
 	time_t now = time(nullptr);
@@ -360,12 +371,13 @@ void Customer::checkoutAndSaveOrder()
 	ofstream out("orders.txt", ios::app);
 	if (!out.is_open())
 	{
-		errorMsg("Could not write orders.txt - order not saved (stock already deducted)");
+		errorMsg("Could not save the order - please try again");
 		pauseEnter();
 		return;
 	}
+	/* id|user|total|date|Name:qty;Name:qty */
 	out << nextId << "|" << currentUser << "|" << (int)c.lastBillTotal()
-		<< "|" << details.str() << " @ " << buf << "\n";
+		<< "|" << buf << "|" << details.str() << "\n";
 	out.close();
 
 	successMsg("ORDER PLACED - ID #" + to_string(nextId));
@@ -382,33 +394,30 @@ void Customer::viewOrderHistory()
 		ifstream in("orders.txt");
 		if (!in.is_open())
 		{
-			infoMsg("No orders found (orders.txt missing)");
+			infoMsg("No orders found yet");
 			return;
 		}
 		string line;
 		int n = 0;
 		setDefaultColor();
+		cout << "\n";
 		while (getline(in, line))
 		{
-			if (line.empty()) continue;
-			stringstream ss(line);
-			string id, user, total, rest;
-			getline(ss, id, '|');
-			getline(ss, user, '|');
-			getline(ss, total, '|');
-			getline(ss, rest);
+			if (trimCopy(line).empty()) continue;
+			string id, user, total, date, items;
+			if (!parseOrderLine(line, id, user, total, date, items))
+				continue;
 			if (user == currentUser)
 			{
 				n++;
-				contentPrint("#" + id + "  |  Total: Rs. " + total + "  |  " + rest);
-				cout << "\n";
+				printOrderBlock(id, user, total, date, items);
 			}
 		}
 		if (n == 0) infoMsg("You have no past orders");
 	}
 	catch (...)
 	{
-		errorMsg("Could not read orders.txt");
+		errorMsg("Could not read your order history");
 	}
 }
 
@@ -430,39 +439,49 @@ void Customer::manageWishlist()
 	contentPrint("3) View wishlist");
 	contentPrint("4) Back");
 	int ch = readIntInRange("Choice:   ", 1, 4);
+	if (ch == 4)
+		return;
+
 	if (ch == 1)
 	{
-		string name = trimCopy(readLine("Item name:   "));
-		if (name.empty())
+		clearScreen();
+		sectionTitle("ADD TO WISHLIST", 6);
+		string name;
+		if (readLineOrCancel("Item name (0 = Back):   ", name))
+			return;
+		bool exists = false;
+		for (int i = 0; i < wishlist_size; i++)
 		{
-			errorMsg("Item name required");
+			if (trimCopy(wishlist[i]) == name)
+			{
+				exists = true;
+				break;
+			}
+		}
+		if (exists)
+			errorMsg("Already on wishlist");
+		else if (wishlist_size < 100)
+		{
+			wishlist[wishlist_size++] = name;
+			saveWishlist();
+			successMsg("Added to wishlist (saved)");
 		}
 		else
-		{
-			bool exists = false;
-			for (int i = 0; i < wishlist_size; i++)
-			{
-				if (trimCopy(wishlist[i]) == name)
-				{
-					exists = true;
-					break;
-				}
-			}
-			if (exists)
-				errorMsg("Already on wishlist");
-			else if (wishlist_size < 100)
-			{
-				wishlist[wishlist_size++] = name;
-				saveWishlist();
-				successMsg("Added to wishlist (saved)");
-			}
-			else
-				errorMsg("Wishlist is full");
-		}
+			errorMsg("Wishlist is full");
 	}
 	else if (ch == 2 && wishlist_size > 0)
 	{
-		int idx = readIntInRange("Item # to remove:   ", 1, wishlist_size);
+		clearScreen();
+		sectionTitle("REMOVE FROM WISHLIST", 6);
+		for (int i = 0; i < wishlist_size; i++)
+			printNumberedLine(cout, i + 1, wishlist[i], 2);
+		cout << "\n";
+		int idx = readIntInRange("Item # to remove (0 = Back):   ", 0, wishlist_size);
+		if (idx == 0)
+		{
+			infoMsg("Going back...");
+			return;
+		}
 		idx--;
 		for (int i = idx; i < wishlist_size - 1; i++)
 			wishlist[i] = wishlist[i + 1];
@@ -473,10 +492,14 @@ void Customer::manageWishlist()
 	}
 	else if (ch == 2 && wishlist_size == 0)
 	{
+		clearScreen();
+		sectionTitle("WISHLIST", 6);
 		infoMsg("Wishlist is empty - nothing to remove");
 	}
 	else if (ch == 3)
 	{
+		clearScreen();
+		sectionTitle("YOUR WISHLIST", 6);
 		if (wishlist_size == 0)
 			infoMsg("Wishlist is empty");
 		else

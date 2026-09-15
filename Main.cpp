@@ -15,6 +15,8 @@ int main()
 back:
 	HWND consoleHandle = GetConsoleWindow();
 	ShowWindow(consoleHandle, SW_MAXIMIZE);
+	/* Let maximize + font apply before we lock buffer size (avoids bottom "reflection"). */
+	Sleep(50);
 
 	Welcome_Message();
 	int select_menu = Select_Role();

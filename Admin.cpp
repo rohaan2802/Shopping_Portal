@@ -47,17 +47,20 @@ int Admin::countAdmins()
 void Admin::registraion()
 {
 	clearScreen();
-	sectionTitle("ADMIN REGISTRATION (SINGLETON)", 5);
-	contentPrint("Only ONE admin account is allowed for this portal.");
+	sectionTitle("ADMIN REGISTRATION", 5);
+	contentPrint("Only one admin account can be created for this portal.");
 	cout << "\n";
+	infoMsg("Type 0 at username to go back");
 
 	if (hasRegisteredAdmin())
 	{
-		errorMsg("Admin already registered (Singleton). New admin cannot be created. Please use Login.");
+		errorMsg("An admin account is already registered. Please use Login.");
 		return;
 	}
 
-	string user = readToken("Username (6-16 chars):   ");
+	string user;
+	if (readTokenOrCancel("Username (6-16 chars, 0 = Back):   ", user))
+		return;
 	contentPrint("Password:   ", false);
 	string pass = getPasswordMasked();
 	contentPrint("Confirm:    ", false);
@@ -71,33 +74,35 @@ void Admin::registraion()
 	ofstream out("admin_accounts.txt", ios::trunc);
 	if (!out.is_open())
 	{
-		errorMsg("Cannot write admin_accounts.txt");
+		errorMsg("Could not save admin account. Please try again.");
 		return;
 	}
 	out << user << "\n" << pass << "\n";
 	out.close();
-	successMsg("Admin account created successfully (Singleton). You can now login.");
+	successMsg("Admin account created successfully. You can now login.");
 }
 
 bool Admin::login()
 {
 	clearScreen();
 	sectionTitle("ADMIN LOGIN", 4);
+	infoMsg("Type 0 at username to go back");
 
 	if (!hasRegisteredAdmin())
 	{
-		errorMsg("No admin account exists yet. Please choose Registration first (Singleton setup).");
+		errorMsg("No admin account exists yet. Please choose Registration first.");
 		return false;
 	}
 
-	login_name = readToken("Username:   ");
+	if (readTokenOrCancel("Username (0 = Back):   ", login_name))
+		return false;
 	contentPrint("Password:   ", false);
 	login_pass = getPasswordMasked();
 
 	ifstream in("admin_accounts.txt");
 	if (!in.is_open())
 	{
-		errorMsg("Cannot open admin_accounts.txt");
+		errorMsg("Could not read admin account data. Please try again.");
 		return false;
 	}
 
@@ -136,9 +141,9 @@ bool Admin::admin_Reg_Log_Menu()
 		contentPrint("3)    Go Back");
 		cout << "\n";
 		if (hasRegisteredAdmin())
-			infoMsg("Admin already exists (Singleton) - use Login");
+			infoMsg("Admin account is already set up - please use Login");
 		else
-			infoMsg("No admin yet - use Registration once to create the only admin");
+			infoMsg("No admin account yet - use Registration to create one");
 
 		int choice = readIntInRange("Enter Your Choice:   ", 1, 3);
 		if (choice == 1)
@@ -228,13 +233,29 @@ void Admin::manageCategories()
 		if (ch == 3) return;
 		else if (ch == 1)
 		{
-			string name = trimCopy(readLine("New category name:   "));
+			clearScreen();
+			sectionTitle("ADD CATEGORY", 5);
+			string name;
+			if (readLineOrCancel("New category name (0 = Back):   ", name))
+			{
+				pauseEnter();
+				continue;
+			}
 			Item::addCategory(name);
 			pauseEnter();
 		}
 		else if (ch == 2)
 		{
-			string name = trimCopy(readLine("Category name to remove:   "));
+			clearScreen();
+			sectionTitle("REMOVE CATEGORY", 5);
+			Item::listCategories();
+			cout << "\n";
+			string name;
+			if (readLineOrCancel("Category name to remove (0 = Back):   ", name))
+			{
+				pauseEnter();
+				continue;
+			}
 			Item::removeCategory(name);
 			pauseEnter();
 		}
@@ -246,7 +267,7 @@ void Admin::manageProducts()
 	while (true)
 	{
 		clearScreen();
-		sectionTitle("MANAGE PRODUCTS (CRUD)", 5);
+		sectionTitle("MANAGE PRODUCTS", 5);
 		Item::listCategories();
 		cout << "\n";
 		contentPrint("1) View products in category");
@@ -257,21 +278,35 @@ void Admin::manageProducts()
 		int ch = readIntInRange("\nChoice:   ", 1, 5);
 		if (ch == 5) return;
 
-		string cat = trimCopy(readLine("Category name:   "));
-		if (cat.empty())
+		clearScreen();
+		if (ch == 1) sectionTitle("VIEW PRODUCTS", 5);
+		else if (ch == 2) sectionTitle("ADD PRODUCT", 5);
+		else if (ch == 3) sectionTitle("UPDATE PRODUCT", 5);
+		else sectionTitle("REMOVE PRODUCT", 5);
+		Item::listCategories();
+		cout << "\n";
+
+		string cat;
+		if (readLineOrCancel("Category name (0 = Back):   ", cat))
 		{
-			errorMsg("Category name required");
 			pauseEnter();
 			continue;
 		}
 		if (ch == 1)
 		{
+			clearScreen();
+			sectionTitle("PRODUCTS - " + cat, 5);
 			Item::viewCategoryProducts(cat);
 			pauseEnter();
 		}
 		else if (ch == 2)
 		{
-			string name = trimCopy(readLine("Product name:   "));
+			string name;
+			if (readLineOrCancel("Product name (0 = Back):   ", name))
+			{
+				pauseEnter();
+				continue;
+			}
 			string price = trimCopy(readLine("Price label (e.g. 250 PKR):   "));
 			int qty = readIntInRange("Quantity:   ", 0, 99999);
 			Item::addProduct(cat, name, price, qty);
@@ -279,7 +314,16 @@ void Admin::manageProducts()
 		}
 		else if (ch == 3)
 		{
-			string name = trimCopy(readLine("Existing product name:   "));
+			clearScreen();
+			sectionTitle("UPDATE PRODUCT - " + cat, 5);
+			Item::viewCategoryProducts(cat);
+			cout << "\n";
+			string name;
+			if (readLineOrCancel("Existing product name (0 = Back):   ", name))
+			{
+				pauseEnter();
+				continue;
+			}
 			string price = trimCopy(readLine("New price label:   "));
 			int qty = readIntInRange("New quantity:   ", 0, 99999);
 			Item::updateProduct(cat, name, price, qty);
@@ -287,7 +331,16 @@ void Admin::manageProducts()
 		}
 		else if (ch == 4)
 		{
-			string name = trimCopy(readLine("Product name to remove:   "));
+			clearScreen();
+			sectionTitle("REMOVE PRODUCT - " + cat, 5);
+			Item::viewCategoryProducts(cat);
+			cout << "\n";
+			string name;
+			if (readLineOrCancel("Product name to remove (0 = Back):   ", name))
+			{
+				pauseEnter();
+				continue;
+			}
 			Item::removeProduct(cat, name);
 			pauseEnter();
 		}
@@ -301,7 +354,7 @@ void Admin::viewOrdersAndStats()
 	ifstream in("orders.txt");
 	if (!in.is_open())
 	{
-		infoMsg("No orders yet (orders.txt missing or empty)");
+		infoMsg("No orders recorded yet");
 		return;
 	}
 
@@ -310,45 +363,36 @@ void Admin::viewOrdersAndStats()
 	double revenue = 0;
 	setDefaultColor();
 	cout << "\n";
-	{
-		ostringstream hdr;
-		hdr << fitField("ID", 6, false) << "  "
-			<< fitField("CUSTOMER", 14, true)
-			<< fitField("TOTAL", 12, true)
-			<< "DETAILS";
-		contentPrint(hdr.str());
-		cout << "\n";
-	}
 
 	while (getline(in, line))
 	{
-		if (line.empty()) continue;
+		if (trimCopy(line).empty())
+			continue;
+
+		string id, user, totalStr, date, items;
+		if (!parseOrderLine(line, id, user, totalStr, date, items))
+			continue;
+
 		count++;
-		stringstream ss(line);
-		string id, user, totalStr, rest;
-		getline(ss, id, '|');
-		getline(ss, user, '|');
-		getline(ss, totalStr, '|');
-		getline(ss, rest);
 		double total = 0;
 		parseDoubleSafe(totalStr, total);
 		revenue += total;
-		int idNum = 0;
-		ostringstream row;
-		if (parseIntSafe(id, idNum))
-			row << paddedIndex(idNum, 6);
-		else
-			row << fitField(id, 6, false);
-		row << "  " << fitField(user, 14, true)
-			<< fitField("Rs. " + totalStr, 12, true)
-			<< truncateFit(rest, CONTENT_WIDTH - 34);
-		contentPrint(row.str());
+
+		printOrderBlock(id, user, totalStr, date, items);
+	}
+
+	if (count == 0)
+	{
+		infoMsg("No orders recorded yet");
+		return;
 	}
 
 	setColor(15);
-	cout << "\n\n";
+	cout << "\n";
+	contentPrint("==============================================");
 	contentPrint("Total Orders : " + to_string(count));
 	contentPrint("Total Revenue: Rs. " + to_string(static_cast<int>(revenue)));
+	contentPrint("==============================================");
 	setDefaultColor();
 }
 
@@ -363,7 +407,7 @@ bool Admin::admin_menu()
 		cout << "\n";
 		contentPrint("2)  Manage Categories");
 		cout << "\n";
-		contentPrint("3)  Manage Products (CRUD)");
+		contentPrint("3)  Manage Products");
 		cout << "\n";
 		contentPrint("4)  View Orders & Stats");
 		cout << "\n";
