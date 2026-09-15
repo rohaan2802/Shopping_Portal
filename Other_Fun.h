@@ -735,7 +735,7 @@ inline void Welcome_Message()
 	setColor(11);
 	cout << "\n\n\n";
 	contentPrint(bar);
-	contentPrint("                WELCOME TO FAST SHOPPING PORTAL");
+	centerPrint("WELCOME TO FAST SHOPPING PORTAL");
 	contentPrint(bar);
 	setColor(14);
 	cout << "\n";
