@@ -1,0 +1,615 @@
+#include "Commerce.h"
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <ctime>
+#include <windows.h>
+#include <conio.h>
+#include "Cart.h"
+#include "Items.h"
+#include "Customer.h"
+#include "Other_Fun.h"
+
+using namespace std;
+
+extern Cart c;
+
+namespace
+{
+const char *WISHLIST_FILE = "wishlist.txt";
+}
+
+Customer::Customer()
+{
+    currentUser = "";
+    wishlist_size = 0;
+    for (int i = 0; i < 100; i++)
+        wishlist[i] = "";
+}
+
+void Customer::clearWishlistMemory()
+{
+    wishlist_size = 0;
+    for (int i = 0; i < 100; i++)
+        wishlist[i] = "";
+}
+
+void Customer::loadWishlist()
+{
+    clearWishlistMemory();
+    ifstream in(WISHLIST_FILE);
+    if (!in.is_open())
+        return;
+
+    string line;
+    while (getline(in, line))
+    {
+        line = trimCopy(line);
+        if (line.empty() || line[0] == '#')
+            continue;
+        size_t bar = line.find('|');
+        if (bar == string::npos)
+            continue;
+        string user = trimCopy(line.substr(0, bar));
+        string item = trimCopy(line.substr(bar + 1));
+        if (user != currentUser || item.empty())
+            continue;
+
+        bool dup = false;
+        for (int i = 0; i < wishlist_size; i++)
+        {
+            if (trimCopy(wishlist[i]) == item)
+            {
+                dup = true;
+                break;
+            }
+        }
+        if (dup)
+            continue;
+        if (wishlist_size < 100)
+            wishlist[wishlist_size++] = item;
+    }
+}
+
+void Customer::saveWishlist()
+{
+    // Preserve other users' entries, rewrite current user's list
+    ifstream in(WISHLIST_FILE);
+    ostringstream kept;
+    string line;
+    if (in.is_open())
+    {
+        while (getline(in, line))
+        {
+            string raw = line;
+            string t = trimCopy(line);
+            if (t.empty() || t[0] == '#')
+            {
+                kept << raw << "\n";
+                continue;
+            }
+            size_t bar = t.find('|');
+            if (bar == string::npos)
+            {
+                kept << raw << "\n";
+                continue;
+            }
+            string user = trimCopy(t.substr(0, bar));
+            if (user == currentUser)
+                continue; // drop old rows for this user
+            kept << raw << "\n";
+        }
+        in.close();
+    }
+
+    ofstream out(WISHLIST_FILE);
+    if (!out.is_open())
+    {
+        errorMsg("Could not save wishlist.txt");
+        return;
+    }
+
+    string preserved = kept.str();
+    if (preserved.empty())
+        out << "# wishlist.txt - format: username|item_name\n";
+    else
+        out << preserved;
+
+    for (int i = 0; i < wishlist_size; i++)
+        out << currentUser << "|" << wishlist[i] << "\n";
+}
+
+bool Customer::customer_Reg_Log_Menu()
+{
+label1:
+    clearScreen();
+    banner("CUSTOMER GATEWAY", 3);
+    setDefaultColor();
+    contentPrint("1)    Registration");
+    cout << "\n";
+    contentPrint("2)    Login");
+    cout << "\n";
+    contentPrint("3)    Change Password");
+    cout << "\n";
+    contentPrint("4)    Go Back");
+    cout << "\n";
+    int choice = readIntInRange("Enter Your Choice here:   ", 1, 4);
+
+    if (choice == 1)
+    {
+        registraion();
+        pauseEnter();
+        goto label1;
+    }
+    if (choice == 2)
+    {
+        if (login())
+        {
+            show_customer_menu();
+            c.reset_data(); // logout / leave menu - cart only, stock untouched
+            clearWishlistMemory();
+            goto label1;
+        }
+        else
+        {
+            pauseEnter();
+            goto label1;
+        }
+    }
+    if (choice == 3)
+    {
+        forgotPassword();
+        pauseEnter();
+        goto label1;
+    }
+    if (choice == 4)
+        return false;
+
+    return false;
+}
+
+void Customer::registraion()
+{
+    ofstream write_customer_account_reg;
+    ifstream read_customer_account_reg;
+    clearScreen();
+    sectionTitle("CUSTOMER REGISTRATION", 5);
+    infoMsg("Type 0 at username to go back");
+again32:
+    if (readTokenOrCancel("Username (6-16 chars, 0 = Back):   ", reg_name))
+        return;
+    contentPrint("Enter Your password:   ", false);
+    reg_password = getPasswordMasked();
+    contentPrint("Enter Confirm_Password:   ", false);
+    confirm_pass = getPasswordMasked();
+
+    if (!validCredential(reg_name, reg_password, confirm_pass))
+    {
+        errorMsg("USERNAME/PASSWORD 6-16 chars, no spaces, confirm must match");
+        if (askRetryOrBack())
+            goto again32;
+        return;
+    }
+
+    read_customer_account_reg.open("customer_account_save.txt");
+    string existingUser, existingPass;
+    if (read_customer_account_reg.is_open())
+    {
+        while (getline(read_customer_account_reg, existingUser))
+        {
+            if (trimCopy(existingUser).empty())
+                continue;
+            if (!getline(read_customer_account_reg, existingPass))
+                existingPass = "";
+            if (trimCopy(existingUser) == reg_name)
+            {
+                errorMsg("Account Already Registered - please login");
+                read_customer_account_reg.close();
+                return;
+            }
+        }
+    }
+    read_customer_account_reg.close();
+
+    write_customer_account_reg.open("customer_account_save.txt", ios::app);
+    write_customer_account_reg << reg_name << "\n" << reg_password << "\n";
+    write_customer_account_reg.close();
+    successMsg("REGISTERED SUCCESSFULLY");
+}
+
+bool Customer::login()
+{
+    ifstream read_customer_account_log("customer_account_save.txt");
+    clearScreen();
+    sectionTitle("CUSTOMER LOGIN", 5);
+    infoMsg("Type 0 at username to go back");
+    if (!read_customer_account_log.is_open())
+    {
+        errorMsg("NO REGISTRATION/ACCOUNT FOUND");
+        return false;
+    }
+
+    if (readTokenOrCancel("Username (0 = Back):   ", login_name))
+        return false;
+    contentPrint("Enter Your password:   ", false);
+    login_pass = getPasswordFromUser();
+
+    string s1, s2;
+    while (getline(read_customer_account_log, s1))
+    {
+        if (s1.empty())
+            continue;
+        if (!getline(read_customer_account_log, s2))
+            s2 = "";
+        if (s1 == login_name && s2 == login_pass)
+        {
+            currentUser = login_name;
+            loadWishlist();
+            successMsg("LOGIN SUCCESSFUL - Welcome " + currentUser);
+            return true;
+        }
+    }
+    errorMsg("NO REGISTRATION/ACCOUNT FOUND");
+    return false;
+}
+
+string Customer::getPasswordFromUser() { return getPasswordMasked(); }
+
+void Customer::forgotPassword()
+{
+    clearScreen();
+    sectionTitle("CHANGE PASSWORD", 4);
+    infoMsg("Type 0 at username to go back");
+again32:
+    string searchString;
+    if (readTokenOrCancel("Username (0 = Back):   ", searchString))
+        return;
+    contentPrint("Current password:   ", false);
+    const auto oldPassword = getPasswordMasked();
+    std::ifstream accounts("customer_account_save.txt");
+    std::string user, password;
+    bool verified = false;
+    while (std::getline(accounts, user) && std::getline(accounts, password))
+        if (user == searchString && password == oldPassword)
+            verified = true;
+    if (!verified)
+    {
+        errorMsg("Current credentials do not match");
+        return;
+    }
+    contentPrint("Enter Your New_Password:   ", false);
+    string newValue = getPasswordMasked();
+    contentPrint("Enter Confirm New_Password:   ", false);
+    string confirm_new_val = getPasswordMasked();
+
+    if (!validCredential(searchString, newValue, confirm_new_val))
+    {
+        errorMsg("Invalid password rules - try again");
+        if (askRetryOrBack())
+            goto again32;
+        return;
+    }
+    updateValueInFile("customer_account_save.txt", searchString, newValue);
+}
+
+void Customer::updateValueInFile(const string &filename, const string &searchString,
+                                 const string &newValue)
+{
+    ifstream inputFile(filename);
+    if (!inputFile)
+    {
+        errorMsg("Unable to open the file");
+        return;
+    }
+
+    ofstream tempFile("temp.txt");
+    string line;
+    bool found = false;
+
+    while (getline(inputFile, line))
+    {
+        if (line == searchString)
+        {
+            found = true;
+            tempFile << line << "\n";
+            getline(inputFile, line); // skip old password
+            tempFile << newValue << "\n";
+        }
+        else
+        {
+            tempFile << line << "\n";
+        }
+    }
+
+    inputFile.close();
+    tempFile.close();
+
+    if (!found)
+    {
+        remove("temp.txt");
+        errorMsg("User_Name not found");
+        return;
+    }
+
+    remove(filename.c_str());
+    if (rename("temp.txt", filename.c_str()) == 0)
+        successMsg("PASSWORD UPDATED SUCCESSFULLY");
+    else
+        errorMsg("Error renaming the file");
+}
+
+void Customer::checkoutAndSaveOrder()
+{
+    clearScreen();
+    sectionTitle("CHECKOUT & BILL", 3);
+    if (!c.Bill(5.0, 5.0))
+    {
+        pauseEnter();
+        return;
+    }
+
+    cout << "\n";
+    int confirm = readIntInRange("Place order? 1 = YES, 0 = NO:   ", 0, 1);
+    if (confirm == 0)
+    {
+        infoMsg("Checkout cancelled");
+        pauseEnter();
+        return;
+    }
+
+    // Generate order id
+    int nextId = 1001;
+    ifstream check("orders.txt");
+    string line;
+    while (getline(check, line))
+    {
+        if (line.empty())
+            continue;
+        try
+        {
+            const auto id = std::stoll(line.substr(0, line.find('|')));
+            if (id >= 2147483646LL)
+            {
+                errorMsg("Order ID capacity reached");
+                return;
+            }
+            if (id >= nextId)
+                nextId = static_cast<int>(id + 1);
+        }
+        catch (...)
+        {
+        }
+    }
+    check.close();
+
+    ostringstream details;
+    for (int i = 0; i < c.size(); i++)
+    {
+        if (i)
+            details << ";";
+        details << c.getName(i) << ":" << c.getQty(i);
+    }
+
+    time_t now = time(nullptr);
+    tm local{};
+    localtime_s(&local, &now);
+    char buf[64];
+    strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M", &local);
+
+    std::ostringstream record;
+    record << nextId << "|" << currentUser << "|" << std::fixed << std::setprecision(2)
+           << c.lastBillTotal() << "|" << buf << "|" << details.str();
+    if (!c.validateAndDeductStock(record.str()))
+    {
+        errorMsg("Order not saved; checkout did not complete");
+        pauseEnter();
+        return;
+    }
+
+    successMsg("ORDER PLACED - ID #" + to_string(nextId));
+    c.reset_data();
+    pauseEnter();
+}
+
+void Customer::viewOrderHistory()
+{
+    clearScreen();
+    sectionTitle("ORDER HISTORY - " + currentUser, 5);
+    try
+    {
+        ifstream in("orders.txt");
+        if (!in.is_open())
+        {
+            infoMsg("No orders found yet");
+            return;
+        }
+        string line;
+        int n = 0;
+        setDefaultColor();
+        cout << "\n";
+        while (getline(in, line))
+        {
+            if (trimCopy(line).empty())
+                continue;
+            string id, user, total, date, items;
+            if (!parseOrderLine(line, id, user, total, date, items))
+                continue;
+            if (user == currentUser)
+            {
+                n++;
+                printOrderBlock(id, user, total, date, items);
+            }
+        }
+        if (n == 0)
+            infoMsg("You have no past orders");
+    }
+    catch (...)
+    {
+        errorMsg("Could not read your order history");
+    }
+}
+
+void Customer::manageWishlist()
+{
+    clearScreen();
+    sectionTitle("WISHLIST - " + currentUser, 6);
+    if (wishlist_size == 0)
+        infoMsg("Wishlist is empty");
+    else
+    {
+        setDefaultColor();
+        for (int i = 0; i < wishlist_size; i++)
+            printNumberedLine(cout, i + 1, wishlist[i], 2);
+    }
+    cout << "\n";
+    contentPrint("1) Add item name to wishlist");
+    contentPrint("2) Remove from wishlist");
+    contentPrint("3) View wishlist");
+    contentPrint("4) Back");
+    int ch = readIntInRange("Choice:   ", 1, 4);
+    if (ch == 4)
+        return;
+
+    if (ch == 1)
+    {
+        clearScreen();
+        sectionTitle("ADD TO WISHLIST", 6);
+        string name;
+        if (readLineOrCancel("Item name (0 = Back):   ", name))
+            return;
+        bool exists = false;
+        for (int i = 0; i < wishlist_size; i++)
+        {
+            if (trimCopy(wishlist[i]) == name)
+            {
+                exists = true;
+                break;
+            }
+        }
+        if (exists)
+            errorMsg("Already on wishlist");
+        else if (wishlist_size < 100)
+        {
+            wishlist[wishlist_size++] = name;
+            saveWishlist();
+            successMsg("Added to wishlist (saved)");
+        }
+        else
+            errorMsg("Wishlist is full");
+    }
+    else if (ch == 2 && wishlist_size > 0)
+    {
+        clearScreen();
+        sectionTitle("REMOVE FROM WISHLIST", 6);
+        for (int i = 0; i < wishlist_size; i++)
+            printNumberedLine(cout, i + 1, wishlist[i], 2);
+        cout << "\n";
+        int idx = readIntInRange("Item # to remove (0 = Back):   ", 0, wishlist_size);
+        if (idx == 0)
+        {
+            infoMsg("Going back...");
+            return;
+        }
+        idx--;
+        for (int i = idx; i < wishlist_size - 1; i++)
+            wishlist[i] = wishlist[i + 1];
+        wishlist_size--;
+        wishlist[wishlist_size] = "";
+        saveWishlist();
+        successMsg("Removed from wishlist (saved)");
+    }
+    else if (ch == 2 && wishlist_size == 0)
+    {
+        clearScreen();
+        sectionTitle("WISHLIST", 6);
+        infoMsg("Wishlist is empty - nothing to remove");
+    }
+    else if (ch == 3)
+    {
+        clearScreen();
+        sectionTitle("YOUR WISHLIST", 6);
+        if (wishlist_size == 0)
+            infoMsg("Wishlist is empty");
+        else
+        {
+            setDefaultColor();
+            cout << "\n";
+            for (int i = 0; i < wishlist_size; i++)
+                printNumberedLine(cout, i + 1, wishlist[i], 2);
+        }
+    }
+}
+
+bool Customer::show_customer_menu()
+{
+    Item items;
+    while (true)
+    {
+        clearScreen();
+        banner("CUSTOMER VIEW - " + currentUser, 5);
+        setDefaultColor();
+        contentPrint("1)  Place An Order / Browse");
+        cout << "\n";
+        contentPrint("2)  Modify Cart Quantity");
+        cout << "\n";
+        contentPrint("3)  Display Cart Items");
+        cout << "\n";
+        contentPrint("4)  Search Products");
+        cout << "\n";
+        contentPrint("5)  Remove An Item From Cart");
+        cout << "\n";
+        contentPrint("6)  Show Bill / Checkout");
+        cout << "\n";
+        contentPrint("7)  Wishlist (saved)");
+        cout << "\n";
+        contentPrint("8)  Order History");
+        cout << "\n";
+        contentPrint("9)  Logout");
+        cout << "\n";
+
+        int choice = readIntInRange("Enter Your Choice here:   ", 1, 9);
+
+        if (choice == 1)
+        {
+            items.print_Items_Menu();
+        }
+        else if (choice == 2)
+        {
+            items.Modify_Cart_Item();
+        }
+        else if (choice == 3)
+        {
+            items.Display_Cart();
+        }
+        else if (choice == 4)
+        {
+            items.Search_Catalog();
+        }
+        else if (choice == 5)
+        {
+            items.Item_Remove_from_Cart();
+        }
+        else if (choice == 6)
+        {
+            checkoutAndSaveOrder();
+        }
+        else if (choice == 7)
+        {
+            manageWishlist();
+            pauseEnter();
+        }
+        else if (choice == 8)
+        {
+            viewOrderHistory();
+            pauseEnter();
+        }
+        else if (choice == 9)
+        {
+            items.reset();
+            clearWishlistMemory();
+            successMsg("Logged out - cart cleared (stock unchanged)");
+            return false;
+        }
+    }
+}

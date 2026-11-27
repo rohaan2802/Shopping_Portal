@@ -1,0 +1,256 @@
+
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+
+         ==============================================================
+         CUSTOMER GATEWAY
+         ==============================================================
+
+
+         1)    Registration
+
+         2)    Login
+
+         3)    Change Password
+
+         4)    Go Back
+
+         Enter Your Choice here:   
+
+
+                           ####  CUSTOMER LOGIN  ####
+
+
+         [INFO]  Type 0 at username to go back
+         Username (0 = Back):            Enter Your password:   
+
+         [OK]  LOGIN SUCCESSFUL - Welcome rohaan
+
+
+
+
+         ==============================================================
+         CUSTOMER VIEW - rohaan
+         ==============================================================
+
+
+         1)  Place An Order / Browse
+
+         2)  Modify Cart Quantity
+
+         3)  Display Cart Items
+
+         4)  Search Products
+
+         5)  Remove An Item From Cart
+
+         6)  Show Bill / Checkout
+
+         7)  Wishlist (saved)
+
+         8)  Order History
+
+         9)  Logout
+
+         Enter Your Choice here:   
+
+
+                 ####  ORDER PLACING - BROWSE CATEGORIES  ####
+
+         Select a category (or 0 to go back)
+
+          1)  Groceries
+
+          2)  Personal Care
+
+          3)  Household Essentials
+
+          4)  Baby Care
+
+          5)  Health and Wellness
+
+          6)  Electronics
+
+          7)  Home Appliances
+
+          8)  Clothing and Fashion
+
+          9)  Home Decor and Furniture
+
+         10)  Sports and Fitness
+
+         11)  Office and School Supplies
+
+         12)  Pet Supplies
+
+
+         GO BACK = 0   |   Enter category #:   
+
+
+                             ####  Groceries  ####
+
+          ITEM#  ITEM NAME                 PRICE             STOCK     
+
+              1  Apples                    150 PKR           20        
+              2  Bananas                   80 PKR            13        
+              3  Bread                     120 PKR           5         
+              4  Milk                      180 PKR           8         
+              5  Eggs                      200 PKR           12        
+              6  Chicken breasts           500 PKR           3         
+              7  Ground beef               400 PKR           6         
+              8  Rice                      100 PKR           15        
+              9  Pasta                     90 PKR            20        
+             10  Cereal                    250 PKR           7         
+             11  Yogurt                    80 PKR            18        
+             12  Cheese                    300 PKR           9         
+             13  Tomatoes                  70 PKR            30        
+             14  Lettuce                   60 PKR            22        
+             15  Carrots                   50 PKR            35        
+             16  Onions                    40 PKR            40        
+             17  Potatoes                  80 PKR            28        
+             18  Green beans               120 PKR           15        
+             19  Broccoli                  100 PKR           20        
+             20  Cauliflower               150 PKR           12        
+             21  Oranges                   180 PKR           14        
+             22  Strawberries              300 PKR           5         
+             23  Blueberries               400 PKR           3         
+             24  Grapes                    250 PKR           10        
+             25  Avocado                   200 PKR           8         
+             26  Olive oil                 350 PKR           7         
+             27  Peanut butter             250 PKR           15        
+             28  Jelly                     200 PKR           10        
+             29  Canned soup               150 PKR           20        
+             30  Frozen pizza              500 PKR           4         
+
+         Add ITEM # to cart (0 = back to categories):   
+
+
+
+                 ####  ORDER PLACING - BROWSE CATEGORIES  ####
+
+         Select a category (or 0 to go back)
+
+          1)  Groceries
+
+          2)  Personal Care
+
+          3)  Household Essentials
+
+          4)  Baby Care
+
+          5)  Health and Wellness
+
+          6)  Electronics
+
+          7)  Home Appliances
+
+          8)  Clothing and Fashion
+
+          9)  Home Decor and Furniture
+
+         10)  Sports and Fitness
+
+         11)  Office and School Supplies
+
+         12)  Pet Supplies
+
+
+         GO BACK = 0   |   Enter category #:   
+
+
+         ==============================================================
+         CUSTOMER VIEW - rohaan
+         ==============================================================
+
+
+         1)  Place An Order / Browse
+
+         2)  Modify Cart Quantity
+
+         3)  Display Cart Items
+
+         4)  Search Products
+
+         5)  Remove An Item From Cart
+
+         6)  Show Bill / Checkout
+
+         7)  Wishlist (saved)
+
+         8)  Order History
+
+         9)  Logout
+
+         Enter Your Choice here:   
+
+         [OK]  Logged out - cart cleared (stock unchanged)
+
+
+
+
+         ==============================================================
+         CUSTOMER GATEWAY
+         ==============================================================
+
+
+         1)    Registration
+
+         2)    Login
+
+         3)    Change Password
+
+         4)    Go Back
+
+         Enter Your Choice here:   
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+                  Thank you for visiting FAST Shopping Portal!
+

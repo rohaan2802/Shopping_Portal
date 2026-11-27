@@ -1,0 +1,163 @@
+
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+
+         ==============================================================
+         ADMIN PORTAL
+         ==============================================================
+
+
+         1)    Registration
+
+         2)    Login
+
+         3)    Go Back
+
+
+         [INFO]  Admin account is already set up - please use Login
+         Enter Your Choice:   
+
+
+                            ####  ADMIN LOGIN  ####
+
+
+         [INFO]  Type 0 at username to go back
+         Username (0 = Back):            Password:   
+
+         [OK]  ADMIN LOGIN SUCCESSFUL
+
+
+
+
+         ==============================================================
+         ADMIN DASHBOARD - admin1
+         ==============================================================
+
+
+         1)  View All Users
+
+         2)  Manage Categories
+
+         3)  Manage Products
+
+         4)  View Orders & Stats
+
+         5)  Inventory Insights
+
+         6)  Logout
+
+         Enter choice:   
+
+
+                         ####  INVENTORY INSIGHTS  ####
+
+         Products 351  |  Units 4,651  |  Categories 12
+         Inventory value: Rs. 5,975,360.00
+
+         Category                   Items      Median       Value (Rs.)
+         --------------------------------------------------------------
+         Baby Care                     30      165.00         64,700.00
+         Clothing and Fashion          30     2000.00        335,000.00
+         Electronics                   21     8000.00      1,972,340.00
+         Groceries                     30      165.00         58,700.00
+         Health and Wellness           30      190.00         87,320.00
+         Home Appliances               30     8000.00      2,376,000.00
+         Home Decor and Furniture      30     1000.00        236,900.00
+         Household Essentials          30      110.00         51,220.00
+         Office and School Supplies    30       80.00         57,400.00
+         Personal Care                 30      120.00         59,780.00
+         Pet Supplies                  30      200.00        111,600.00
+         Sports and Fitness            30     1500.00        564,400.00
+
+         LOW STOCK (<= 5 units): 71 products
+           Digital camera                Electronics                2
+           Gaming console                Electronics                2
+           Golf clubs                    Sports and Fitness         2
+           Treadmill                     Sports and Fitness         2
+           Air conditioner               Home Appliances            3
+           Baby car seat                 Baby Care                  3
+           Baby monitor                  Baby Care                  3
+           Baby stroller                 Baby Care                  3
+           ... and 63 more
+
+         RESTOCK TO 10 UNITS: 130 products, 584 units
+         Estimated purchase cost: Rs. 6,366,390.00
+
+
+                           Press Enter to continue...
+
+
+         ==============================================================
+         ADMIN DASHBOARD - admin1
+         ==============================================================
+
+
+         1)  View All Users
+
+         2)  Manage Categories
+
+         3)  Manage Products
+
+         4)  View Orders & Stats
+
+         5)  Inventory Insights
+
+         6)  Logout
+
+         Enter choice:   
+
+         [OK]  Admin logged out
+
+
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+                  Thank you for visiting FAST Shopping Portal!
+

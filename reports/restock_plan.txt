@@ -1,0 +1,21 @@
+SHOPPING PORTAL | CATALOG AUDIT
+351 products | 12 categories | 4651 stock units
+Inventory value: PKR 5975360.00
+Matched: 21
+
+RESTOCK PLAN (target 8 units per product)
+Product                     Category                       Now   Order      Cost PKR
+------------------------------------------------------------------------------------
+Digital camera              Electronics                      2       6     180000.00
+Gaming console              Electronics                      2       6     240000.00
+Laptop                      Electronics                      3       5     400000.00
+Graphics tablet             Electronics                      4       4      60000.00
+Tablet                      Electronics                      4       4      80000.00
+Television                  Electronics                      4       4     280000.00
+Monitor                     Electronics                      5       3      75000.00
+Smartphone                  Electronics                      5       3     150000.00
+WiFi router                 Electronics                      6       2      16000.00
+Wireless earbuds            Electronics                      6       2      16000.00
+External SSD                Electronics                      7       1      12000.00
+------------------------------------------------------------------------------------
+11 products | 40 units to order | estimated cost PKR 1,509,000.00

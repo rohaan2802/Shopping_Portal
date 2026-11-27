@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Shopping_Portal: a C++17 OOP shopping system with Admin, Vendor and Customer roles, exact PKR billing, rollback-capable checkout, inventory analytics and an interactive browser sandbox.">
+  <meta name="theme-color" content="#4f46e5">
+  <title>Shopping_Portal · C++17 Commerce System</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script>try{document.documentElement.dataset.theme=JSON.parse(localStorage.getItem('shop-theme'))||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(e){document.documentElement.dataset.theme='light'}</script>
+  <script src="assets/js/data.js" defer></script>
+  <script src="assets/js/site.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#overview">Skip to content</a>
+
+<!-- ============================== NAVBAR ============================== -->
+<header class="nav" id="header">
+  <div class="container nav-inner">
+    <a class="brand" href="#overview" aria-label="Shopping_Portal home">
+      <span class="brand-logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M3 4h3l2.6 11h10l2.2-8H7.2M10 20h.01M18 20h.01" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span>Shopping<b>_Portal</b></span>
+    </a>
+    <nav id="navigation" class="nav-links" aria-label="Main navigation">
+      <a href="#overview">Overview</a>
+      <a href="#features">Features</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#design">Classes</a>
+      <a href="#walkthroughs">Walkthroughs</a>
+      <a href="#algorithms">Algorithms</a>
+      <a href="#insights">Insights</a>
+      <a href="#demo">Live Demo</a>
+      <a href="#cli">CLI</a>
+      <a href="#screenshots">Screenshots</a>
+      <a href="#setup">Setup</a>
+      <a href="#testing">Testing</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="icon-btn" href="https://github.com/rohaan2802/Shopping_Portal" aria-label="Source code on GitHub" title="Source on GitHub">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.64 22.4c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.56-.29-5.25-1.28-5.25-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.7 5.38-5.27 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
+      </a>
+      <button id="theme" class="icon-btn theme-btn" type="button" aria-label="Switch to dark theme" title="Toggle theme">
+        <svg class="i-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" fill="currentColor"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+      <button id="menu" class="icon-btn menu-btn" type="button" aria-label="Open navigation" aria-controls="navigation" aria-expanded="false">
+        <svg class="i-bars" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3.5 6h17M3.5 12h17M3.5 18h17" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+        <svg class="i-close" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+</header>
+
+<main>
+<!-- ============================== HERO ============================== -->
+<section id="overview" class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">C++17 · OOP · File-backed commerce</span>
+      <h1>From catalog to <span class="grad">confirmed order</span>.</h1>
+      <p class="lead">Shopping_Portal is a three-role shopping system written in modern C++. Admins run the catalog and read inventory insights, vendors own their listings, and customers browse, build a cart, keep a wishlist and check out with exact PKR billing and rollback-safe file updates.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#demo">Try the live demo
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn btn-ghost" href="#screenshots">View 30 screenshots</a>
+        <a class="btn btn-ghost" href="https://github.com/rohaan2802/Shopping_Portal">Source code</a>
+      </div>
+      <ul class="tech" aria-label="Technologies">
+        <li>C++17</li><li>OOP &amp; inheritance</li><li>CMake + CTest</li><li>Visual Studio</li><li>Windows Console API</li><li>Python test harness</li><li>Playwright</li><li>HTML · CSS · JS</li>
+      </ul>
+    </div>
+    <div class="stats" aria-label="Project statistics">
+      <div class="stat"><b>351</b><span>sample products</span></div>
+      <div class="stat"><b>12</b><span>categories</span></div>
+      <div class="stat"><b>4,651</b><span>stock units</span></div>
+      <div class="stat"><b>3</b><span>user roles</span></div>
+      <div class="stat"><b>191</b><span>automated checks</span></div>
+      <div class="stat"><b>6.4k</b><span>lines of C++, Python &amp; tests</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== FEATURES ============================== -->
+<section id="features">
+  <div class="container">
+    <span class="eyebrow">What it does</span>
+    <h2>Features at a glance</h2>
+    <p class="sub">Every feature below is implemented in the C++ source and exercised by an automated test or a recorded transcript in <code>reports/</code>.</p>
+    <div class="grid g3">
+      <article class="card feature"><div class="ico" aria-hidden="true">👤</div><h3>Three role workflows</h3><p>An abstract <code>Role</code> base class with Admin, Vendor and Customer subclasses. Each overrides <code>registraion()</code> and <code>login()</code> and has its own dashboard.</p></article>
+      <article class="card feature"><div class="ico" aria-hidden="true">🛒</div><h3>Cart, wishlist &amp; history</h3><p>Matching cart lines merge, quantities can be edited or removed, wishlists persist per user, and every confirmed order is appended to <code>orders.txt</code>.</p></article>
+      <article class="card feature"><div class="ico" aria-hidden="true">💰</div><h3>Exact PKR billing</h3><p>Prices are stored as integer paisa. Tax and delivery are each 5%, rounded half up, so 2 Apples always cost exactly PKR 330.00.</p></article>
+      <article class="card feature"><div class="ico" aria-hidden="true">🛡️</div><h3>Rollback-safe checkout</h3><p>Every cart line is validated first. The changed stock files and the new order are staged together and restored from backups if any write fails.</p></article>
+      <article class="card feature new"><div class="ico" aria-hidden="true">📊</div><h3>Admin inventory insights <span class="badge">New</span></h3><p>A read-only dashboard with per-category medians and values, low-stock alerts and a restock cost estimate, built on <code>Analytics.h</code>.</p></article>
+      <article class="card feature new"><div class="ico" aria-hidden="true">🧾</div><h3>Quotes with discounts <span class="badge">New</span></h3><p><code>catalog_cli --quote "Apples:3,Milk:2" --discount 10</code> prices a basket, checks stock and applies the discount before tax.</p></article>
+      <article class="card feature new"><div class="ico" aria-hidden="true">📈</div><h3>Price statistics <span class="badge">New</span></h3><p>Min, median, mean and max price for each category, plus restock planning to any target stock level.</p></article>
+      <article class="card feature new"><div class="ico" aria-hidden="true">📤</div><h3>CSV &amp; JSON export <span class="badge">New</span></h3><p>Price-range filters, value sorting, <code>--desc</code>, <code>--limit</code> and spreadsheet-safe CSV output.</p></article>
+      <article class="card feature"><div class="ico" aria-hidden="true">🌐</div><h3>Works offline</h3><p>This page runs by double-clicking <code>index.html</code>: the catalog and screenshot list are bundled in <code>assets/js/data.js</code>, so no server is required.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== ARCHITECTURE ============================== -->
+<section id="architecture">
+  <div class="container">
+    <span class="eyebrow">How it is built</span>
+    <h2>Architecture, modules &amp; data flow</h2>
+    <p class="sub">A shared, standard-library-only domain layer sits under both the Windows console application and the portable audit CLI. The webpage only reads the exported catalog. Nothing in the browser can change the native data files.</p>
+    <div class="arch" aria-label="Architecture diagram">
+      <div class="arch-col">
+        <div class="arch-box ui"><b>Shopping_Portal.exe</b><small>Windows console · Admin / Vendor / Customer</small></div>
+        <div class="arch-box ui"><b>catalog_cli</b><small>Portable read-only audit · Windows / Linux / macOS</small></div>
+        <div class="arch-box ui"><b>index.html</b><small>Browser sandbox · localStorage only</small></div>
+      </div>
+      <div class="arch-arrow" aria-hidden="true">→</div>
+      <div class="arch-col">
+        <div class="arch-box core"><b>Analytics.h</b><small>Statistics · filters · restock · quotes · CSV</small></div>
+        <div class="arch-box core"><b>Commerce.h</b><small>Parsing · integer money · rollback commits</small></div>
+      </div>
+      <div class="arch-arrow" aria-hidden="true">→</div>
+      <div class="arch-col">
+        <div class="arch-box data"><b>data/sample</b><small>Versioned seed (12 category files)</small></div>
+        <div class="arch-box data"><b>data/runtime</b><small>Ignored, mutable local copy</small></div>
+        <div class="arch-box data"><b>reports/ + data.js</b><small>Recorded outputs and the web bundle</small></div>
+      </div>
+    </div>
+
+    <h3>Data flow</h3>
+    <ol class="flow">
+      <li><b>Seed.</b> <code>data/sample/</code> holds <code>ItemsCategory.txt</code> (the category index), one file per category (<code>Name - price PKR, quantity</code>), the demo accounts, sample orders and wishlists. It is versioned and never edited by the app.</li>
+      <li><b>Runtime copy.</b> <code>run.bat</code> calls <code>tools/prepare_demo.py</code>, which copies the seed into the git-ignored <code>data/runtime/</code>. The portal runs inside that folder, so stock changes, orders and wishlists stay local.</li>
+      <li><b>Load and validate.</b> <code>shop::loadCatalog()</code> reads the index, rejects unsafe or duplicate category names, parses each product line and rejects malformed rows, duplicates, bad prices and negative stock.</li>
+      <li><b>Transact.</b> At checkout, <code>Cart::validateAndDeductStock()</code> checks every line, builds the new file contents in memory and hands them to <code>shop::commitFiles()</code> together with the new order record.</li>
+      <li><b>Audit.</b> <code>catalog_cli</code> loads the same files read-only and prints summaries, statistics, plans, quotes or JSON/CSV.</li>
+      <li><b>Evidence.</b> <code>tools/record_evidence.py</code> runs the CLI and the real executable in throw-away copies of the seed, saves the output in <code>reports/</code> and rebuilds <code>assets/js/data.js</code>. <code>tools/render_figures.py</code> turns those reports into the 30 screenshots.</li>
+    </ol>
+
+    <h3>Modules</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Module</th><th>Lines</th><th>Responsibility</th><th>Key functions</th></tr></thead>
+        <tbody>
+          <tr><td><a href="src/Main.cpp">src/Main.cpp</a></td><td>91</td><td>Program entry, console set-up, role selection loop</td><td><code>main()</code></td></tr>
+          <tr><td><a href="src/Admin.cpp">src/Admin.cpp</a></td><td>529</td><td>Single admin account, users, categories, products, orders, insights</td><td><code>admin_menu()</code>, <code>viewOrdersAndStats()</code>, <code>viewInventoryInsights()</code></td></tr>
+          <tr><td><a href="src/Vendor.cpp">src/Vendor.cpp</a></td><td>414</td><td>Vendor registration with company, owned-product stock and prices</td><td><code>vendor_menu()</code>, <code>manageOwnStock()</code>, <code>viewOwnProducts()</code></td></tr>
+          <tr><td><a href="src/Customer.cpp">src/Customer.cpp</a></td><td>615</td><td>Accounts, password change, shopping menu, wishlist, checkout, history</td><td><code>show_customer_menu()</code>, <code>checkoutAndSaveOrder()</code>, <code>manageWishlist()</code></td></tr>
+          <tr><td><a href="src/Items.cpp">src/Items.cpp</a></td><td>968</td><td>Category registry, browsing, search, product CRUD</td><td><code>print_Items_Menu()</code>, <code>addProduct()</code>, <code>searchAllCatalogs()</code></td></tr>
+          <tr><td><a href="src/Cart.cpp">src/Cart.cpp</a></td><td>386</td><td>Cart lines, merging, quantity edits, bill, stock deduction</td><td><code>add_item()</code>, <code>Bill()</code>, <code>validateAndDeductStock()</code></td></tr>
+          <tr><td><a href="include/Commerce.h">include/Commerce.h</a></td><td>241</td><td>Shared domain rules used by every program</td><td><code>money()</code>, <code>calculate()</code>, <code>parseProduct()</code>, <code>loadCatalog()</code>, <code>commitFiles()</code></td></tr>
+          <tr><td><a href="include/Analytics.h">include/Analytics.h</a></td><td>297</td><td>Read-only analytics on top of the domain layer</td><td><code>priceStatistics()</code>, <code>select()</code>, <code>sortProducts()</code>, <code>restockPlan()</code>, <code>buildQuote()</code>, <code>toCsv()</code></td></tr>
+          <tr><td><a href="include/Other_Fun.h">include/Other_Fun.h</a></td><td>789</td><td>Console UI helpers: colours, centred layout, safe input</td><td><code>banner()</code>, <code>readIntInRange()</code>, <code>fitField()</code></td></tr>
+          <tr><td><a href="src/catalog_cli.cpp">src/catalog_cli.cpp</a></td><td>346</td><td>Command-line front end for every analytics feature</td><td><code>parse()</code>, <code>printStats()</code>, <code>printRestock()</code>, <code>printQuote()</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== CLASSES / DESIGN ============================== -->
+<section id="design">
+  <div class="container">
+    <span class="eyebrow">Object-oriented design</span>
+    <h2>Classes and data structures</h2>
+    <p class="sub">The console application uses classic OOP: an abstract base class, three role subclasses and two collaborator classes. The shared library uses plain value types in the <code>shop</code> namespace so it can be tested without any console.</p>
+    <pre class="code diagram">            ┌──────────────────────┐
+            │ «abstract» Role      │  reg_name, reg_password, login_name …
+            │ + registraion() = 0  │
+            │ + login() = 0        │
+            └──────────┬───────────┘
+        public ┌───────┼────────┐ protected
+       ┌───────┴──┐ ┌──┴─────┐ ┌┴──────────┐
+       │  Admin   │ │ Vendor │ │ Customer  │──uses──▶ Cart ──reads/writes──▶ category files
+       └────┬─────┘ └───┬────┘ └─────┬─────┘           │
+            └───────────┴──── uses ──┴──▶ Item         └──▶ shop::commitFiles()
+                                   (catalog CRUD, search)</pre>
+    <div class="grid g2 mt">
+      <article class="card cls"><h3><code>Role</code> <span class="pill">abstract</span></h3><p>Holds registration and login fields. Declares the pure virtual <code>registraion()</code> and <code>login()</code> and a virtual destructor, so every role is used through the same contract.</p></article>
+      <article class="card cls"><h3><code>Admin : public Role</code></h3><p>Only one admin may register (<code>hasRegisteredAdmin()</code>). Menu: users, categories, products, orders &amp; stats, <b>inventory insights</b>, logout. Revenue is summed in paisa.</p></article>
+      <article class="card cls"><h3><code>Vendor : public Role</code></h3><p>Stores a company name; <code>vendor_products.txt</code> maps products to vendors so a vendor can only view, add, update or remove its own listings.</p></article>
+      <article class="card cls"><h3><code>Customer : protected Role</code></h3><p>Protected inheritance hides the base interface from outside code. Keeps the current user and a 100-slot wishlist, and drives browsing, checkout, history and password change.</p></article>
+      <article class="card cls"><h3><code>Cart</code></h3><p>Fixed 500-line arrays of names, prices and quantities. <code>add_item()</code> merges identical name + price lines. <code>validateAndDeductStock()</code> checks every line and commits stock and order together.</p></article>
+      <article class="card cls"><h3><code>Item</code></h3><p>Mostly static catalog operations: list, add or remove categories (blocked while products exist), add, update or remove products, and search all categories with de-duplication.</p></article>
+      <article class="card cls"><h3><code>shop::Product</code>, <code>shop::Totals</code></h3><p>Plain structs: category, name, price label, price in paisa and quantity; subtotal, tax, delivery and total in paisa. <code>using Cents = std::int64_t</code>.</p></article>
+      <article class="card cls"><h3><code>analytics::PriceStats</code>, <code>Filter</code>, <code>RestockPlan</code>, <code>Quote</code></h3><p>Value types returned by the analytics functions. They hold results only, so they are easy to print, test and export.</p></article>
+    </div>
+
+    <h3 class="mt">Design decisions</h3>
+    <div class="grid g3">
+      <article class="card"><h3>Integer money</h3><p>Binary floating point cannot represent 0.10 exactly. Storing paisa in 64-bit integers keeps every bill exact and makes the rounding rule explicit.</p></article>
+      <article class="card"><h3>Header-only domain layer</h3><p><code>Commerce.h</code> and <code>Analytics.h</code> use only the standard library, so the same rules compile into the Windows app, the portable CLI and the unit tests.</p></article>
+      <article class="card"><h3>Stage, back up, then swap</h3><p>Text files have no transactions. Writing <code>.shop.tmp</code> files first and keeping <code>.shop.bak</code> copies lets checkout undo a half-finished update.</p></article>
+      <article class="card"><h3>Read-only analytics</h3><p>Reports and quotes never write data, so an admin or reviewer can run them at any time without risking stock or orders.</p></article>
+      <article class="card"><h3>Seed vs runtime data</h3><p>The versioned seed stays clean. Demos and tests run on copies, so results are repeatable and Git history stays readable.</p></article>
+      <article class="card"><h3>Reject, don't guess</h3><p>Ambiguous product names, inverted price ranges, unknown sort keys and overselling all fail with a clear message instead of picking an arbitrary record.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== WALKTHROUGHS ============================== -->
+<section id="walkthroughs">
+  <div class="container">
+    <span class="eyebrow">Step by step</span>
+    <h2>Feature walkthroughs</h2>
+    <p class="sub">What happens inside the program for the four most important flows. Menu numbers match the native console app.</p>
+    <div class="grid g2">
+      <article class="card walk"><h3>🛒 Customer checkout</h3><ol>
+        <li>Welcome screen <b>3 → 2</b>, sign in as <code>rohaan / 123456</code>. <code>Customer::login()</code> checks <code>customer_account_save.txt</code>.</li>
+        <li><b>1 → 1</b> opens Groceries; <code>Item::print_Items_Menu()</code> lists products with live stock.</li>
+        <li>Pick Apples, quantity 2. <code>Cart::add_item()</code> merges it with any existing Apples line at the same price. Stock is <i>not</i> changed yet.</li>
+        <li><b>6</b> shows the bill: <code>Cart::Bill()</code> converts prices to paisa and calls <code>shop::calculate()</code> → 300.00 + 15.00 + 15.00 = <b>PKR 330.00</b>.</li>
+        <li>Confirm with <b>1</b>. <code>validateAndDeductStock()</code> re-reads stock, rejects shortages or ambiguous names, and commits <code>Groceries.txt</code> and <code>orders.txt</code> together. Apples go 20 → 18.</li>
+        <li>The order gets the next ID after the highest saved one and appears under <b>8</b> (Order History).</li>
+      </ol></article>
+      <article class="card walk"><h3>📊 Admin inventory insights</h3><ol>
+        <li>Welcome screen <b>1 → 2</b>, sign in as <code>admin1 / admin12</code>.</li>
+        <li>Choose <b>5) Inventory Insights</b>. <code>viewInventoryInsights()</code> loads the catalog with <code>shop::loadCatalog(".")</code>.</li>
+        <li><code>priceStatistics()</code> groups products by category and prints items, median price and stock value per category.</li>
+        <li><code>select()</code> with <code>maxStock = 5</code> finds 71 low-stock products, sorted lowest first; the first 8 are listed.</li>
+        <li><code>restockPlan(catalog, 10)</code> estimates 130 products, 584 units and PKR 6,366,390.00 to restock.</li>
+        <li>No file is opened for writing; <b>6</b> logs out.</li>
+      </ol></article>
+      <article class="card walk"><h3>🏷️ Vendor stock management</h3><ol>
+        <li>Welcome screen <b>2 → 2</b>, sign in as <code>vendor1 / vendor1</code> (company FastGoods Co).</li>
+        <li><b>1</b> opens stock management; <b>1</b> lists only products mapped to this vendor in <code>vendor_products.txt</code>.</li>
+        <li>Add, update or remove options check ownership first, then update the category file through <code>Item</code>.</li>
+        <li>Category names are validated (no <code>../</code>, no reserved Windows names such as <code>CON</code>).</li>
+      </ol></article>
+      <article class="card walk"><h3>🧾 CLI price quote</h3><ol>
+        <li><code>catalog_cli --quote "Apples:3,Milk:2,Bread:1" --discount 10</code></li>
+        <li><code>parsePercent("10")</code> → 1000 basis points (max 50%).</li>
+        <li><code>buildQuote()</code> splits on commas, finds each name case-insensitively, merges repeats and checks stock.</li>
+        <li>Gross 930.00, discount 93.00 (rounded half up), subtotal 837.00, tax 41.85, delivery 41.85, <b>total PKR 920.70</b>.</li>
+        <li>Unknown names, ambiguous names, zero quantities or overselling exit with code 2 and a clear message.</li>
+      </ol></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== ALGORITHMS ============================== -->
+<section id="algorithms">
+  <div class="container">
+    <span class="eyebrow">Under the hood</span>
+    <h2>Key algorithms</h2>
+    <p class="sub">n = number of products (351 in the sample), k = cart or quote lines.</p>
+    <div class="grid g2">
+      <article class="card algo"><h3>1. Complete-record parsing</h3><p>Find the <b>last</b> <code>" - "</code> and the <b>last</b> comma, so names like <code>T-shirts</code> survive. Validate the name, a price with at most two decimals and a 1–9 digit quantity.</p><pre class="code">dash  = line.rfind(" - ");  comma = line.rfind(',');
+if (dash == npos || comma == npos || dash &gt;= comma) reject;
+name  = trim(line[0 .. dash]);  price = money(...);  qty = stoi(...)</pre><p class="muted">O(length of line) per record; O(total file size) per catalog.</p></article>
+      <article class="card algo"><h3>2. Exact 5% charges</h3><p>Half-up rounding in integers. Splitting the subtotal into a quotient and remainder of 10,000 avoids overflow for very large bills.</p><pre class="code">charge = (subtotal / 10000) * bp
+       + ((subtotal % 10000) * bp + 5000) / 10000;   // bp = 500 → 5%
+total  = subtotal + tax + delivery;</pre><p class="muted">O(1). Tested with 30000 → 1500 and a PKR 10-trillion bill.</p></article>
+      <article class="card algo"><h3>3. Rollback-capable commit</h3><p>Three phases over every changed file: write <code>.shop.tmp</code>; rename the original to <code>.shop.bak</code> and the temp into place; delete backups only after all files succeed. Any exception restores the backups and removes temp files.</p><p class="muted">O(total bytes written). Pending <code>.tmp</code>/<code>.bak</code> files block a new commit until recovered.</p></article>
+      <article class="card algo"><h3>4. Median and mean per category</h3><p>Group products in a <code>std::map</code>, sort each group by price, take the middle element (or the rounded average of the two middle elements) and the rounded mean.</p><p class="muted">O(n log n) overall. An "All categories" row is computed the same way.</p></article>
+      <article class="card algo"><h3>5. Restock plan</h3><p>For each product with stock &lt; target: order <code>target − stock</code> units at the catalog price. Lines are sorted by current stock, then name.</p><p class="muted">O(n log n). Targets outside 1–100,000 are rejected.</p></article>
+      <article class="card algo"><h3>6. Quote merging</h3><p>Each <code>Name:qty</code> item is matched case-insensitively against the catalog. More than one match means ambiguity. Repeated items add to the same line, and the merged quantity is checked against stock.</p><p class="muted">O(k · n), tiny for real baskets.</p></article>
+      <article class="card algo"><h3>7. Deterministic sorting</h3><p><code>std::stable_sort</code> by price, stock or value (price × stock), always breaking ties by lower-case name, so reports never change order between runs.</p><p class="muted">O(n log n).</p></article>
+      <article class="card algo"><h3>8. CSV escaping</h3><p>Fields containing a comma, quote or newline are wrapped in quotes, and inner quotes are doubled, so names like <code>6" ruler</code> import correctly into Excel.</p><p class="muted">O(length of field).</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== INSIGHTS ============================== -->
+<section id="insights">
+  <div class="container">
+    <span class="eyebrow">Computed live from the catalog export</span>
+    <h2>Inventory insights</h2>
+    <p class="sub">The same numbers the admin dashboard and <code>catalog_cli --stats</code> report, calculated in your browser from the bundled catalog (<code>assets/js/data.js</code>).</p>
+    <div class="kpis" id="kpis"><p class="muted">Loading insights…</p></div>
+    <div class="grid g2">
+      <article class="card"><h3>Inventory value by category (PKR)</h3><div id="valueBars" class="bars"></div></article>
+      <article class="card"><h3>Lowest stock right now</h3><div class="table-wrap"><table><thead><tr><th>Product</th><th>Category</th><th>Stock</th></tr></thead><tbody id="lowStock"></tbody></table></div></article>
+    </div>
+    <article class="card mt"><h3>Price statistics per category (PKR)</h3><div class="table-wrap"><table><thead><tr><th>Category</th><th>Items</th><th>Min</th><th>Median</th><th>Mean</th><th>Max</th></tr></thead><tbody id="priceStats"></tbody></table></div></article>
+  </div>
+</section>
+
+<!-- ============================== DEMO ============================== -->
+<section id="demo">
+  <div class="container">
+    <span class="eyebrow">Hands-on · no install needed</span>
+    <h2>Try the customer flow</h2>
+    <p class="sub">A <strong>browser-only simulation</strong> of the native customer checkout, loaded from the real C++ catalog export. Charges follow the same rules: integer paisa, 5% tax and 5% delivery, each rounded half up. Try the code <code>ROHAAN10</code> for 10% off.</p>
+    <div class="toolbar">
+      <label class="field">Search<input id="productSearch" type="search" placeholder="Try Apples or shirt" autocomplete="off"></label>
+      <label class="field">Category<select id="productCategory"><option value="">All categories</option></select></label>
+      <label class="field">Sort by<select id="productSort"><option value="name">Name</option><option value="price">Price · low to high</option><option value="price-desc">Price · high to low</option><option value="stock">Stock · low to high</option></select></label>
+      <label class="check"><input id="inStock" type="checkbox"> In stock only</label>
+      <button id="resetDemo" class="btn btn-ghost" type="button">Reset sandbox</button>
+    </div>
+    <p id="productCount" class="count" aria-live="polite"></p>
+    <p id="demoMessage" class="message" role="status"></p>
+    <div class="demo-layout">
+      <div id="products" class="products"><p class="muted">Loading products…</p></div>
+      <aside class="card cart" aria-label="Shopping cart">
+        <h3>Your cart <span id="cartCount" class="badge">0</span></h3>
+        <div id="cartLines"></div>
+        <form id="couponForm" class="coupon"><input id="coupon" placeholder="Discount code" aria-label="Discount code" autocomplete="off"><button class="btn btn-ghost" type="submit">Apply</button></form>
+        <div id="bill"></div>
+        <button id="checkout" class="btn btn-primary wide" type="button" disabled>Simulate checkout</button>
+        <small class="muted">No payment is taken and native data files are never touched.</small>
+      </aside>
+    </div>
+    <h3 class="mt">Simulated receipt</h3>
+    <pre id="receipt" class="receipt" aria-live="polite">A simulated receipt appears here after checkout.</pre>
+  </div>
+</section>
+
+<!-- ============================== CLI ============================== -->
+<section id="cli">
+  <div class="container">
+    <span class="eyebrow">Portable C++ audit tool</span>
+    <h2>catalog_cli commands</h2>
+    <p class="sub">A read-only command-line tool that validates the same catalog files the portal uses. Run it from the repository root in PowerShell, cmd or the VS Code terminal after building. Each command finishes in well under a second. MinGW builds put it at <code>build\catalog_cli.exe</code>, Visual Studio builds at <code>build\Release\catalog_cli.exe</code>, and Linux/macOS at <code>./build/catalog_cli</code>.</p>
+    <div class="grid g2">
+      <article class="card"><h3>Explore</h3><pre class="code"><span class="c"># search, filter and sort</span>
+.\build\catalog_cli.exe --search oil
+.\build\catalog_cli.exe --category Electronics --sort price
+.\build\catalog_cli.exe --min-price 1000 --max-price 5000 --sort value --desc --limit 10
+.\build\catalog_cli.exe --low-stock --threshold 3 --sort stock
+.\build\catalog_cli.exe --categories</pre></article>
+      <article class="card"><h3>Analyse &amp; export</h3><pre class="code"><span class="c"># statistics, planning, quotes, export</span>
+.\build\catalog_cli.exe --summary
+.\build\catalog_cli.exe --stats
+.\build\catalog_cli.exe --restock 8 --category Electronics
+.\build\catalog_cli.exe --quote "Apples:3,Milk:2,Bread:1" --discount 10
+.\build\catalog_cli.exe --sort value --desc --limit 12 --csv &gt; top.csv</pre></article>
+    </div>
+    <div class="table-wrap mt">
+      <table>
+        <thead><tr><th>Option</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>--data DIR</code></td><td>Catalog folder to read (default <code>data/sample</code>)</td></tr>
+          <tr><td><code>--search</code> / <code>--category</code></td><td>Case-insensitive name search and exact category filter</td></tr>
+          <tr><td><code>--min-price</code> / <code>--max-price</code></td><td>Inclusive PKR price range; an inverted range is rejected</td></tr>
+          <tr><td><code>--sort name|price|stock|value</code>, <code>--desc</code>, <code>--limit N</code></td><td>Deterministic ordering with a name tie-breaker</td></tr>
+          <tr><td><code>--low-stock</code>, <code>--threshold N</code></td><td>Products at or below the threshold (default 5)</td></tr>
+          <tr><td><code>--summary</code>, <code>--stats</code>, <code>--categories</code></td><td>Category totals, price statistics and the category registry</td></tr>
+          <tr><td><code>--restock TARGET</code></td><td>Units and estimated cost to bring each product up to TARGET</td></tr>
+          <tr><td><code>--quote SPEC</code>, <code>--discount PCT</code></td><td>Stock-checked basket pricing with up to 50% discount before tax</td></tr>
+          <tr><td><code>--json</code>, <code>--csv</code>, <code>--help</code></td><td>Machine-readable output, spreadsheet export, full help page</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== SCREENSHOTS ============================== -->
+<section id="screenshots">
+  <div class="container">
+    <span class="eyebrow">Same images as the README</span>
+    <h2>Screenshots</h2>
+    <p class="sub">Program output, recorded transcripts, source code and browser captures, all 1600 × 1000. Click a screenshot to open the viewer, then use the arrow keys, swipe or zoom.</p>
+    <div class="toolbar">
+      <label class="field grow">Search screenshots<input id="figureSearch" type="search" placeholder="Try checkout, quote or tests" autocomplete="off"></label>
+    </div>
+    <div id="filters" class="filters" role="group" aria-label="Screenshot categories"></div>
+    <p id="galleryCount" class="count" aria-live="polite">30 screenshots</p>
+    <div id="gallery" class="gallery">
+      <!-- GALLERY:START -->
+      <figure class="shot" data-category="Catalog" data-index="0">
+        <button type="button" aria-label="Open screenshot 01: Catalog audit summary"><img src="assets/screenshots/01_catalog_audit_summary.png" alt="01. Catalog audit summary" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Catalog</span><b>01. Catalog audit summary</b><span>catalog_cli --summary validates the seed and totals products, units and value for every category.</span><small>Source: reports/summary.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Catalog" data-index="1">
+        <button type="button" aria-label="Open screenshot 02: Inventory value by category"><img src="assets/screenshots/02_inventory_value_by_category.png" alt="02. Inventory value by category" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Catalog</span><b>02. Inventory value by category</b><span>Stock value (price x units) per category from the exported catalog; product counts in brackets.</span><small>Source: reports/catalog.json</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Catalog" data-index="2">
+        <button type="button" aria-label="Open screenshot 03: Product search"><img src="assets/screenshots/03_product_search.png" alt="03. Product search" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Catalog</span><b>03. Product search</b><span>A case-insensitive search for &#x27;oil&#x27; finds matches across several categories with full names, prices and stock.</span><small>Source: reports/search.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Catalog" data-index="3">
+        <button type="button" aria-label="Open screenshot 04: Electronics sorted by price"><img src="assets/screenshots/04_electronics_sorted_by_price.png" alt="04. Electronics sorted by price" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Catalog</span><b>04. Electronics sorted by price</b><span>Category filter plus ascending price sort, with a deterministic name tie-breaker.</span><small>Source: reports/price_sort.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Catalog" data-index="4">
+        <button type="button" aria-label="Open screenshot 05: Low-stock review"><img src="assets/screenshots/05_low_stock_review.png" alt="05. Low-stock review" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Catalog</span><b>05. Low-stock review</b><span>Products at or below the low-stock threshold (default 5), lowest stock first.</span><small>Source: reports/low_stock.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Analytics" data-index="5">
+        <button type="button" aria-label="Open screenshot 06: Price statistics per category"><img src="assets/screenshots/06_price_statistics_per_category.png" alt="06. Price statistics per category" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Analytics</span><b>06. Price statistics per category</b><span>New --stats view: min, median, mean and max unit price for each category and overall.</span><small>Source: reports/price_stats.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Analytics" data-index="6">
+        <button type="button" aria-label="Open screenshot 07: Restock plan with cost"><img src="assets/screenshots/07_restock_plan_with_cost.png" alt="07. Restock plan with cost" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Analytics</span><b>07. Restock plan with cost</b><span>New --restock view: units to order and estimated cost to bring Electronics up to 8 units each.</span><small>Source: reports/restock_plan.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Analytics" data-index="7">
+        <button type="button" aria-label="Open screenshot 08: Discounted price quote"><img src="assets/screenshots/08_discounted_price_quote.png" alt="08. Discounted price quote" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Analytics</span><b>08. Discounted price quote</b><span>New --quote view: a stock-checked basket with 10% off applied before 5% tax and 5% delivery.</span><small>Source: reports/quote.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Analytics" data-index="8">
+        <button type="button" aria-label="Open screenshot 09: CSV export of top stock value"><img src="assets/screenshots/09_csv_export_of_top_stock_value.png" alt="09. CSV export of top stock value" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Analytics</span><b>09. CSV export of top stock value</b><span>--sort value --desc --limit 12 --csv exports the most valuable stock lines for spreadsheets.</span><small>Source: reports/top_value.csv</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Native" data-index="9">
+        <button type="button" aria-label="Open screenshot 10: Native role selection"><img src="assets/screenshots/10_native_role_selection.png" alt="10. Native role selection" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Native</span><b>10. Native role selection</b><span>The Windows console portal opens with Admin, Vendor and Customer entry points.</span><small>Source: reports/native_welcome.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Native" data-index="10">
+        <button type="button" aria-label="Open screenshot 11: Admin dashboard"><img src="assets/screenshots/11_admin_dashboard.png" alt="11. Admin dashboard" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Native</span><b>11. Admin dashboard</b><span>Admin login reaches the dashboard, now with the Inventory Insights option.</span><small>Source: reports/native_admin.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Native" data-index="11">
+        <button type="button" aria-label="Open screenshot 12: Admin inventory insights"><img src="assets/screenshots/12_admin_inventory_insights.png" alt="12. Admin inventory insights" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Native</span><b>12. Admin inventory insights</b><span>New native report: category medians and values, low-stock alerts and a restock estimate.</span><small>Source: reports/native_insights.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Native" data-index="12">
+        <button type="button" aria-label="Open screenshot 13: Vendor product ownership"><img src="assets/screenshots/13_vendor_product_ownership.png" alt="13. Vendor product ownership" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Native</span><b>13. Vendor product ownership</b><span>A vendor sees only the products it owns, with price and stock.</span><small>Source: reports/native_vendor.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Native" data-index="13">
+        <button type="button" aria-label="Open screenshot 14: Browsing the grocery catalog"><img src="assets/screenshots/14_browsing_the_grocery_catalog.png" alt="14. Browsing the grocery catalog" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Native</span><b>14. Browsing the grocery catalog</b><span>Customers browse a category with live prices and stock read from the data files.</span><small>Source: reports/native_browse.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Native" data-index="14">
+        <button type="button" aria-label="Open screenshot 15: Merged cart and line totals"><img src="assets/screenshots/15_merged_cart_and_line_totals.png" alt="15. Merged cart and line totals" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Native</span><b>15. Merged cart and line totals</b><span>Adding Apples twice merges into one line (qty 3); Milk is a second line with its own total.</span><small>Source: reports/native_cart.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Native" data-index="15">
+        <button type="button" aria-label="Open screenshot 16: Confirmed checkout bill"><img src="assets/screenshots/16_confirmed_checkout_bill.png" alt="16. Confirmed checkout bill" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Native</span><b>16. Confirmed checkout bill</b><span>2 Apples: PKR 300.00 subtotal + 15.00 tax + 15.00 delivery = PKR 330.00, then the order is saved.</span><small>Source: reports/native_checkout.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Native" data-index="16">
+        <button type="button" aria-label="Open screenshot 17: Saved order and updated stock"><img src="assets/screenshots/17_saved_order_and_updated_stock.png" alt="17. Saved order and updated stock" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Native</span><b>17. Saved order and updated stock</b><span>The order log gains the new order and Apples stock drops from 20 to 18.</span><small>Source: reports/checkout_orders.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Native" data-index="17">
+        <button type="button" aria-label="Open screenshot 18: Persistent wishlist"><img src="assets/screenshots/18_persistent_wishlist.png" alt="18. Persistent wishlist" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Native</span><b>18. Persistent wishlist</b><span>Wishlist items are saved per customer and survive logout.</span><small>Source: reports/native_wishlist.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Tests" data-index="18">
+        <button type="button" aria-label="Open screenshot 19: Domain correctness checks"><img src="assets/screenshots/19_domain_correctness_checks.png" alt="19. Domain correctness checks" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Tests</span><b>19. Domain correctness checks</b><span>17 checks: money parsing, rounding, malformed rows, unsafe names and rollback cleanup.</span><small>Source: reports/domain_tests.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Tests" data-index="19">
+        <button type="button" aria-label="Open screenshot 20: Analytics test suite"><img src="assets/screenshots/20_analytics_test_suite.png" alt="20. Analytics test suite" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Tests</span><b>20. Analytics test suite</b><span>30 new checks for statistics, filters, sorting, restock plans, quotes, discounts and CSV.</span><small>Source: reports/analytics_tests.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Tests" data-index="20">
+        <button type="button" aria-label="Open screenshot 21: Native cart and CRUD checks"><img src="assets/screenshots/21_native_cart_and_crud_checks.png" alt="21. Native cart and CRUD checks" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Tests</span><b>21. Native cart and CRUD checks</b><span>Unit checks for cart merging, stock rules and category-gated product operations.</span><small>Source: reports/console_tests.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Tests" data-index="21">
+        <button type="button" aria-label="Open screenshot 22: Integration scenarios"><img src="assets/screenshots/22_integration_scenarios.png" alt="22. Integration scenarios" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Tests</span><b>22. Integration scenarios</b><span>Nine piped-input scenarios run the real executable in temporary fixtures.</span><small>Source: reports/smoke_tests.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Tests" data-index="22">
+        <button type="button" aria-label="Open screenshot 23: CMake and CTest run"><img src="assets/screenshots/23_cmake_and_ctest_run.png" alt="23. CMake and CTest run" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Tests</span><b>23. CMake and CTest run</b><span>All CTest targets pass, including CLI quote, statistics and overselling checks.</span><small>Source: reports/ctest.txt</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Source" data-index="23">
+        <button type="button" aria-label="Open screenshot 24: Complete-record parsing"><img src="assets/screenshots/24_complete_record_parsing.png" alt="24. Complete-record parsing" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Source</span><b>24. Complete-record parsing</b><span>Parsing uses the final separators, so names like T-shirts survive, and validates every field.</span><small>Source: include/Commerce.h</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Source" data-index="24">
+        <button type="button" aria-label="Open screenshot 25: Exact PKR charge calculation"><img src="assets/screenshots/25_exact_pkr_charge_calculation.png" alt="25. Exact PKR charge calculation" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Source</span><b>25. Exact PKR charge calculation</b><span>Integer-paisa arithmetic: tax and delivery are rounded half up without overflow.</span><small>Source: include/Commerce.h</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Source" data-index="25">
+        <button type="button" aria-label="Open screenshot 26: Rollback-capable file commit"><img src="assets/screenshots/26_rollback_capable_file_commit.png" alt="26. Rollback-capable file commit" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Source</span><b>26. Rollback-capable file commit</b><span>Checkout stages every file, keeps backups and restores them if any step fails.</span><small>Source: include/Commerce.h</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Source" data-index="26">
+        <button type="button" aria-label="Open screenshot 27: Quote builder with stock checks"><img src="assets/screenshots/27_quote_builder_with_stock_checks.png" alt="27. Quote builder with stock checks" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Source</span><b>27. Quote builder with stock checks</b><span>Analytics.h merges repeated items, rejects unknown or ambiguous names and checks stock.</span><small>Source: include/Analytics.h</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Source" data-index="27">
+        <button type="button" aria-label="Open screenshot 28: Inventory insights source"><img src="assets/screenshots/28_inventory_insights_source.png" alt="28. Inventory insights source" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Source</span><b>28. Inventory insights source</b><span>The admin report reuses the analytics layer and never writes to data files.</span><small>Source: src/Admin.cpp</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Browser" data-index="28">
+        <button type="button" aria-label="Open screenshot 29: Interactive shopping sandbox"><img src="assets/screenshots/29_interactive_shopping_sandbox.png" alt="29. Interactive shopping sandbox" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Browser</span><b>29. Interactive shopping sandbox</b><span>The webpage loads the C++ catalog export: search, filter, sort and add items to the cart.</span><small>Source: index.html  (browser capture)</small></figcaption>
+      </figure>
+      <figure class="shot" data-category="Browser" data-index="29">
+        <button type="button" aria-label="Open screenshot 30: Simulated receipt with discount"><img src="assets/screenshots/30_simulated_receipt_with_discount.png" alt="30. Simulated receipt with discount" width="1600" height="1000" loading="lazy" decoding="async"></button>
+        <figcaption><span class="tag">Browser</span><b>30. Simulated receipt with discount</b><span>The ROHAAN10 code takes 10% off before tax and delivery, matching the CLI quote rules.</span><small>Source: index.html  (browser capture)</small></figcaption>
+      </figure>
+      <!-- GALLERY:END -->
+    </div>
+  </div>
+</section>
+
+<!-- ============================== SETUP ============================== -->
+<section id="setup">
+  <div class="container">
+    <span class="eyebrow">Build · run · test</span>
+    <h2>Setup &amp; commands</h2>
+    <p class="sub">Requirements: Windows 10/11, CMake 3.20+, a C++17 compiler (Visual Studio 2022 or MinGW-w64 g++) and Python 3.10+. Run every command from the <b>repository root</b> (the folder that contains <code>CMakeLists.txt</code>) in PowerShell, cmd or the VS Code terminal (<kbd>Ctrl</kbd>+<kbd>`</kbd>). Python and CMake commands work the same in all three; <code>.\</code> paths are written for PowerShell and also work in cmd.</p>
+    <div class="grid g2">
+      <article class="card"><h3>Quick start (Windows)</h3><pre class="code"><span class="c"># 1. configure, build and test (one command)</span>
+.\build.bat
+<span class="c"># 2. reset demo data and start the portal</span>
+.\run.bat</pre><p>Or open <a href="Shopping_Portal.sln">Shopping_Portal.sln</a> in Visual Studio and press <kbd>F5</kbd>. <code>run.bat</code> builds automatically the first time.</p></article>
+      <article class="card"><h3>Demo accounts &amp; this webpage</h3><table class="mini"><tbody><tr><td>Customer</td><td><code>rohaan / 123456</code></td></tr><tr><td>Admin</td><td><code>admin1 / admin12</code></td></tr><tr><td>Vendor</td><td><code>vendor1 / vendor1</code></td></tr></tbody></table><p>Double-click <code>index.html</code>, or serve it:</p><pre class="code">python -m http.server 8080 --bind 127.0.0.1
+<span class="c"># then open http://127.0.0.1:8080</span></pre></article>
+    </div>
+
+    <h3 class="mt">Every command explained</h3>
+    <div class="table-wrap">
+      <table class="commands">
+        <thead><tr><th>Command</th><th>What it does and why</th><th>Time</th><th>Needed?</th></tr></thead>
+        <tbody>
+          <tr><td><code>.\build.bat</code></td><td>Runs the three CMake steps below: picks MinGW Makefiles when <code>mingw32-make</code> is present, builds Release, then runs CTest.</td><td>1–4 min first time, seconds after</td><td><span class="req">Required</span> once</td></tr>
+          <tr><td><code>cmake -S . -B build</code></td><td>Configure: reads <code>CMakeLists.txt</code> and writes build files into <code>build/</code>. Add <code>-G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release</code> for MinGW.</td><td>5–30 s</td><td><span class="req">Required</span> (or build.bat)</td></tr>
+          <tr><td><code>cmake --build build --config Release</code></td><td>Compiles <code>Shopping_Portal.exe</code>, <code>catalog_cli</code> and the three test programs.</td><td>1–3 min first time, seconds after</td><td><span class="req">Required</span> (or build.bat)</td></tr>
+          <tr><td><code>ctest --test-dir build -C Release --output-on-failure</code></td><td>Runs the 7 CTest checks: domain, seed catalog, analytics, CLI quote, CLI stats, oversell rejection and console units.</td><td>1–10 s</td><td>Recommended</td></tr>
+          <tr><td><code>python tools/prepare_demo.py --reset</code></td><td>Copies <code>data/sample/</code> into <code>data/runtime/</code> so the demo starts with fresh stock, orders and wishlists. <code>run.bat</code> already calls it.</td><td>&lt; 1 s</td><td>Optional</td></tr>
+          <tr><td><code>.\run.bat</code></td><td>Builds if needed, prepares runtime data and starts the interactive portal inside <code>data\runtime</code>.</td><td>Instant (interactive)</td><td><span class="req">Required</span> to use the app</td></tr>
+          <tr><td><code>.\build\catalog_cli.exe --summary</code> (and the other CLI options)</td><td>Read-only catalog reports, statistics, restock plans, quotes and exports. See the <a href="#cli">CLI section</a>.</td><td>&lt; 1 s</td><td>Optional</td></tr>
+          <tr><td><code>python tests/native_smoke.py</code></td><td>Drives the real executable through 9 scripted scenarios (checkout, wishlist, vendor, admin, insights…) in a temporary copy of the seed.</td><td>2–15 s</td><td>Optional</td></tr>
+          <tr><td><code>python tools/record_evidence.py</code></td><td>Re-runs the CLI, test suites and native scenarios, saves the output in <code>reports/</code> and rebuilds <code>assets/js/data.js</code>.</td><td>~10 s</td><td>Optional (after code changes)</td></tr>
+          <tr><td><code>python tools/render_figures.py --browser</code></td><td>Turns <code>reports/</code> and source excerpts into the 30 screenshots (1600×1000), captures the webpage with Playwright, and refreshes <code>data.js</code> and the gallery in this page. Needs Pillow (+ Playwright for <code>--browser</code>).</td><td>15–40 s</td><td>Optional (after changes)</td></tr>
+          <tr><td><code>python tools/build_site_data.py</code></td><td>Bundles <code>reports/catalog.json</code> and the screenshot list into <code>assets/js/data.js</code> and regenerates the static gallery HTML. Called automatically by the two tools above.</td><td>&lt; 1 s</td><td>Optional</td></tr>
+          <tr><td><code>python tests/site_check.py</code></td><td>Opens this page in headless Chrome/Edge over <b>both</b> <code>file://</code> and <code>http://</code>, at desktop and mobile size, and checks every section, theme and the sandbox bill.</td><td>30–60 s</td><td>Optional</td></tr>
+          <tr><td><code>python -m http.server 8080 --bind 127.0.0.1</code></td><td>Serves the page locally the same way GitHub Pages does. Stop it with <kbd>Ctrl</kbd>+<kbd>C</kbd>.</td><td>Runs until stopped</td><td>Optional</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted">Optional Python packages: <code>python -m pip install pillow playwright</code>. Playwright can use an installed Chrome or Edge, so <code>python -m playwright install chromium</code> is only needed if neither is installed. Linux and macOS can build <code>catalog_cli</code> and the portable tests with the same CMake commands; the role UI needs the Windows console API.</p>
+
+    <h3 class="mt">Folder structure</h3>
+    <pre class="tree">Shopping_Portal/
+├── src/                  Native portal (6 files) + portable catalog_cli.cpp
+├── include/              Role, Admin, Vendor, Customer, Items, Cart headers
+│   ├── Commerce.h        Parsing, integer money, rollback-capable commits
+│   └── Analytics.h       Statistics, filters, restock plans, quotes, CSV
+├── tests/                domain, analytics, console-unit, smoke and webpage suites
+├── tools/                Demo reset, evidence recorder, screenshot renderer, site bundler
+├── data/sample/          Versioned demo seed (legacy/ keeps the originals)
+├── reports/              Recorded program outputs + catalog.json
+├── assets/screenshots/   30 screenshots shared by README and webpage
+├── assets/js/data.js     Bundled catalog + screenshot list (works from file://)
+├── assets/css, assets/js Webpage styles and scripts
+├── docs/                 Architecture, demo guide, requirements, history
+├── build.bat · run.bat   One-click build/test and run scripts
+├── CMakeLists.txt        C++17 build with 7 CTest checks
+├── Shopping_Portal.sln   Visual Studio solution
+└── index.html            This page</pre>
+  </div>
+</section>
+
+<!-- ============================== TESTING ============================== -->
+<section id="testing">
+  <div class="container">
+    <span class="eyebrow">Verified behaviour</span>
+    <h2>Testing &amp; results</h2>
+    <div class="grid g4">
+      <div class="card result"><b>17</b><span>domain checks</span><a href="reports/domain_tests.txt">report</a></div>
+      <div class="card result"><b>30</b><span>analytics checks</span><a href="reports/analytics_tests.txt">report</a></div>
+      <div class="card result"><b>36</b><span>native unit checks</span><a href="reports/console_tests.txt">report</a></div>
+      <div class="card result"><b>9</b><span>integration scenarios</span><a href="reports/smoke_tests.txt">report</a></div>
+    </div>
+
+    <h3 class="mt">Test coverage matrix</h3>
+    <div class="table-wrap">
+      <table class="matrix">
+        <thead><tr><th>Area</th><th>Domain</th><th>Analytics</th><th>Console</th><th>Smoke</th><th>CTest CLI</th><th>Webpage</th></tr></thead>
+        <tbody>
+          <tr><td>Product parsing &amp; catalog validation</td><td>✔</td><td></td><td>✔</td><td></td><td>✔</td><td></td></tr>
+          <tr><td>Money parsing &amp; 5% half-up rounding</td><td>✔</td><td>✔</td><td>✔</td><td></td><td>✔</td><td>✔</td></tr>
+          <tr><td>Rollback commit &amp; staging failures</td><td>✔</td><td></td><td>✔</td><td></td><td></td><td></td></tr>
+          <tr><td>Duplicate registration rejected</td><td></td><td></td><td></td><td>✔</td><td></td><td></td></tr>
+          <tr><td>Cart merge, edit, remove</td><td></td><td></td><td>✔</td><td>✔</td><td></td><td>✔</td></tr>
+          <tr><td>Checkout, stock deduction, order record</td><td></td><td></td><td>✔</td><td>✔</td><td></td><td>✔</td></tr>
+          <tr><td>Wishlist persistence, search de-duplication</td><td></td><td></td><td></td><td>✔</td><td></td><td></td></tr>
+          <tr><td>Category &amp; product CRUD guards</td><td></td><td></td><td>✔</td><td>✔</td><td></td><td></td></tr>
+          <tr><td>Statistics, filters, deterministic sorting</td><td></td><td>✔</td><td></td><td></td><td>✔</td><td>✔</td></tr>
+          <tr><td>Restock plans, quotes, oversell rejection, CSV</td><td></td><td>✔</td><td></td><td>✔</td><td>✔</td><td></td></tr>
+          <tr><td>Navbar, themes, mobile menu, gallery, file://</td><td></td><td></td><td></td><td></td><td></td><td>✔</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-wrap mt">
+      <table>
+        <thead><tr><th>Scenario</th><th>Observed result</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td>Catalog validation</td><td>351 products · 12 categories · 4,651 units · PKR 5,975,360.00</td><td><a href="reports/summary.txt">summary.txt</a></td></tr>
+          <tr><td>Native checkout of 2 Apples</td><td>PKR 300.00 + 15.00 tax + 15.00 delivery = PKR 330.00; stock 20 → 18</td><td><a href="reports/native_checkout.txt">transcript</a></td></tr>
+          <tr><td>Discounted quote</td><td>Gross 930.00 − 10% = 837.00 + 41.85 + 41.85 = PKR 920.70</td><td><a href="reports/quote.txt">quote.txt</a></td></tr>
+          <tr><td>Restock Electronics to 8</td><td>11 products · 40 units · PKR 1,509,000.00</td><td><a href="reports/restock_plan.txt">restock_plan.txt</a></td></tr>
+          <tr><td>Admin inventory insights</td><td>71 low-stock products; restock to 10 units costs PKR 6,366,390.00</td><td><a href="reports/native_insights.txt">transcript</a></td></tr>
+          <tr><td>Overselling a quote</td><td>Rejected with exit code 2 and a clear message</td><td><a href="reports/ctest.txt">ctest.txt</a></td></tr>
+          <tr><td>CMake / CTest</td><td>All 7 CTest targets pass (6 portable + Windows console suite)</td><td><a href="reports/ctest.txt">ctest.txt</a></td></tr>
+          <tr><td>Webpage checks</td><td>Headless Chrome over file:// and http://: every section renders, 30 screenshots, themes, sandbox bill</td><td><a href="tests/site_check.py">site_check.py</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid g2 mt">
+      <article class="card"><h3>Billing rule</h3><pre class="code">subtotal = Σ unit_price_paisa × quantity   (after discount)
+tax      = round_half_up(subtotal × 5%)
+delivery = round_half_up(subtotal × 5%)
+total    = subtotal + tax + delivery</pre></article>
+      <article class="card"><h3>Known limitations</h3><ul class="list">
+        <li>The role UI uses the Windows console API, so it runs on Windows only. The CLI and tests are portable.</li>
+        <li>Passwords are stored in plain text files. This is a learning project, not a production authentication system.</li>
+        <li>Data lives in text files with a single-user design; there is no locking between two running copies.</li>
+        <li>The webpage sandbox is a simulation. It never writes to the native data files.</li>
+      </ul></article>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============================== FOOTER ============================== -->
+<footer id="author">
+  <div class="container footer-grid">
+    <div>
+      <span class="eyebrow">About the author</span>
+      <h2>Mohammad Rohaan</h2>
+      <p>BS Computer Science · FAST-NUCES. Built as an object-oriented programming project (22I-2327, Section Z) and extended into a tested, documented C++17 system with inventory analytics and a browser demo.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://github.com/rohaan2802">GitHub profile</a>
+        <a class="btn btn-ghost" href="mailto:m.rohaanarshad@gmail.com">Email</a>
+        <a class="btn btn-ghost" href="https://github.com/rohaan2802/Shopping_Portal#readme">README</a>
+      </div>
+    </div>
+    <div class="footer-links">
+      <h3>Project links</h3>
+      <a href="https://github.com/rohaan2802/Shopping_Portal">Repository</a>
+      <a href="https://rohaan2802.github.io/Shopping_Portal/">Live webpage</a>
+      <a href="docs/ARCHITECTURE.md">Architecture notes</a>
+      <a href="docs/DEMO_GUIDE.txt">Demo guide</a>
+      <a href="docs/OOP_Project_Description.pdf">Original course brief</a>
+    </div>
+  </div>
+  <p class="container copy">© 2026 Mohammad Rohaan · Shopping_Portal · C++17</p>
+</footer>
+
+<button id="top" class="to-top" type="button" aria-label="Back to top" hidden>
+  <svg class="ring" viewBox="0 0 56 56" aria-hidden="true"><path class="track" d="M28 2.5H38A15.5 15.5 0 0 1 53.5 18V38A15.5 15.5 0 0 1 38 53.5H18A15.5 15.5 0 0 1 2.5 38V18A15.5 15.5 0 0 1 18 2.5Z"/><path class="fill" d="M28 2.5H38A15.5 15.5 0 0 1 53.5 18V38A15.5 15.5 0 0 1 38 53.5H18A15.5 15.5 0 0 1 2.5 38V18A15.5 15.5 0 0 1 18 2.5Z" pathLength="100"/></svg>
+  <svg class="chev" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M6 13l6-6 6 6M6 19l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<dialog id="viewer" aria-labelledby="viewerTitle">
+  <div class="viewerbar">
+    <strong id="viewerTitle"></strong>
+    <div class="actions">
+      <button id="previous" class="btn btn-ghost" type="button" aria-label="Previous screenshot">← Prev</button>
+      <button id="next" class="btn btn-ghost" type="button" aria-label="Next screenshot">Next →</button>
+      <button id="zoom" class="btn btn-ghost" type="button" aria-pressed="false">Zoom</button>
+      <button id="close" class="icon-btn" type="button" aria-label="Close viewer">✕</button>
+    </div>
+  </div>
+  <div class="imagewrap"><img id="viewerImage" alt="" width="1600" height="1000"></div>
+  <p id="viewerCaption"></p>
+</dialog>
+</body>
+</html>

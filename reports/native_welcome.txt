@@ -1,0 +1,29 @@
+
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+                  Thank you for visiting FAST Shopping Portal!
+

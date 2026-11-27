@@ -1,39 +1,25 @@
-## Visual Studio / MSVC
+/build/
+/data/runtime/
+.env
+.env.*
+!.env.example
 .vs/
-[Bb]in/
-[Oo]bj/
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-build/*.exe
-build/*.obj
-build/*.pdb
-build/*.ilk
+__pycache__/
+*.pyc
 *.obj
 *.exe
 *.pdb
 *.ilk
+*.user
+*.suo
+*.shop.tmp
+*.shop.bak
+/.test-runtime/
+
+/x64/
+/x86/
+/Debug/
+/Release/
 *.iobj
 *.ipdb
-
-## Archives / junk
-*.zip
-*.rar
-*.7z
-temp.txt
-temp_vendor.txt
-*.tmp
-
-## IDE / OS
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-.DS_Store
-Thumbs.db
-
-## Python screenshot helper cache
-__pycache__/
-*.pyc
-.venv/
+*.tlog/

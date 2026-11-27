@@ -1,0 +1,31 @@
+PASS statistics include one row per category plus a total row
+PASS odd-sized median, min and max are exact
+PASS even-sized median averages the middle pair
+PASS mean price rounds half up in paisa
+PASS inventory value equals sum of price x stock
+PASS inclusive price-range filter
+PASS configurable low-stock threshold
+PASS case-insensitive search and category filter
+PASS inverted price range rejected
+PASS descending stock-value sort
+PASS alphabetical sort is case-insensitive
+PASS unknown sort key rejected
+PASS restock plan targets only products below target, lowest stock first
+PASS restock cost uses unit prices
+PASS restock target must be positive
+PASS repeated quote items merge
+PASS two Apples quote matches the native PKR 330.00 checkout
+PASS 10% discount is applied before tax and delivery
+PASS fractional discount percent parsed exactly
+PASS discount above 50% rejected
+PASS quote beyond available stock rejected
+PASS unknown quote product rejected
+PASS zero quantity rejected
+PASS quote item without quantity rejected
+PASS ambiguous names across categories rejected
+PASS CSV fields quote commas and escape quotes
+PASS CSV export has a header and exact money columns
+PASS thousands separators for reports
+PASS sample seed statistics: 351 products, 4,651 units
+PASS sample seed quote: 2 Apples = PKR 330.00
+30 analytics checks passed

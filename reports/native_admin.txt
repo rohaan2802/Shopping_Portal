@@ -1,0 +1,105 @@
+
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+
+         ==============================================================
+         ADMIN PORTAL
+         ==============================================================
+
+
+         1)    Registration
+
+         2)    Login
+
+         3)    Go Back
+
+
+         [INFO]  Admin account is already set up - please use Login
+         Enter Your Choice:   
+
+
+                            ####  ADMIN LOGIN  ####
+
+
+         [INFO]  Type 0 at username to go back
+         Username (0 = Back):            Password:   
+
+         [OK]  ADMIN LOGIN SUCCESSFUL
+
+
+
+
+         ==============================================================
+         ADMIN DASHBOARD - admin1
+         ==============================================================
+
+
+         1)  View All Users
+
+         2)  Manage Categories
+
+         3)  Manage Products
+
+         4)  View Orders & Stats
+
+         5)  Inventory Insights
+
+         6)  Logout
+
+         Enter choice:   
+
+         [OK]  Admin logged out
+
+
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+                  Thank you for visiting FAST Shopping Portal!
+

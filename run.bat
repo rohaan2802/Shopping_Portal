@@ -2,32 +2,32 @@
 setlocal EnableExtensions
 cd /d "%~dp0"
 
-REM Always delete old exe + rebuild so UI/alignment updates are never skipped.
-echo Cleaning previous build...
-if exist "build\Shopping_Portal.exe" del /f /q "build\Shopping_Portal.exe"
-if exist "build\*.obj" del /f /q "build\*.obj" 2>nul
-if exist "*.obj" del /f /q "*.obj" 2>nul
+if not exist "build\Shopping_Portal.exe" if not exist "build\Release\Shopping_Portal.exe" (
+  echo [INFO] No native executable was found. Building the project first...
+  call "%~dp0build.bat"
+  if errorlevel 1 (
+    echo [ERROR] The build failed, so the portal was not started.
+    exit /b 1
+  )
+)
 
-echo Building latest sources...
-call "%~dp0build.bat"
+python tools\prepare_demo.py
 if errorlevel 1 (
-  echo [ERROR] Build failed - cannot run.
-  pause
+  echo [ERROR] Runtime demo data could not be prepared.
   exit /b 1
 )
 
-if not exist "build\Shopping_Portal.exe" (
-  echo [ERROR] build\Shopping_Portal.exe not found after build.
-  pause
+set "PORTAL_EXE="
+if exist "build\Shopping_Portal.exe" set "PORTAL_EXE=%CD%\build\Shopping_Portal.exe"
+if not defined PORTAL_EXE if exist "build\Release\Shopping_Portal.exe" set "PORTAL_EXE=%CD%\build\Release\Shopping_Portal.exe"
+if not defined PORTAL_EXE (
+  echo [ERROR] Build completed but Shopping_Portal.exe was not found.
   exit /b 1
 )
 
-echo.
-echo Starting FAST Shopping Portal in a new console window...
-echo Working directory: %cd%
-echo.
-
-start "FAST Shopping Portal" /D "%~dp0" cmd /k "build\Shopping_Portal.exe"
-
-endlocal
-exit /b 0
+pushd data\runtime
+echo [INFO] Starting Shopping_Portal with isolated runtime data...
+"%PORTAL_EXE%"
+set "PORTAL_EXIT=%ERRORLEVEL%"
+popd
+exit /b %PORTAL_EXIT%

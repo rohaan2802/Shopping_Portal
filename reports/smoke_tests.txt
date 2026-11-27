@@ -1,0 +1,10 @@
+=== Shopping_Portal smoke results ===
+[PASS] duplicate customer registration rejected (count=1, returncode=0, has_msg=True)
+[PASS] add-to-cart / logout does not change stock (before=20 after=20)
+[PASS] cart merges same item; stock untouched until checkout (apples_in_cart_display=1, stock 20->20)
+[PASS] checkout deducts stock once (before=20 after=19)
+[PASS] wishlist persists to wishlist.txt (found=True)
+[PASS] search dedupes identical catalog rows (hits=1)
+[PASS] reject product add on fake category (msg_ok=True, file_created=False)
+[PASS] reject delete category with products (msg_ok=True, still_listed=True)
+[PASS] admin inventory insights report without data changes (report=True, restock=True, unchanged=True)

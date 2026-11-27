@@ -1,0 +1,13 @@
+PRICE QUOTE (read-only, stock not reserved)
+Item                           Qty      Unit PKR      Line PKR
+--------------------------------------------------------------
+Apples                           3        150.00        450.00
+Milk                             2        180.00        360.00
+Bread                            1        120.00        120.00
+--------------------------------------------------------------
+Gross                                                   930.00
+Discount (10.00%)                                       -93.00
+Subtotal                                                837.00
+Tax (5%)                                                 41.85
+Delivery (5%)                                            41.85
+TOTAL PKR                                               920.70

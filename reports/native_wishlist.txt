@@ -1,0 +1,272 @@
+
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+
+         ==============================================================
+         CUSTOMER GATEWAY
+         ==============================================================
+
+
+         1)    Registration
+
+         2)    Login
+
+         3)    Change Password
+
+         4)    Go Back
+
+         Enter Your Choice here:   
+
+
+                           ####  CUSTOMER LOGIN  ####
+
+
+         [INFO]  Type 0 at username to go back
+         Username (0 = Back):            Enter Your password:   
+
+         [OK]  LOGIN SUCCESSFUL - Welcome rohaan
+
+
+
+
+         ==============================================================
+         CUSTOMER VIEW - rohaan
+         ==============================================================
+
+
+         1)  Place An Order / Browse
+
+         2)  Modify Cart Quantity
+
+         3)  Display Cart Items
+
+         4)  Search Products
+
+         5)  Remove An Item From Cart
+
+         6)  Show Bill / Checkout
+
+         7)  Wishlist (saved)
+
+         8)  Order History
+
+         9)  Logout
+
+         Enter Your Choice here:   
+
+
+                         ####  WISHLIST - rohaan  ####
+
+
+         [INFO]  Wishlist is empty
+
+         1) Add item name to wishlist
+         2) Remove from wishlist
+         3) View wishlist
+         4) Back
+         Choice:   
+
+
+                          ####  ADD TO WISHLIST  ####
+
+         Item name (0 = Back):   
+
+         [OK]  Added to wishlist (saved)
+
+
+
+                           Press Enter to continue...
+
+
+         ==============================================================
+         CUSTOMER VIEW - rohaan
+         ==============================================================
+
+
+         1)  Place An Order / Browse
+
+         2)  Modify Cart Quantity
+
+         3)  Display Cart Items
+
+         4)  Search Products
+
+         5)  Remove An Item From Cart
+
+         6)  Show Bill / Checkout
+
+         7)  Wishlist (saved)
+
+         8)  Order History
+
+         9)  Logout
+
+         Enter Your Choice here:   
+
+
+                         ####  WISHLIST - rohaan  ####
+
+          1)  Apples
+
+         1) Add item name to wishlist
+         2) Remove from wishlist
+         3) View wishlist
+         4) Back
+         Choice:   
+
+
+                          ####  ADD TO WISHLIST  ####
+
+         Item name (0 = Back):   
+
+         [OK]  Added to wishlist (saved)
+
+
+
+                           Press Enter to continue...
+
+
+         ==============================================================
+         CUSTOMER VIEW - rohaan
+         ==============================================================
+
+
+         1)  Place An Order / Browse
+
+         2)  Modify Cart Quantity
+
+         3)  Display Cart Items
+
+         4)  Search Products
+
+         5)  Remove An Item From Cart
+
+         6)  Show Bill / Checkout
+
+         7)  Wishlist (saved)
+
+         8)  Order History
+
+         9)  Logout
+
+         Enter Your Choice here:   
+
+
+                         ####  WISHLIST - rohaan  ####
+
+          1)  Apples
+          2)  Headphones
+
+         1) Add item name to wishlist
+         2) Remove from wishlist
+         3) View wishlist
+         4) Back
+         Choice:   
+
+
+                           ####  YOUR WISHLIST  ####
+
+
+          1)  Apples
+          2)  Headphones
+
+
+                           Press Enter to continue...
+
+
+         ==============================================================
+         CUSTOMER VIEW - rohaan
+         ==============================================================
+
+
+         1)  Place An Order / Browse
+
+         2)  Modify Cart Quantity
+
+         3)  Display Cart Items
+
+         4)  Search Products
+
+         5)  Remove An Item From Cart
+
+         6)  Show Bill / Checkout
+
+         7)  Wishlist (saved)
+
+         8)  Order History
+
+         9)  Logout
+
+         Enter Your Choice here:   
+
+         [OK]  Logged out - cart cleared (stock unchanged)
+
+
+
+
+         ==============================================================
+         CUSTOMER GATEWAY
+         ==============================================================
+
+
+         1)    Registration
+
+         2)    Login
+
+         3)    Change Password
+
+         4)    Go Back
+
+         Enter Your Choice here:   
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+                  Thank you for visiting FAST Shopping Portal!
+

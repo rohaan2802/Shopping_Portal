@@ -1,0 +1,18 @@
+PASS integer PKR parsing
+PASS fractional price precision
+PASS negative price rejected
+PASS excess decimal precision rejected
+PASS hyphenated product name preserved
+PASS negative stock rejected
+PASS malformed records rejected
+PASS category traversal and invalid filenames rejected
+PASS record delimiter rejected
+PASS money formatting preserves two decimal places
+PASS independent half-up charge rounding
+PASS large supported bill avoids overflow
+PASS negative subtotal rejected
+PASS multi-file commit saves both records
+PASS existing staging file blocks transaction
+PASS failed staging leaves original files unchanged
+PASS owned temporary files cleaned after failure
+17 domain checks passed

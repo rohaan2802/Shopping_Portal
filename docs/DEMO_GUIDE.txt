@@ -1,0 +1,125 @@
+SHOPPING_PORTAL - DEMO AND PROJECT NOTES
+=======================================
+
+WHAT THIS PROJECT DOES
+A C++17 shopping system. Admin manages inventory and reads inventory insights, Vendor manages
+owned products, and Customer browses, builds a cart, saves a wishlist and places
+orders. It demonstrates OOP role contracts, file persistence and validation.
+It does not process real payments. Public demo passwords are not production auth.
+
+THREE ENTRY POINTS
+1. Windows console: actual file-backed role workflows.
+2. Catalog CLI: portable read-only audit of product records.
+3. Webpage: portfolio + independent browser simulation of customer shopping.
+The browser does not call the console program or modify its text files.
+
+BUILD FROM THE PROJECT ROOT
+cmake -S . -B build
+cmake --build build --config Release
+ctest --test-dir build -C Release --output-on-failure
+
+For MinGW + Ninja, configure a fresh build directory with:
+cmake -S . -B build -G Ninja -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel 2
+Do not mix CMake generators in the same build directory.
+
+NATIVE DEMO - ABOUT THREE MINUTES
+python tools/prepare_demo.py --reset
+.\run.bat
+
+Customer -> Login: 3, then 2
+Username: rohaan
+Password: 123456
+Browse: 1, Groceries: 1, Apples: 1, quantity: 2
+Return twice: 0, 0
+Display cart: 3, return: 0
+Checkout: 6, confirm: 1, press Enter when prompted
+History: 8, press Enter
+Wishlist: 7 (follow its menu), press Enter on return
+Logout: 9; go back: 4; exit: 4
+
+Expected fresh-run bill:
+2 Apples x PKR 150.00 = PKR 300.00
+Tax 5%                = PKR  15.00
+Delivery 5%           = PKR  15.00
+TOTAL                  = PKR 330.00
+Apples stock: 20 -> 18 only when checkout succeeds.
+Orders append to data/runtime/orders.txt.
+The maximum existing order ID determines the next ID.
+The public seed has sample historical orders; the new order follows them.
+
+Admin insights: from the welcome screen choose 1 -> 2, sign in as admin1 / admin12,
+then 5 (Inventory Insights), press Enter, 6 to log out.
+
+Other demo accounts:
+Admin: admin1 / admin12
+Vendor: vendor1 / vendor1
+Do not put real passwords or personal information in the demo files.
+
+CATALOG AUDIT
+.\build\catalog_cli.exe --data data/sample --search oil
+.\build\catalog_cli.exe --data data/sample --category Electronics --sort price
+.\build\catalog_cli.exe --data data/sample --low-stock --sort stock
+.\build\catalog_cli.exe --data data/sample --stats
+.\build\catalog_cli.exe --data data/sample --restock 8 --category Electronics
+.\build\catalog_cli.exe --data data/sample --quote "Apples:3,Milk:2,Bread:1" --discount 10
+.\build\catalog_cli.exe --data data/sample --sort value --desc --limit 12 --csv
+.\build\catalog_cli.exe --data data/sample --json
+For Visual Studio CMake, use build\Release\catalog_cli.exe instead.
+The tool rejects malformed input and never writes stock or accounts.
+
+WEB DEMO
+Double-click index.html (no server needed), or serve it like GitHub Pages:
+python -m http.server 8080 --bind 127.0.0.1
+Open http://127.0.0.1:8080   (Ctrl+C stops the server)
+Insights -> check 351 products, the price statistics table and low-stock list.
+Live Demo -> Reset sandbox -> search Apples -> quantity 2 -> Add.
+Confirm subtotal 300.00, charges 15.00 + 15.00, total 330.00.
+Enter code ROHAAN10 -> Apply: 10% off before tax, total 297.00.
+Simulate checkout -> inspect the explicitly simulated receipt.
+Search/filter/sort and local storage work without an API key.
+Changing browser state does not change the native runtime.
+
+EXPLAIN THE METHOD
+Prices become integer paisa (100 paisa = one PKR).
+Subtotal = sum(price_paisa x quantity).
+Tax and delivery are independently rounded half up at 5%.
+Each charge = floor((subtotal x 500 + 5000) / 10000).
+The C++ implementation splits quotient/remainder to avoid overflow.
+Complete-line parsing preserves hyphenated names such as T-shirts.
+Checkout validates the whole cart before writing, stages order and stock files,
+and restores backups after ordinary in-process file errors.
+This is not a database: no concurrent writers or power-loss durability.
+Do not run two native copies against the same runtime directory.
+
+SAVED EVIDENCE
+reports/ contains real CLI output, native transcripts, resulting order/stock
+files and test reports. The 30 screenshots in assets/screenshots are rendered
+from those reports, from the source code, and from real browser captures.
+README and webpage share the same files, titles and order through
+assets/screenshots/manifest.json.
+
+REFRESH EVIDENCE AND SCREENSHOTS
+python tests/native_smoke.py
+python tools/record_evidence.py
+python -m pip install Pillow playwright
+python tools/render_figures.py --browser
+python tests/site_check.py
+record_evidence.py and render_figures.py also run tools/build_site_data.py,
+which rebuilds assets/js/data.js and the static screenshot gallery in index.html.
+site_check.py runs 99 checks over both file:// and http://.
+Playwright uses its bundled Chromium, or an installed Chrome or Edge.
+
+VS CODE
+Open this folder -> Terminal -> Run Task -> Build / Test /
+Run Windows portal / Preview webpage (http) / Webpage checks.
+The build task needs CMake/compiler available in your terminal environment.
+The Visual Studio solution also remains available; set its debugger working
+directory to $(ProjectDir)data\runtime after preparing the data.
+
+LIMITATIONS TO MENTION HONESTLY
+Public plaintext demo accounts, fixed console capacities, text files and a
+single-process persistence model. Ambiguous name/price matches across categories
+are rejected. The browser is a simulation. No real payment or shipping service.
+The CMake + MinGW Windows build is the reference build; the portable CLI and
+both C++ test suites also build with GCC on Linux.

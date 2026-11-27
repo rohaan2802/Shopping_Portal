@@ -1,0 +1,154 @@
+
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+
+         ==============================================================
+         VENDOR PORTAL
+         ==============================================================
+
+
+         1) Register
+
+         2) Login
+
+         3) Back
+
+         Choice:   
+
+
+                            ####  VENDOR LOGIN  ####
+
+
+         [INFO]  Type 0 at username to go back
+         Username (0 = Back):            Password:   
+
+         [OK]  VENDOR LOGIN SUCCESSFUL - FastGoods Co
+
+
+
+
+         ==============================================================
+         VENDOR DASHBOARD - vendor1 (FastGoods Co)
+         ==============================================================
+
+
+         1)  Manage My Products / Stock
+
+         2)  View Catalog Categories
+
+         3)  Search Catalog
+
+         4)  Logout
+
+         Enter choice:   
+
+
+               ####  VENDOR STOCK MANAGEMENT - FastGoods Co  ####
+
+         1) View my products
+
+         2) Add product to category
+
+         3) Update my product stock/price
+
+         4) Remove my product
+
+         5) Back
+
+         Choice:   
+
+
+                     ####  MY PRODUCTS - FastGoods Co  ####
+
+          1)  [Electronics] Demo Speaker  |  3500 PKR  |  Stock: 10
+          2)  [Electronics] Lithium Battery  |  5510  |  Stock: 34
+
+
+                           Press Enter to continue...
+
+
+               ####  VENDOR STOCK MANAGEMENT - FastGoods Co  ####
+
+         1) View my products
+
+         2) Add product to category
+
+         3) Update my product stock/price
+
+         4) Remove my product
+
+         5) Back
+
+         Choice:   
+
+
+         ==============================================================
+         VENDOR DASHBOARD - vendor1 (FastGoods Co)
+         ==============================================================
+
+
+         1)  Manage My Products / Stock
+
+         2)  View Catalog Categories
+
+         3)  Search Catalog
+
+         4)  Logout
+
+         Enter choice:   
+
+         [OK]  Vendor logged out
+
+
+
+
+
+         ==============================================================
+                        WELCOME TO FAST SHOPPING PORTAL
+         ==============================================================
+
+         Author: Mohammad Rohaan  |  22I-2327  |  Sec-Z
+         OOP Console Shopping Portal - Admin | Vendor | Customer
+
+
+
+
+         What Is Your Login Type?
+
+         1. Admin
+
+         2. Vendor
+
+         3. Customer
+
+         4. Exit
+
+         Enter Your Choice here:   
+
+
+                  Thank you for visiting FAST Shopping Portal!
+

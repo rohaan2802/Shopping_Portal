@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "cmake -S . -B build && cmake --build build --config Release",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Test",
+      "type": "shell",
+      "command": "ctest --test-dir build -C Release --output-on-failure"
+    },
+    {
+      "label": "Webpage checks",
+      "type": "shell",
+      "command": "python tests/site_check.py"
+    },
+    {
+      "label": "Run Windows portal",
+      "type": "shell",
+      "command": ".\\run.bat"
+    },
+    {
+      "label": "Preview webpage (http)",
+      "type": "shell",
+      "command": "python -m http.server 8080 --bind 127.0.0.1"
+    },
+    {
+      "label": "Refresh evidence + screenshots",
+      "type": "shell",
+      "command": "python tools/record_evidence.py && python tools/render_figures.py --browser"
+    }
+  ]
+}

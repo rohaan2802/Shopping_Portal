@@ -1,0 +1,26 @@
+SHOPPING PORTAL | CATALOG AUDIT
+351 products | 12 categories | 4651 stock units
+Inventory value: PKR 5975360.00
+Matched: 21
+
+USB flash drive                Electronics                   PKR 1500.00      stock=20
+Wireless mouse                 Electronics                   PKR 2000.00      stock=15
+Bluetooth speaker              Electronics                   PKR 3000.00      stock=10
+Wireless keyboard              Electronics                   PKR 3500.00      stock=10
+Portable hard drive            Electronics                   PKR 4000.00      stock=12
+Power bank                     Electronics                   PKR 4500.00      stock=12
+Headphones                     Electronics                   PKR 5000.00      stock=15
+Lithium Battery                Electronics                   PKR 5510.00      stock=34
+Webcam                         Electronics                   PKR 6000.00      stock=8
+WiFi router                    Electronics                   PKR 8000.00      stock=6
+Wireless earbuds               Electronics                   PKR 8000.00      stock=6
+Smartwatch                     Electronics                   PKR 10000.00     stock=8
+External SSD                   Electronics                   PKR 12000.00     stock=7
+Graphics tablet                Electronics                   PKR 15000.00     stock=4
+Tablet                         Electronics                   PKR 20000.00     stock=4
+Monitor                        Electronics                   PKR 25000.00     stock=5
+Digital camera                 Electronics                   PKR 30000.00     stock=2
+Gaming console                 Electronics                   PKR 40000.00     stock=2
+Smartphone                     Electronics                   PKR 50000.00     stock=5
+Television                     Electronics                   PKR 70000.00     stock=4
+Laptop                         Electronics                   PKR 80000.00     stock=3

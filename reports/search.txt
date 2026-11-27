@@ -1,0 +1,12 @@
+SHOPPING PORTAL | CATALOG AUDIT
+351 products | 12 categories | 4651 stock units
+Inventory value: PKR 5975360.00
+Matched: 7
+
+Aluminum foil                  Household Essentials          PKR 80.00        stock=20
+Baby oil                       Baby Care                     PKR 120.00       stock=18
+Essential oils                 Health and Wellness           PKR 180.00       stock=10
+Massage oil                    Health and Wellness           PKR 250.00       stock=12
+Olive oil                      Groceries                     PKR 350.00       stock=7
+Toilet brush                   Household Essentials          PKR 80.00        stock=20
+Toilet paper                   Household Essentials          PKR 150.00       stock=12

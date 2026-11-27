@@ -1,0 +1,22 @@
+SHOPPING PORTAL | CATALOG AUDIT
+351 products | 12 categories | 4651 stock units
+Inventory value: PKR 5975360.00
+Matched: 351
+
+PRICE STATISTICS (PKR)
+Category                     Items        Min     Median       Mean         Max
+-------------------------------------------------------------------------------
+Baby Care                       30      60.00     165.00     295.00     1000.00
+Clothing and Fashion            30     200.00    2000.00    2036.67     5000.00
+Electronics                     21    1500.00    8000.00   19190.95    80000.00
+Groceries                       30      40.00     165.00     196.67      500.00
+Health and Wellness             30      50.00     190.00     266.00     1200.00
+Home Appliances                 30    2000.00    8000.00   16133.33    80000.00
+Home Decor and Furniture        30     300.00    1000.00    1253.33     3000.00
+Household Essentials            30      50.00     110.00     129.00      250.00
+Office and School Supplies      30      20.00      80.00     247.33     2000.00
+Personal Care                   30      50.00     120.00     137.00      300.00
+Pet Supplies                    30      50.00     200.00     365.00     1500.00
+Sports and Fitness              30     200.00    1500.00    4823.33    50000.00
+-------------------------------------------------------------------------------
+All categories                 351      20.00     300.00    3360.37    80000.00

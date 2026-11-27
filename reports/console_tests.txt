@@ -1,0 +1,128 @@
+
+         [INFO]  Item(s) Added to Cart Successfully!
+
+         [INFO]  Item(s) Added to Cart Successfully!
+
+         [INFO]  Item(s) Added to Cart Successfully!
+PASS: cart merges only identical name+price
+PASS: merged quantity is 3
+PASS: different price stays separate
+PASS: reset clears cart
+
+         [INFO]  Item(s) Added to Cart Successfully!
+PASS: catalog stock unread until deduct
+PASS: checkout deduct succeeds with enough stock
+PASS: stock reduced only after deduct
+
+         [INFO]  Item(s) Added to Cart Successfully!
+
+
+         [ERROR]  Unavailable, ambiguous or insufficient stock: Widget
+
+PASS: checkout rejects when stock insufficient
+PASS: failed checkout leaves stock unchanged
+PASS: categoryExists false for unlisted category
+
+
+         [ERROR]  Invalid category "FakeUnitCat": not listed in
+         ItemsCategory.txt
+
+PASS: addProduct rejects fake category
+
+
+         [ERROR]  Invalid category "FakeUnitCat": not listed in
+         ItemsCategory.txt
+
+PASS: updateProduct rejects fake category
+
+
+         [ERROR]  Invalid category "FakeUnitCat": not listed in
+         ItemsCategory.txt
+
+PASS: removeProduct rejects fake category
+
+
+         [ERROR]  Invalid category "FakeUnitCat": not listed in
+         ItemsCategory.txt
+
+PASS: viewCategoryProducts rejects fake category
+PASS: categoryExists true for listed category
+
+
+         [OK]  Product added
+
+
+
+         [ERROR]  Product already exists in this category
+
+
+
+         [ERROR]  Product already exists in this category
+
+PASS: addProduct accepts new name on valid category
+PASS: addProduct rejects existing Alpha
+PASS: addProduct rejects existing Beta
+PASS: listed category exists in index
+
+
+         [ERROR]  Category file missing: MissingFileCat.txt
+
+PASS: addProduct rejects missing category file
+PASS: categoryHasProducts detects products
+
+
+         [ERROR]  Cannot delete "UnitBlockCat": products still exist
+
+PASS: removeCategory blocked when products exist
+PASS: blocked delete leaves category listed
+PASS: empty file has no products
+
+
+         [OK]  Category removed: UnitBlockCat
+
+PASS: removeCategory allowed for empty category
+PASS: category removed from index
+
+
+         [ERROR]  Invalid quantity
+
+PASS: zero quantity rejected
+
+         [INFO]  Item(s) Added to Cart Successfully!
+
+
+                     <<<<<  DISPLAYING ITEMS IN CART  >>>>>
+
+          ITEM#  ITEM NAME             UNIT PRICE  QTY   LINE TOTAL    
+
+              1  T-shirts              Rs. 19.99   1     Rs. 19.99     
+
+
+         --------------------------------------------------------------
+         SUBTOTAL                                             Rs. 19.99
+         TAX (5%)                                              Rs. 1.00
+         Delivery Charges (5%)                                 Rs. 1.00
+         --------------------------------------------------------------
+         TOTAL AMOUNT                                         Rs. 21.99
+PASS: fractional bill generated
+PASS: fractional charges keep exact two-decimal total
+
+
+         [ERROR]  Checkout failed: Pending transaction files require
+         recovery
+
+PASS: order staging failure rejects checkout
+PASS: order write failure leaves stock unchanged
+PASS: order write failure leaves orders unchanged
+
+
+         [OK]  Product updated
+
+PASS: successful update accepts fractional price
+PASS: updated record remains parseable
+
+
+         [OK]  Product removed
+
+PASS: successful product removal
+PASS: catalog remains parseable after removal
