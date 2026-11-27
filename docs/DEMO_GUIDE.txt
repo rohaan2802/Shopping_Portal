@@ -107,7 +107,7 @@ python tools/render_figures.py --browser
 python tests/site_check.py
 record_evidence.py and render_figures.py also run tools/build_site_data.py,
 which rebuilds assets/js/data.js and the static screenshot gallery in index.html.
-site_check.py runs 107 checks over both file:// and http://.
+site_check.py runs 117 checks over both file:// and http://.
 Playwright uses its bundled Chromium, or an installed Chrome or Edge.
 
 VS CODE

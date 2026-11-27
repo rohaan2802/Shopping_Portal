@@ -98,9 +98,21 @@ $('#close').addEventListener('click', () => $('#viewer').close());
 $('#zoom').addEventListener('click', () => $('#zoom').setAttribute('aria-pressed', String($('#viewerImage').classList.toggle('enlarged'))));
 $('#viewer').addEventListener('keydown', e => { if (e.key === 'ArrowRight') step(1); if (e.key === 'ArrowLeft') step(-1); });
 $('#viewer').addEventListener('click', e => { if (e.target === $('#viewer')) $('#viewer').close(); });
-let touchX = 0;
-$('#viewerImage').addEventListener('touchstart', e => { touchX = e.changedTouches[0].clientX; }, {passive: true});
-$('#viewerImage').addEventListener('touchend', e => { const d = e.changedTouches[0].clientX - touchX; if (Math.abs(d) > 50) step(d < 0 ? 1 : -1); }, {passive: true});
+// Swipe left/right changes screenshot only when NOT zoomed. While zoomed, touches pan the
+// image inside .imagewrap (native scrolling). Vertical or multi-finger gestures never navigate.
+let swipe = null;
+const isZoomed = () => $('#viewerImage').classList.contains('enlarged');
+$('#viewerImage').addEventListener('touchstart', e => {
+  swipe = isZoomed() || e.touches.length > 1 ? null : {x: e.touches[0].clientX, y: e.touches[0].clientY};
+}, {passive: true});
+$('#viewerImage').addEventListener('touchmove', e => { if (e.touches.length > 1) swipe = null; }, {passive: true});
+$('#viewerImage').addEventListener('touchend', e => {
+  if (!swipe || isZoomed()) { swipe = null; return; }
+  const dx = e.changedTouches[0].clientX - swipe.x, dy = e.changedTouches[0].clientY - swipe.y;
+  swipe = null;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+}, {passive: true});
+$('#viewerImage').addEventListener('touchcancel', () => { swipe = null; }, {passive: true});
 $('#figureSearch').addEventListener('input', filterGallery);
 $('#filters').innerHTML = ['All', ...new Set(cards.map(c => c.dataset.category))].map(c => `<button type="button" class="chip" aria-pressed="${c === 'All'}">${esc(c)}</button>`).join('');
 $$('#filters .chip').forEach(b => b.addEventListener('click', () => {

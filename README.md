@@ -11,7 +11,7 @@
 <a href="Shopping_Portal.sln"><img src="https://img.shields.io/badge/IDE-Visual%20Studio-5C2D91?style=for-the-badge&logo=visualstudio&logoColor=white" alt="IDE: Visual Studio" /></a>
 <a href="src/Main.cpp"><img src="https://img.shields.io/badge/UI-Windows%20Console-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="UI: Windows Console" /></a>
 <a href="src/catalog_cli.cpp"><img src="https://img.shields.io/badge/CLI-Linux%20%7C%20macOS%20%7C%20Windows-FCC624?style=for-the-badge&logo=linux&logoColor=white" alt="CLI: Linux | macOS | Windows" /></a>
-<a href="reports/ctest.txt"><img src="https://img.shields.io/badge/Tests-199%20passing-2EA043?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests: 199 passing" /></a>
+<a href="reports/ctest.txt"><img src="https://img.shields.io/badge/Tests-209%20passing-2EA043?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests: 209 passing" /></a>
 <a href="CMakeLists.txt"><img src="https://img.shields.io/badge/CTest-7%20targets-064F8C?style=for-the-badge&logo=cmake&logoColor=white" alt="CTest: 7 targets" /></a>
 <a href="include/Analytics.h"><img src="https://img.shields.io/badge/Analytics-Stats%20%7C%20Restock%20%7C%20Quotes-7C3AED?style=for-the-badge&logo=googleanalytics&logoColor=white" alt="Analytics: Stats | Restock | Quotes" /></a>
 <a href="index.html"><img src="https://img.shields.io/badge/Web-HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="Web: HTML5" /></a>
@@ -89,7 +89,7 @@ The sample catalog holds **351 products in 12 categories (4,651 stock units, PKR
 | 🔎 | Search, category, price-range and low-stock filters; value sorting; limits | `catalog_cli` |
 | 📤 | JSON and CSV export | `catalog_cli --json / --csv` |
 | 🌐 | Webpage with live inventory insights, shopping sandbox, discount codes and screenshot viewer | `index.html` |
-| ✅ | 199 automated checks across five suites, including headless browser tests over `file://` and `http://` | `tests/` |
+| ✅ | 209 automated checks across five suites, including headless browser tests over `file://` and `http://` | `tests/` |
 
 ## 🆕 What's new in this version
 
@@ -97,7 +97,7 @@ The sample catalog holds **351 products in 12 categories (4,651 stock units, PKR
 - **Admin → 5) Inventory Insights** – a new read-only native report built on the analytics module. **Logout moved to option 6.**
 - **Exact admin revenue** – order totals are summed in integer paisa (previously `double` truncated to an `int`), and the report now shows the average order value.
 - **`catalog_cli` v2** – new options `--min-price`, `--max-price`, `--threshold`, `--desc`, `--limit`, `--sort value`, `--stats`, `--categories`, `--restock`, `--quote`, `--discount` and `--csv`, with a full `--help` page and clear errors (exit code 2).
-- **Tests** – a 30-check `analytics_tests` suite, four new CTest entries for the CLI, a ninth integration scenario for the admin report, and `tests/site_check.py` (107 browser checks, run over both `file://` and `http://`).
+- **Tests** – a 30-check `analytics_tests` suite, four new CTest entries for the CLI, a ninth integration scenario for the admin report, and `tests/site_check.py` (117 browser checks, run over both `file://` and `http://`).
 - **Tooling** – `record_evidence.py` finds single- or multi-config build outputs and records nine CLI reports and eight native transcripts; `render_figures.py` produces all 30 screenshots, including real Playwright browser captures.
 - **Webpage redesign** – right-aligned navbar with 12 sections, icon theme toggle, visible mobile menu icon, a new back-to-top button with a scroll-progress ring, a new light and dark palette, larger 18 px body text, live insights, price statistics and discount codes in the sandbox.
 - **Works offline** – the page no longer uses `fetch()`. `tools/build_site_data.py` bundles the catalog and screenshot list into `assets/js/data.js` and writes the 30 screenshots into `index.html` as plain `<img>` tags, so double-clicking `index.html` works the same as GitHub Pages.
@@ -147,7 +147,7 @@ More detail: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 | Module | Lines | Key functions |
 | --- | ---: | --- |
-| `src/Main.cpp` | 107 | `main()`: console set-up and the role selection loop |
+| `src/Main.cpp` | 91 | `main()`: console set-up and the role selection loop |
 | `src/Admin.cpp` | 529 | `admin_menu()`, `viewOrdersAndStats()`, `viewInventoryInsights()` |
 | `src/Vendor.cpp` | 414 | `vendor_menu()`, own-product view, add, update and remove |
 | `src/Customer.cpp` | 615 | `show_customer_menu()`, `checkoutAndSaveOrder()`, wishlist, order history, password change |
@@ -230,7 +230,7 @@ Shopping_Portal/
 │   ├── analytics_tests.cpp  30 analytics checks
 │   ├── unit_console.cpp     36 native cart / CRUD checks (Windows)
 │   ├── native_smoke.py      9 piped-input integration scenarios
-│   └── site_check.py        107 headless browser checks (file:// and http://)
+│   └── site_check.py        117 headless browser checks (file:// and http://)
 ├── tools/                   prepare_demo.py, record_evidence.py, render_figures.py, build_site_data.py
 ├── data/
 │   ├── sample/              Versioned demo seed
@@ -329,7 +329,7 @@ python tests/site_check.py                    # webpage checks (file:// and http
 | `python tools/record_evidence.py` | Repo root · any terminal | Re-runs CLI, tests and native scenarios; saves `reports/`; rebuilds `assets/js/data.js` | ~10 s | Optional (after code changes) |
 | `python tools/render_figures.py --browser` | Repo root · any terminal | Renders the 30 screenshots (Pillow) and the 2 browser captures (Playwright); refreshes data.js and the gallery | 15–40 s | Optional (after changes) |
 | `python tools/build_site_data.py` | Repo root · any terminal | Bundles catalog + screenshot list into `assets/js/data.js` and rewrites the static gallery in `index.html` | < 1 s | Optional (called by the two above) |
-| `python tests/site_check.py` | Repo root · any terminal | 107 headless-browser checks over `file://` and `http://`, desktop and mobile, both themes | 30–60 s | Optional |
+| `python tests/site_check.py` | Repo root · any terminal | 117 headless-browser checks over `file://` and `http://`, desktop and mobile, both themes | 30–60 s | Optional |
 | `python -m http.server 8080 --bind 127.0.0.1` | Repo root · any terminal | Serves the page like GitHub Pages; stop with `Ctrl+C` | Until stopped | Optional |
 
 MinGW builds place programs in `build\`, Visual Studio builds in `build\Release\`, and Linux/macOS in `./build/`. Playwright can use an installed Chrome or Edge; `python -m playwright install chromium` is only needed if neither is installed. The same tasks are available in VS Code under **Terminal → Run Task**.
@@ -419,8 +419,8 @@ The tool is read-only: it never opens account, cart, order or stock files for wr
 | `analytics_tests` – statistics, filters, restock, quotes, CSV | 30 | [analytics_tests.txt](reports/analytics_tests.txt) |
 | `console_tests` – native cart and CRUD rules | 36 | [console_tests.txt](reports/console_tests.txt) |
 | `native_smoke.py` – end-to-end piped scenarios | 9 | [smoke_tests.txt](reports/smoke_tests.txt) |
-| `site_check.py` – webpage over `file://` and `http://`, desktop and mobile, light and dark | 107 | [site_check.py](tests/site_check.py) |
-| **Total** | **199** | CTest runs 7 targets: [ctest.txt](reports/ctest.txt) |
+| `site_check.py` – webpage over `file://` and `http://`, desktop and mobile, light and dark | 117 | [site_check.py](tests/site_check.py) |
+| **Total** | **209** | CTest runs 7 targets: [ctest.txt](reports/ctest.txt) |
 
 | Scenario | Observed result | Evidence |
 | --- | --- | --- |

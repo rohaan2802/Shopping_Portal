@@ -67,7 +67,7 @@ data/sample/ ──copy──> data/runtime/ ──used by──> native portal
 3. `console_tests` checks cart behavior and native category/product rules on a temporary fixture.
 4. CTest also runs the CLI against the seed: catalog validation, a PKR 330.00 quote, statistics, and a rejected oversell.
 5. `native_smoke.py` drives nine role scenarios through redirected input and checks resulting state, including the read-only admin insights report.
-6. `site_check.py` (107 checks) opens the webpage in headless Chrome/Edge both from disk (`file://`) and over HTTP, at desktop and mobile widths in both themes: navbar, icons, back-to-top, 30 screenshots, content in every section, insights tables, gallery filters, sandbox billing and console errors.
+6. `site_check.py` (117 checks) opens the webpage in headless Chrome/Edge both from disk (`file://`) and over HTTP, at desktop and mobile widths in both themes: navbar, icons, back-to-top, 30 screenshots, content in every section, insights tables, gallery filters, sandbox billing and console errors.
 
 Outputs in `reports/` are regenerated after a local build with `python tools/record_evidence.py`, and the screenshots with `python tools/render_figures.py --browser`. Both finish by running `tools/build_site_data.py`.
 

@@ -125,6 +125,46 @@ def main():
             page.click("#checkout")
             check(f"{mode}: sandbox receipt printed", "SIMULATED RECEIPT" in page.inner_text("#receipt"))
             page.close()
+
+            # touch gestures in the screenshot viewer (mobile emulation with real touch input)
+            ctx = browser.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
+            page = ctx.new_page()
+            watch(page, f"{mode}/touch")
+            page.goto(url)
+            page.locator("#gallery figure.shot button").nth(4).tap()
+            page.wait_for_selector("#viewer[open]")
+            page.wait_for_function("document.querySelector('#viewerImage').complete")
+            cdp = ctx.new_cdp_session(page)
+
+            def drag(x1, y1, x2, y2):
+                cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": x1, "y": y1}]})
+                for i in range(1, 9):
+                    cdp.send("Input.dispatchTouchEvent", {"type": "touchMove", "touchPoints": [{"x": x1 + (x2 - x1) * i / 8, "y": y1 + (y2 - y1) * i / 8}]})
+                cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+                page.wait_for_timeout(250)
+
+            box = page.locator("#viewerImage").bounding_box()
+            cx, cy = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
+            title = lambda: page.inner_text("#viewerTitle")
+            zoomed = lambda: page.evaluate("document.querySelector('#viewerImage').classList.contains('enlarged')") and page.get_attribute("#zoom", "aria-pressed") == "true"
+            start = title()
+            drag(cx, cy - 60, cx + 10, cy + 60)
+            check(f"{mode}: touch - vertical swipe never changes screenshot", title() == start)
+            drag(cx + 120, cy, cx - 120, cy + 10)
+            moved = title()
+            check(f"{mode}: touch - horizontal swipe changes screenshot when not zoomed", moved != start, f"{start} -> {moved}")
+            page.locator("#zoom").tap()
+            page.wait_for_timeout(200)
+            box = page.locator(".imagewrap").bounding_box()
+            cx, cy = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
+            drag(cx + 140, cy, cx - 140, cy)
+            sx = page.evaluate("document.querySelector('.imagewrap').scrollLeft")
+            check(f"{mode}: touch - zoomed horizontal pan scrolls the image, same screenshot, still zoomed", title() == moved and zoomed() and sx > 0, f"{title()} zoomed={zoomed()} scrollLeft={sx}")
+            drag(cx - 140, cy, cx + 100, cy)
+            check(f"{mode}: touch - zoomed pan back does not navigate", title() == moved and zoomed(), title())
+            drag(cx, cy + 80, cx, cy - 80)
+            check(f"{mode}: touch - zoomed vertical pan stays on the same zoomed screenshot", title() == moved and zoomed())
+            ctx.close()
         browser.close()
     server.shutdown()
     check("no JavaScript or console errors (file:// and http://)", not errors, "; ".join(errors))
