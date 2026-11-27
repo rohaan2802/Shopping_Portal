@@ -60,6 +60,8 @@ def main():
                     check(f"{tag}: theme applied", page.evaluate("document.documentElement.dataset.theme") == theme)
                     icon = "#theme .i-sun" if theme == "dark" else "#theme .i-moon"
                     check(f"{tag}: theme toggle icon visible", page.locator(icon).is_visible())
+                    tops = page.evaluate("[...document.querySelectorAll('#features .feature')].map(c => { const s = getComputedStyle(c); return s.borderTopWidth + ' ' + s.borderTopColor; })")
+                    check(f"{tag}: all {len(tops)} feature cards share one top accent line", len(tops) == 9 and len(set(tops)) == 1 and tops[0].startswith("3px"), str(set(tops)))
                     check(f"{tag}: no horizontal overflow", page.evaluate("document.documentElement.scrollWidth <= innerWidth"))
                     links = page.locator("#navigation a:visible").count()
                     if layout == "desktop":

@@ -103,8 +103,9 @@ section{padding:72px 0;border-top:1px solid var(--border)}
 .card:hover{border-color:color-mix(in srgb,var(--primary) 60%,var(--border))}
 .card p{color:var(--muted);margin:0 0 8px}
 .feature .ico{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:1.4rem;background:var(--surface-2);border:1px solid var(--border);margin-bottom:12px}
+/* every feature card gets the same 3px accent line on top (it stays the same colour on hover) */
+.feature,.feature:hover{border-top:3px solid var(--primary)}
 .feature:hover{transform:translateY(-3px)}
-.feature.new{border-top:3px solid var(--primary)}
 .badge{display:inline-block;font-size:.74rem;font-weight:800;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:var(--on-primary);vertical-align:middle;margin-left:4px}
 .table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
 table{width:100%;border-collapse:collapse;background:var(--surface);font-size:1rem}
