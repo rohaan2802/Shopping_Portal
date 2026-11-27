@@ -24,35 +24,46 @@
 <a href="https://rohaan2802.github.io/Shopping_Portal/"><img src="https://img.shields.io/badge/Pages-Live%20demo-222222?style=for-the-badge&logo=githubpages&logoColor=white" alt="Pages: Live demo" /></a>
 <a href="https://github.com/rohaan2802"><img src="https://img.shields.io/badge/Author-Rohaan-181717?style=for-the-badge&logo=github&logoColor=white" alt="Author: Rohaan" /></a>
 
-**[🌐 Live webpage](https://rohaan2802.github.io/Shopping_Portal/)** · **[📦 Repository](https://github.com/rohaan2802/Shopping_Portal)** · **[🖼️ Screenshots](#-screenshots)** · **[🚀 Quick start](#-setup)**
+
 
 </div>
 
 ---
 
+## 🔗 Live Links
+
+| What | Link |
+|------|------|
+| Website (GitHub Pages) | [https://rohaan2802.github.io/Shopping_Portal/](https://rohaan2802.github.io/Shopping_Portal/) |
+| Repository | [https://github.com/rohaan2802/Shopping_Portal](https://github.com/rohaan2802/Shopping_Portal) |
+| Live demo: try the customer checkout in the browser | [https://rohaan2802.github.io/Shopping_Portal/#demo](https://rohaan2802.github.io/Shopping_Portal/#demo) |
+
+---
+
 ## 📑 Contents
 
-1. [Overview](#-overview)
-2. [Features](#-features)
-3. [What's new in this version](#-whats-new-in-this-version)
-4. [Tech stack](#-tech-stack)
-5. [Architecture](#-architecture)
-6. [Data flow](#-data-flow)
-7. [Classes and data structures](#-classes-and-data-structures)
-8. [Key algorithms](#-key-algorithms)
-9. [Design decisions](#-design-decisions)
-10. [Folder structure](#-folder-structure)
-11. [Setup](#-setup)
-12. [Commands reference](#-commands-reference)
-13. [Demo walkthrough](#-demo-walkthrough)
-14. [Feature walkthroughs](#-feature-walkthroughs)
-15. [catalog_cli reference](#-catalog_cli-reference)
-16. [Billing and data rules](#-billing-and-data-rules)
-17. [Testing and results](#-testing-and-results)
-18. [Webpage](#-webpage)
-19. [Screenshots](#-screenshots)
-20. [Limitations](#-limitations)
-21. [About the author](#-about-the-author)
+1. [Live Links](#-live-links)
+2. [Overview](#-overview)
+3. [Features](#-features)
+4. [What's new in this version](#-whats-new-in-this-version)
+5. [Tech stack](#-tech-stack)
+6. [Architecture](#-architecture)
+7. [Data flow](#-data-flow)
+8. [Classes and data structures](#-classes-and-data-structures)
+9. [Key algorithms](#-key-algorithms)
+10. [Design decisions](#-design-decisions)
+11. [Folder structure](#-folder-structure)
+12. [Setup](#-setup)
+13. [Commands reference](#-commands-reference)
+14. [Demo walkthrough](#-demo-walkthrough)
+15. [Feature walkthroughs](#-feature-walkthroughs)
+16. [catalog_cli reference](#-catalog_cli-reference)
+17. [Billing and data rules](#-billing-and-data-rules)
+18. [Testing and results](#-testing-and-results)
+19. [Webpage](#-webpage)
+20. [Screenshots](#-screenshots)
+21. [Limitations](#-limitations)
+22. [About the author](#-about-the-author)
 
 ## 🧭 Overview
 
